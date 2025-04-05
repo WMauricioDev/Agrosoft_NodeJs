@@ -2,24 +2,24 @@ import pool from '../database/Conexion.js';
 
 export const RegistrarUsuarios = async (req, res) => {
   try {
-    const { identificacion, nombre, apellido, fecha_nacimiento, telefono, email, password, area_desarrollo, cargo } = req.body;
-    
-    if (!identificacion || !password || !nombre || !apellido || !email) {
-      return res.status(400).json({ message: 'Identificación, nombre, apellido, email y contraseña son obligatorios' });
+    const { nombre, apellido, email, password, username, rol_id } = req.body;
+
+    if (!nombre || !apellido || !email || !password) {
+      return res.status(400).json({ message: 'Nombre, apellido, email y contraseña son obligatorios' });
     }
 
     const sql = `
-      INSERT INTO usuarios (identificacion, nombre, apellido, fecha_nacimiento, telefono, email, password, area_desarrollo, cargo) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      INSERT INTO usuarios_usuarios (nombre, apellido, email, password, username, rol_id, fecha_registro)
+      VALUES ($1, $2, $3, $4, $5, $6, NOW())
     `;
     const result = await pool.query(sql, [
-      identificacion, nombre, apellido, fecha_nacimiento, telefono, email, password, area_desarrollo, cargo
+      nombre, apellido, email, password, username, rol_id
     ]);
 
     if (result.rowCount > 0) {
       return res.status(201).json({ message: 'Usuario registrado exitosamente' });
     } else {
-      return res.status(404).json({ message: 'Usuario no registrado' });
+      return res.status(400).json({ message: 'No se pudo registrar el usuario' });
     }
   } catch (error) {
     console.error(error);
@@ -29,8 +29,7 @@ export const RegistrarUsuarios = async (req, res) => {
 
 export const listarUsuarios = async (req, res) => {
   try {
-    const sql = 'SELECT * FROM usuarios';
-    const result = await pool.query(sql);
+    const result = await pool.query('SELECT * FROM usuarios_usuarios');
     res.status(200).json(result.rows);
   } catch (error) {
     console.error(error);
@@ -40,16 +39,16 @@ export const listarUsuarios = async (req, res) => {
 
 export const ActualizarUsuarios = async (req, res) => {
   try {
-    const { identificacion, nombre, apellido, fecha_nacimiento, telefono, email, password, area_desarrollo, cargo } = req.body;
+    const { nombre, apellido, email, password, username, rol_id } = req.body;
     const id = req.params.id;
 
     const sql = `
-      UPDATE usuarios 
-      SET identificacion=$1, nombre=$2, apellido=$3, fecha_nacimiento=$4, telefono=$5, email=$6, password=$7, area_desarrollo=$8, cargo=$9 
-      WHERE id=$10
+      UPDATE usuarios_usuarios
+      SET nombre=$1, apellido=$2, email=$3, password=$4, username=$5, rol_id=$6
+      WHERE id=$7
     `;
     const result = await pool.query(sql, [
-      identificacion, nombre, apellido, fecha_nacimiento, telefono, email, password, area_desarrollo, cargo, id
+      nombre, apellido, email, password, username, rol_id, id
     ]);
 
     if (result.rowCount > 0) {
@@ -66,8 +65,7 @@ export const ActualizarUsuarios = async (req, res) => {
 export const EliminarUsuarios = async (req, res) => {
   try {
     const id = req.params.id;
-    const sql = 'DELETE FROM usuarios WHERE id=$1';
-    const result = await pool.query(sql, [id]);
+    const result = await pool.query('DELETE FROM usuarios_usuarios WHERE id=$1', [id]);
 
     if (result.rowCount > 0) {
       return res.status(200).json({ message: 'Usuario eliminado exitosamente' });
@@ -82,9 +80,8 @@ export const EliminarUsuarios = async (req, res) => {
 
 export const BuscarUsuarios = async (req, res) => {
   try {
-    const identificacion = req.params.identificacion;
-    const sql = 'SELECT * FROM usuarios WHERE identificacion=$1';
-    const result = await pool.query(sql, [identificacion]);
+    const email = req.params.email;
+    const result = await pool.query('SELECT * FROM usuarios_usuarios WHERE email=$1', [email]);
 
     if (result.rows.length > 0) {
       return res.status(200).json({ message: 'Usuario encontrado', usuario: result.rows[0] });
@@ -94,5 +91,25 @@ export const BuscarUsuarios = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al buscar el usuario' });
+  }
+};
+
+export const UsuarioActual = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const result = await pool.query(
+      'SELECT id, nombre, apellido, email, rol_id FROM usuarios_usuarios WHERE id=$1',
+      [userId]
+    );
+
+    if (result.rows.length > 0) {
+      return res.status(200).json(result.rows[0]);
+    } else {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+  } catch (error) {
+    console.error('Error en /usuarios/me:', error);
+    return res.status(500).json({ message: 'Error al obtener usuario actual' });
   }
 };

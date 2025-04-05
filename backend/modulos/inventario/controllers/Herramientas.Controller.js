@@ -2,34 +2,35 @@ import pool from "../../usuarios/database/Conexion.js"
 
 export const registrarHerramienta = async (req, res) => {
     try {
-        const { fk_lote, nombre, descripcion, unidades } = req.body
-        const sql = `INSERT INTO Herramientas (fk_lote, nombre, descripcion, unidades) VALUES ($1, $2, $3, $4)`
-        const { rowCount } = await pool.query(sql, [fk_lote, nombre, descripcion, unidades])
-        
+        const { nombre, descripcion, cantidad, estado, activo } = req.body;
+        const fecha_registro = new Date();
+
+        const sql = `
+            INSERT INTO herramientas_herramienta 
+            (nombre, descripcion, cantidad, estado, activo, fecha_registro)
+            VALUES ($1, $2, $3, $4, $5, $6)
+        `;
+
+        const { rowCount } = await pool.query(sql, [
+            nombre, descripcion, cantidad, estado, activo, fecha_registro
+        ]);
+
         if (rowCount > 0) {
-            res.status(201).json({ "message": "Herramienta registrada" })
+            res.status(201).json({ message: "Herramienta registrada exitosamente" });
         } else {
-            res.status(400).json({ "message": "No se pudo registrar la herramienta" })
+            res.status(400).json({ message: "No se pudo registrar la herramienta" });
         }
     } catch (error) {
-        console.error(error)
-        res.status(500).json({ "message": "Error en el servidor" })
+        console.error(error);
+        res.status(500).json({ message: "Error en el servidor" });
     }
 };
+
 
 export const listarHerramientas = async (req, res) => {
     try {
         const sql = `
-            SELECT 
-                h.id, 
-                h.nombre, 
-                h.descripcion,
-                h.unidades, 
-                h.fk_lote, 
-                l.nombre AS nombre_lote 
-            FROM Herramientas h
-            INNER JOIN Lotes l ON h.fk_lote = l.id
-            ORDER BY h.nombre ASC
+            SELECT * from herramientas_herramienta
         `;
         const { rows } = await pool.query(sql);
         res.status(200).json(rows);
@@ -43,7 +44,7 @@ export const listarHerramientas = async (req, res) => {
 export const eliminarHerramienta = async (req, res) => {
     try {
         const id = req.params.id
-        const sql = `DELETE FROM Herramientas WHERE id = $1`
+        const sql = `DELETE FROM herramientas_herramienta WHERE id = $1`
         const { rowCount } = await pool.query(sql, [id])
         
         if (rowCount > 0) {
@@ -59,18 +60,24 @@ export const eliminarHerramienta = async (req, res) => {
 
 export const actualizarHerramienta = async (req, res) => {
     try {
-        const { fk_lote, nombre, descripcion, unidades } = req.body
-        const id = req.params.id
-        const sql = `UPDATE Herramientas SET fk_lote = $1, nombre = $2, descripcion = $3, unidades = $4 WHERE id = $5`
-        const { rowCount } = await pool.query(sql, [fk_lote, nombre, descripcion, unidades, id])
-        
+        const { nombre, descripcion, cantidad, estado, activo } = req.body;
+        const id = req.params.id;
+
+        const sql = `
+            UPDATE herramientas_herramienta 
+            SET nombre = $1, descripcion = $2, cantidad = $3, estado = $4, activo = $5
+            WHERE id = $6
+        `;
+        const { rowCount } = await pool.query(sql, [nombre, descripcion, cantidad, estado, activo, id]);
+
         if (rowCount > 0) {
-            res.status(200).json({ "message": "Herramienta actualizada" })
+            res.status(200).json({ message: "Herramienta actualizada exitosamente" });
         } else {
-            res.status(404).json({ "message": "Herramienta no encontrada" })
+            res.status(404).json({ message: "Herramienta no encontrada" });
         }
     } catch (error) {
-        console.error(error)
-        res.status(500).json({ "message": "Error en el servidor" })
+        console.error(error);
+        res.status(500).json({ message: "Error en el servidor" });
     }
 };
+
