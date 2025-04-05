@@ -64,7 +64,7 @@ export const listarBodega = async (req, res) => {
 export const eliminarBodega = async (req, res) => {
   try {
     const id = req.params.id_bodega;
-    const sql = 'DELETE FROM bodega_bodega WHERE id_bodega = $1';
+    const sql = 'DELETE FROM bodega_bodega WHERE id = $1';
     const { rowCount } = await pool.query(sql, [id]);
 
     if (rowCount > 0) {
@@ -96,7 +96,7 @@ export const actualizarBodega = async (req, res) => {
       UPDATE bodega_bodega
       SET nombre = $1, direccion = $2, telefono = $3,
           activo = $4, capacidad = $5, ubicacion = $6
-      WHERE id_bodega = $7
+      WHERE id = $7
     `;
 
     const { rowCount } = await pool.query(sql, [
