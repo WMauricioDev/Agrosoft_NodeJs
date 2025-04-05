@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación de la API con PostgreSQL</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">Documentación de la API</h1>
+
+        <h2 class="mt-4">Rol-Permiso</h2>
+        
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                Endpoint 4: Listar Relaciones Rol-Permiso
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr><th>Método</th><td>GET</td></tr>
+                    <tr><th>URL</th><td><code>/api/RolPermiso</code></td></tr>
+                    <tr><th>Headers</th><td>Authorization: Bearer [token]</td></tr>
+                    <tr><th>Respuesta Exitosa</th><td>200 - Lista de relaciones rol-permiso</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                Endpoint 5: Asignar Permiso a Rol
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr><th>Método</th><td>POST</td></tr>
+                    <tr><th>URL</th><td><code>/api/RolPermiso</code></td></tr>
+                    <tr><th>Headers</th><td>Authorization: Bearer [token]</td></tr>
+                    <tr><th>Body</th><td><pre>{ "fk_rol": 1, "fk_permiso": 2 }</pre></td></tr>
+                    <tr><th>Respuestas</th>
+                        <td>
+                            201 - Permiso asignado al rol<br>
+                            400 - La relación ya existe<br>
+                            500 - Error del servidor
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header bg-danger text-white">
+                Endpoint 6: Eliminar Relación Rol-Permiso
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr><th>Método</th><td>DELETE</td></tr>
+                    <tr><th>URL</th><td><code>/api/RolPermiso/:fk_rol/:fk_permiso</code></td></tr>
+                    <tr><th>Ejemplo</th><td><code>/api/RolPermiso/1/2</code></td></tr>
+                    <tr><th>Headers</th><td>Authorization: Bearer [token]</td></tr>
+                    <tr><th>Respuestas</th>
+                        <td>
+                            200 - Relación eliminada<br>
+                            404 - Relación no encontrada<br>
+                            500 - Error al eliminar
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <h2 class="mt-4">Usuario-Rol</h2>
+
+        <div class="card mb-3">
+            <div class="card-header bg-danger text-white">
+                Endpoint 7: Eliminar Relación Usuario-Rol
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr><th>Método</th><td>DELETE</td></tr>
+                    <tr><th>URL</th><td><code>/api/UsuarioRol/:fk_usuario/:fk_rol</code></td></tr>
+                    <tr><th>Ejemplo</th><td><code>/api/UsuarioRol/5/3</code></td></tr>
+                    <tr><th>Headers</th><td>Authorization: Bearer [token]</td></tr>
+                    <tr><th>Respuestas</th>
+                        <td>
+                            200 - Relación eliminada<br>
+                            404 - Relación no encontrada<br>
+                            500 - Error al eliminar
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
