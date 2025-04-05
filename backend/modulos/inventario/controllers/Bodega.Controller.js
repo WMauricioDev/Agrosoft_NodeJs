@@ -1,6 +1,5 @@
 import pool from "../../usuarios/database/Conexion.js";
 
-// Registrar una bodega
 export const registrarBodega = async (req, res) => {
   try {
     const {
@@ -43,7 +42,6 @@ export const registrarBodega = async (req, res) => {
   }
 };
 
-// Listar todas las bodegas
 export const listarBodega = async (req, res) => {
   try {
     const sql = 'SELECT * FROM bodega_bodega';
@@ -60,7 +58,6 @@ export const listarBodega = async (req, res) => {
   }
 };
 
-// Eliminar una bodega
 export const eliminarBodega = async (req, res) => {
   try {
     const id = req.params.id_bodega;
@@ -78,7 +75,6 @@ export const eliminarBodega = async (req, res) => {
   }
 };
 
-// Actualizar una bodega
 export const actualizarBodega = async (req, res) => {
   try {
     const {
