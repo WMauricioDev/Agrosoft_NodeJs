@@ -3,11 +3,12 @@ import axios from "axios";
 import { addToast } from "@heroui/react";
 import { Bodega } from "@/types/inventario/Bodega";
 
-const API_URL = "http://127.0.0.1:8000/inventario/bodega/";
+const API_URL = "http://localhost:3000/api/inv/Bodega";
 
 const fetchBodegas = async (): Promise<Bodega[]> => {
     const token = localStorage.getItem("access_token");
-    if (!token) throw new Error("No se encontró el token de autenticación.");
+    console.log("Token usado:", token);
+        if (!token) throw new Error("No se encontró el token de autenticación.");
 
     const response = await axios.get(API_URL, {
         headers: { Authorization: `Bearer ${token}` },
