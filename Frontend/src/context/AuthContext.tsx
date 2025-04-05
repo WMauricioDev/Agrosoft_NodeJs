@@ -37,7 +37,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/login/", {
+      const response = await fetch("http://localhost:3000/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem("refresh_token", data.refresh);
       setAuthenticated(true);
 
-      const userResponse = await fetch("http://127.0.0.1:8000/usuarios/me/", {
+      const userResponse = await fetch("http://localhost:3000/api/usuarios/me/", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${data.access}`,

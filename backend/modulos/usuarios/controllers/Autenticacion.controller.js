@@ -5,26 +5,22 @@ const secretKey = 'estoesmuysecreto';
 const tokenExpiry = '12h';
 
 const CrearToken = async (req, res) => {
-  const { identificacion, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!identificacion || !password) {
-    return res.status(400).json({ message: 'Identificación y contraseña son obligatorias' });
-  }
-
-  if (isNaN(identificacion)) {
-    return res.status(400).json({ message: 'La identificación debe ser un número' });
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Correo y contraseña son obligatorios' });
   }
 
   try {
-    const sql = `SELECT id, identificacion, nombre FROM usuarios WHERE identificacion = $1 AND password = $2`;
-    const { rows } = await pool.query(sql, [identificacion, password]);
+    const sql = `SELECT id, email, nombre FROM usuarios_usuarios WHERE email = $1 AND password = $2`;
+    const { rows } = await pool.query(sql, [email, password]);
 
     if (rows.length > 0) {
       const user = rows[0];
       const token = jwt.sign(
         {
           id: user.id,
-          identificacion: user.identificacion,
+          email: user.email,
           nombre: user.nombre,
         },
         secretKey,

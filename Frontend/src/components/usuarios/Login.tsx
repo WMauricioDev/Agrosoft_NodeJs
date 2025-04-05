@@ -21,6 +21,7 @@ const Login: React.FC = () => {
     try {
       await login(email, password);
     } catch (err) {
+      console.error('Error en login:', err); // 👈 agrega esto
       setError('Error de autenticación. Verifica tus credenciales.');
     } finally {
       setLoading(false);
