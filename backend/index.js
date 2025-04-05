@@ -6,7 +6,6 @@ import swaggerSpec from './modulos/usuarios/views/Swagger.js';
 
 // Rutas del módulo Cultivo
 import fase_lunar from "./modulos/cultivo/routers/router.fase_lunar.js";
-import cultivoLuna from "./modulos/cultivo/routers/router.cultivo_luna.js";
 import plantaciones from "./modulos/cultivo/routers/router.plantaciones.js";
 import tipoPlaga from "./modulos/cultivo/routers/router.tipo_plaga.js";
 import plagas from "./modulos/cultivo/routers/router.plagas.js";
@@ -14,9 +13,7 @@ import afecciones from "./modulos/cultivo/routers/router.afecciones.js";
 import productosControl from "./modulos/cultivo/routers/router.productos_control.js";
 import tiposControl from "./modulos/cultivo/routers/router.tipos_control.js";
 import controles from "./modulos/cultivo/routers/router.controles.js";
-import tareas from "./modulos/cultivo/routers/router.tareas.js";
-import programacion from "./modulos/cultivo/routers/router.programacion.js";
-import notificaciones from "./modulos/cultivo/routers/router.notificaciones.js";
+//import notificaciones from "./modulos/cultivo/routers/router.notificaciones.js";
 import tipoActividad from "./modulos/cultivo/routers/router.tipo_actividad.js";
 import actividades from "./modulos/cultivo/routers/router.actividades.js";
 import cosechas from "./modulos/cultivo/routers/router.cosechas.js";
@@ -25,6 +22,8 @@ import residuos from "./modulos/cultivo/routers/router.residuos.js";
 import tipoEspecie from "./modulos/cultivo/routers/router.tipo_especie.js";
 import especies from "./modulos/cultivo/routers/router.especies.js";
 import cultivos from "./modulos/cultivo/routers/router.cultivos.js";
+import lotes from "./modulos/cultivo/routers/router.lotes.js"; // Corregido
+import bancal from "./modulos/cultivo/routers/router.bancal.js";
 
 // Rutas del módulo Usuarios
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
@@ -44,13 +43,11 @@ import Semilleros from './modulos/inventario/routers/Semillero.Router.js';
 import Semillero_Insumo from './modulos/inventario/routers/SemilleroInsumo.Router.js';
 
 // Rutas del módulo IoT
-import bancal from "./modulos/IoT/routers/router.bancal.js";
 import configuracion from "./modulos/IoT/routers/router.configuracion.js";
 import datosMeteorologicos from "./modulos/IoT/routers/router.datos_meteorologicos.js";
-import lotes from "./modulos/IoT/routers/router.lotes.js";
 import sensores from "./modulos/IoT/routers/router.sensores.js";
 import sensor_bancal from "./modulos/IoT/routers/router.sensor_bancal.js";
-import tipo_sensor from "./modulos/IoT/router/router.tipo_sensor.js";
+//import tipo_sensor from "./modulos/IoT/router/router.tipo_sensor.js";
 
 // Rutas del módulo Finanzas
 import salario_minimo from "./modulos/finanzas/routers/salarioMinimoRoutes.js";
@@ -68,7 +65,6 @@ app.use(morgan('dev'));
 
 // Rutas del módulo Cultivo
 app.use('/api/cultivo', fase_lunar);
-app.use('/api/cultivo', cultivoLuna);
 app.use('/api/cultivo', plantaciones);
 app.use('/api/cultivo', tipoPlaga);
 app.use('/api/cultivo', plagas);
@@ -76,9 +72,9 @@ app.use('/api/cultivo', afecciones);
 app.use('/api/cultivo', productosControl);
 app.use('/api/cultivo', tiposControl);
 app.use('/api/cultivo', controles);
-app.use('/api/cultivo', tareas);
-app.use('/api/cultivo', programacion);
-app.use('/api/cultivo', notificaciones);
+//app.use('/api/cultivo', tareas);
+//app.use('/api/cultivo', programacion);
+//app.use('/api/cultivo', notificaciones);
 app.use('/api/cultivo', tipoActividad);
 app.use('/api/cultivo', actividades);
 app.use('/api/cultivo', cosechas);
@@ -88,6 +84,7 @@ app.use('/api/cultivo', tipoEspecie);
 app.use('/api/cultivo', especies);
 app.use('/api/cultivo', cultivos);
 app.use('/api/cultivo', lotes);
+app.use('/api/cultivo', bancal);
 
 // Rutas del módulo Usuarios
 app.use('/api', Usuarios);
@@ -107,13 +104,11 @@ app.use('/api/inv', Semilleros);
 app.use('/api/inv', Semillero_Insumo);
 
 // Rutas del módulo IoT
-app.use('/api/iot', bancal);
 app.use('/api/iot', configuracion);
 app.use('/api/iot', datosMeteorologicos);
-app.use('/api/iot', lotes);
 app.use('/api/iot', sensores);
 app.use('/api/iot', sensor_bancal);
-app.use('/api/iot', tipo_sensor);
+//app.use('/api/iot', tipo_sensor);
 
 // Rutas del módulo Finanzas
 app.use('/api/fin', salario_minimo);
@@ -136,4 +131,3 @@ app.get('/documents', (req, resp) => {
 app.listen(3000, () => {
     console.log('✅ Servidor iniciado en el puerto 3000');
 });
-
