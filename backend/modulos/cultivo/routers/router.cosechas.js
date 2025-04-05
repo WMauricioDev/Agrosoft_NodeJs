@@ -13,7 +13,7 @@ const RouterCosechas = Router();
 
 /**
  * @swagger
- * /cosechas:
+ * /api/cultivo/cosechas:
  *   post:
  *     summary: Registra una nueva cosecha
  *     tags: [Cosechas]
@@ -26,13 +26,19 @@ const RouterCosechas = Router();
  *           schema:
  *             type: object
  *             properties:
+ *               id_cultivo:
+ *                 type: integer
+ *                 example: 1
+ *               cantidad:
+ *                 type: number
+ *                 example: 50.5
+ *               unidades_de_medida:
+ *                 type: string
+ *                 example: "kg"
  *               fecha:
  *                 type: string
  *                 format: date
- *               unidades_medida:
- *                 type: number
- *               fk_cultivo:
- *                 type: integer
+ *                 example: "2025-04-05"
  *     responses:
  *       201:
  *         description: Cosecha registrada correctamente
@@ -43,7 +49,7 @@ RouterCosechas.post("/cosechas", verificarToken, postCosechas);
 
 /**
  * @swagger
- * /cosechas:
+ * /api/cultivo/cosechas:
  *   get:
  *     summary: Obtiene todas las cosechas
  *     tags: [Cosechas]
@@ -59,7 +65,7 @@ RouterCosechas.get("/cosechas", verificarToken, getCosechas);
 
 /**
  * @swagger
- * /cosechas/{id}:
+ * /api/cultivo/cosechas/{id}:
  *   get:
  *     summary: Obtiene una cosecha por ID
  *     tags: [Cosechas]
@@ -81,7 +87,7 @@ RouterCosechas.get("/cosechas/:id", verificarToken, getIdCosechas);
 
 /**
  * @swagger
- * /cosechas/{id}:
+ * /api/cultivo/cosechas/{id}:
  *   put:
  *     summary: Actualiza una cosecha por ID
  *     tags: [Cosechas]
@@ -100,24 +106,32 @@ RouterCosechas.get("/cosechas/:id", verificarToken, getIdCosechas);
  *           schema:
  *             type: object
  *             properties:
+ *               id_cultivo:
+ *                 type: integer
+ *                 example: 1
+ *               cantidad:
+ *                 type: number
+ *                 example: 60.0
+ *               unidades_de_medida:
+ *                 type: string
+ *                 example: "kg"
  *               fecha:
  *                 type: string
  *                 format: date
- *               unidades_medida:
- *                 type: number
- *               fk_cultivo:
- *                 type: integer
+ *                 example: "2025-04-06"
  *     responses:
  *       200:
- *         description: Cosecha actualizada exitosamente
+ *         description: Cosecha actualizada correctamente
  *       400:
  *         description: Error en la solicitud
+ *       404:
+ *         description: Cosecha no encontrada
  */
 RouterCosechas.put("/cosechas/:id", verificarToken, updateCosechas);
 
 /**
  * @swagger
- * /cosechas/{id}:
+ * /api/cultivo/cosechas/{id}:
  *   delete:
  *     summary: Elimina una cosecha por ID
  *     tags: [Cosechas]

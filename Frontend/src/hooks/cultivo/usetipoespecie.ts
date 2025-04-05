@@ -3,7 +3,7 @@ import axios from "axios";
 import { addToast } from "@heroui/react";
 import { TipoEspecie } from "@/types/cultivo/TipoEspecie";
 
-const API_URL = "http://127.0.0.1:8000/cultivo/tipo_especies/";
+const API_URL = "http://localhost:3000/api/cultivo/tipo_especies/";
 
 const fetchTipoEspecies = async (): Promise<TipoEspecie[]> => {
   const token = localStorage.getItem("access_token");

@@ -19,7 +19,7 @@ const RouterTipo_especie = Router();
 
 /**
  * @swagger
- * /tipo_especie:
+ * /api/cultivo/tipo_especies:
  *   post:
  *     summary: Crea un nuevo tipo de especie
  *     tags: [Tipo de Especie]
@@ -28,7 +28,7 @@ const RouterTipo_especie = Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -40,18 +40,19 @@ const RouterTipo_especie = Router();
  *                 description: Descripción del tipo de especie
  *               img:
  *                 type: string
- *                 description: URL de la imagen del tipo de especie
+ *                 format: binary
+ *                 description: Imagen del tipo de especie
  *     responses:
  *       201:
  *         description: Tipo de especie creado con éxito
  *       400:
  *         description: Error en la solicitud
  */
-RouterTipo_especie.post("/tipo_especie", verificarToken, postTipo_especie);
+RouterTipo_especie.post("/tipo_especies", verificarToken, postTipo_especie);
 
 /**
  * @swagger
- * /tipo_especie:
+ * /api/cultivo/tipo_especies:
  *   get:
  *     summary: Obtiene todos los tipos de especies
  *     tags: [Tipo de Especie]
@@ -63,11 +64,11 @@ RouterTipo_especie.post("/tipo_especie", verificarToken, postTipo_especie);
  *       401:
  *         description: No autorizado
  */
-RouterTipo_especie.get("/tipo_especie", verificarToken, getTipo_especie);
+RouterTipo_especie.get("/tipo_especies", verificarToken, getTipo_especie);
 
 /**
  * @swagger
- * /tipo_especie/{id}:
+ * /api/cultivo/tipo_especies/{id}:
  *   get:
  *     summary: Obtiene un tipo de especie por ID
  *     tags: [Tipo de Especie]
@@ -86,11 +87,11 @@ RouterTipo_especie.get("/tipo_especie", verificarToken, getTipo_especie);
  *       404:
  *         description: Tipo de especie no encontrado
  */
-RouterTipo_especie.get("/tipo_especie/:id", verificarToken, getIdTipo_especie);
+RouterTipo_especie.get("/tipo_especies/:id", verificarToken, getIdTipo_especie);
 
 /**
  * @swagger
- * /tipo_especie/{id}:
+ * /api/cultivo/tipo_especies/{id}:
  *   put:
  *     summary: Actualiza un tipo de especie por ID
  *     tags: [Tipo de Especie]
@@ -118,7 +119,7 @@ RouterTipo_especie.get("/tipo_especie/:id", verificarToken, getIdTipo_especie);
  *                 description: Nueva descripción del tipo de especie
  *               img:
  *                 type: string
- *                 description: Nueva URL de la imagen del tipo de especie
+ *                 description: Nueva URL de la imagen del tipo de especie (opcional)
  *     responses:
  *       200:
  *         description: Tipo de especie actualizado con éxito
@@ -127,11 +128,11 @@ RouterTipo_especie.get("/tipo_especie/:id", verificarToken, getIdTipo_especie);
  *       404:
  *         description: Tipo de especie no encontrado
  */
-RouterTipo_especie.put("/tipo_especie/:id", verificarToken, updateTipo_especie);
+RouterTipo_especie.put("/tipo_especies/:id", verificarToken, updateTipo_especie);
 
 /**
  * @swagger
- * /tipo_especie/{id}:
+ * /api/cultivo/tipo_especies/{id}:
  *   delete:
  *     summary: Elimina un tipo de especie por ID
  *     tags: [Tipo de Especie]
@@ -150,6 +151,6 @@ RouterTipo_especie.put("/tipo_especie/:id", verificarToken, updateTipo_especie);
  *       404:
  *         description: Tipo de especie no encontrado
  */
-RouterTipo_especie.delete("/tipo_especie/:id", verificarToken, deleteTipo_especie);
+RouterTipo_especie.delete("/tipo_especies/:id", verificarToken, deleteTipo_especie);
 
 export default RouterTipo_especie;

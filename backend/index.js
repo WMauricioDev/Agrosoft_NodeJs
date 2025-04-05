@@ -87,6 +87,7 @@ app.use('/api/cultivo', residuos);
 app.use('/api/cultivo', tipoEspecie);
 app.use('/api/cultivo', especies);
 app.use('/api/cultivo', cultivos);
+app.use('/api/cultivo', lotes);
 
 // Rutas del módulo Usuarios
 app.use('/api', Usuarios);

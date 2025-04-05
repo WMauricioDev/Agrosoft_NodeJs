@@ -3,7 +3,7 @@ import axios from "axios";
 import { addToast } from "@heroui/react";
 import { Lote } from "@/types/cultivo/Lotes";
 
-const API_URL = "http://127.0.0.1:8000/cultivo/lote/";
+const API_URL = "http://localhost:3000/api/cultivo/lotes/";
 
 const fetchLotes = async (): Promise<Lote[]> => {
   const token = localStorage.getItem("access_token");
