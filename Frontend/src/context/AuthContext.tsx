@@ -49,8 +49,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       const data = await response.json();
-      localStorage.setItem("access_token", data.access);
-      localStorage.setItem("refresh_token", data.refresh);
+      localStorage.setItem("access_token", data.token);
+      localStorage.setItem("refresh_token", data.token);
+      console.log("Login data:", data);
+
       setAuthenticated(true);
 
       const userResponse = await fetch("http://localhost:3000/api/usuarios/me/", {
