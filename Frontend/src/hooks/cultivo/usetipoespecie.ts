@@ -18,16 +18,16 @@ const registrarTipoEspecie = async (tipoEspecie: TipoEspecie) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
-  const formData = new FormData();
-  formData.append("nombre", tipoEspecie.nombre);
-  formData.append("descripcion", tipoEspecie.descripcion);
-  if (tipoEspecie.img) {
-    formData.append("img", tipoEspecie.img);
-  }
+  // Enviar como JSON
+  const data = {
+    nombre: tipoEspecie.nombre,
+    descripcion: tipoEspecie.descripcion,
+    img: tipoEspecie.img, // Ahora es un string (nombre del archivo)
+  };
 
-  return axios.post(API_URL, formData, {
+  return axios.post(API_URL, data, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
@@ -38,7 +38,10 @@ const actualizarTipoEspecie = async (id: number, tipoEspecie: TipoEspecie) => {
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
   return axios.put(`${API_URL}${id}/`, tipoEspecie, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { 
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}` 
+    },
   });
 };
 
@@ -59,9 +62,11 @@ export const useTipoEspecies = () => {
 };
 
 export const useRegistrarTipoEspecie = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: registrarTipoEspecie,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tipoEspecies"] });
       addToast({ title: "Éxito", description: "Tipo de especie registrado con éxito", timeout: 3000 });
     },
     onError: () => {
