@@ -6,7 +6,7 @@ export const postTipo_plaga = async (req, res) => {
         if (!nombre) {
             return res.status(400).json({ "message": "El nombre es un campo requerido" });
         }
-        const sql = "INSERT INTO tipo_plaga (nombre, descripcion, img) VALUES ($1, $2, $3) RETURNING id";
+        const sql = "INSERT INTO tipo_plaga_tipoplaga (nombre, descripcion, img) VALUES ($1, $2, $3) RETURNING id";
         const result = await pool.query(sql, [nombre, descripcion, img]);
         if (result.rows.length > 0) {
             return res.status(201).json({ 
@@ -23,7 +23,7 @@ export const postTipo_plaga = async (req, res) => {
 
 export const getTipo_plaga = async (req, res) => {
     try {
-        const sql = "SELECT * FROM tipo_plaga ORDER BY nombre";
+        const sql = "SELECT * FROM tipo_plaga_tipoplaga ORDER BY nombre";
         const result = await pool.query(sql);
         return res.status(200).json(result.rows);
     } catch (error) {
@@ -35,7 +35,7 @@ export const getTipo_plaga = async (req, res) => {
 export const getIdTipo_plaga = async (req, res) => {
     try {
         const { id } = req.params;
-        const sql = "SELECT * FROM tipo_plaga WHERE id = $1";
+        const sql = "SELECT * FROM tipo_plaga_tipoplaga WHERE id = $1";
         const result = await pool.query(sql, [id]);
         if (result.rows.length > 0) {
             return res.status(200).json(result.rows[0]);
@@ -55,7 +55,7 @@ export const updateTipo_plaga = async (req, res) => {
         if (!nombre) {
             return res.status(400).json({ "message": "El nombre es un campo requerido" });
         }
-        const sql = "UPDATE tipo_plaga SET nombre = $1, descripcion = $2, img = $3 WHERE id = $4";
+        const sql = "UPDATE tipo_plaga_tipoplaga SET nombre = $1, descripcion = $2, img = $3 WHERE id = $4";
         const result = await pool.query(sql, [nombre, descripcion, img, id]);
         if (result.rowCount > 0) {
             return res.status(200).json({ "message": "Tipo de plaga actualizado correctamente" });
@@ -70,7 +70,7 @@ export const updateTipo_plaga = async (req, res) => {
 export const deleteTipo_plaga = async (req, res) => {
     try {
         const { id } = req.params;
-        const sql = "DELETE FROM tipo_plaga WHERE id = $1";
+        const sql = "DELETE FROM tipo_plaga_tipoplaga WHERE id = $1";
         const result = await pool.query(sql, [id]);
         if (result.rowCount > 0) {
             return res.status(200).json({ "message": "Tipo de plaga eliminado correctamente" });
