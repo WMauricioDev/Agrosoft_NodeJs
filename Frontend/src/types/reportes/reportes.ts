@@ -11,7 +11,7 @@ export const reportesPorModulo: Record<string, { nombre: string; reporte: string
         { nombre: "Reporte de Cosechas", reporte: "reporteCosechas" },
         { nombre: "Reporte de lotes", reporte: "lote" },
         { nombre: "Reporte de actividades", reporte: "reporteActividades"},
-        { nombre: "Reporte de actividades", reporte: "Bancal"},
+        { nombre: "Reporte de Bancal", reporte: "Bancal"},
     ],
     inv: [
         { nombre: "Reporte de Bodega Herramientas", reporte: "bodega_herramienta" },
