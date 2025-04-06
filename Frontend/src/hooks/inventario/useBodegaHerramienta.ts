@@ -3,7 +3,7 @@ import axios from "axios";
 import { addToast } from "@heroui/react";
 import { BodegaHerramienta } from "@/types/inventario/BodegaHerramienta";
 
-const API_URL = "http://127.0.0.1:8000/inventario/bodega_herramienta/";
+const API_URL = "http://localhost:3000/api/inv/bodega_herramienta/";
 
 const fetchBodegaHerramienta = async (): Promise<BodegaHerramienta[]> => {
     const token = localStorage.getItem("access_token");
@@ -24,24 +24,17 @@ export const useBodegaHerramienta = () => {
     });
 };
 
-const registrarBodegaHerramienta = async ({ bodega, herramienta, cantidad }: Omit<BodegaHerramienta, "id">) => {
-    const token = localStorage.getItem("access_token");
-    if (!token) throw new Error("No se encontró el token de autenticación.");
+const registrarBodegaHerramienta = async (bodega_herramienta: BodegaHerramienta) => {
+  const token = localStorage.getItem("access_token");
+  if (!token) throw new Error("No se encontró el token de autenticación.");
 
-    const payload = {
-        bodega,
-        herramienta: Number(herramienta),  
-        cantidad,
-    };
-
-    const response = await axios.post(API_URL, payload, {
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    return response.data;
+  const response = await axios.post(API_URL, bodega_herramienta, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
 };
 
 export const useRegistrarBodegaHerramienta = () => {
@@ -59,26 +52,19 @@ export const useRegistrarBodegaHerramienta = () => {
     });
 };
 
-const actualizarBodegaHerramienta = async ({ id, bodega, herramienta, cantidad }: BodegaHerramienta) => {
+
+const actualizarBodegaHerramienta = async (bodega_herramienta: BodegaHerramienta) => {
     const token = localStorage.getItem("access_token");
     if (!token) throw new Error("No se encontró el token de autenticación.");
-
-    const payload = {
-        bodega,
-        herramienta: Number(herramienta), 
-        cantidad,
-    };
-
-    const response = await axios.put(`${API_URL}${id}/`, payload, {
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
+  
+    const response = await axios.put(`${API_URL}${bodega_herramienta.id}`, bodega_herramienta, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
-
     return response.data;
-};
-
+  };
 export const useActualizarBodegaHerramienta = () => {
     const queryClient = useQueryClient();
 
