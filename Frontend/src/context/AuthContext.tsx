@@ -13,8 +13,7 @@ export interface User {
   apellido: string;
   email: string;
   username?: string;
-  rol: Rol; 
-  esAdmin?: boolean; 
+  rol_id: Rol; 
 }
 
 interface AuthContextType {
@@ -42,46 +41,43 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Error en el login");
       }
-
+  
       const data = await response.json();
-      localStorage.setItem("access_token", data.token);
-      localStorage.setItem("refresh_token", data.token);
       console.log("Login data:", data);
-
+  
+      // ✅ Aquí está el cambio
+      localStorage.setItem("access_token", data.token);
+  
       setAuthenticated(true);
-
+  
       const userResponse = await fetch("http://localhost:3000/api/usuarios/me/", {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${data.access}`,
+          Authorization: `Bearer ${data.token}`,
           "Content-Type": "application/json",
         },
       });
-
-      const userResponseText = await userResponse.text();
-      console.log("Respuesta de /usuarios/me/:", userResponseText);
-      const userData: User = JSON.parse(userResponseText);
-
+  
+      const userData: User = await userResponse.json();
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
-
+  
       navigate("/");
     } catch (error) {
       console.error("Error en login:", error);
       setAuthenticated(false);
       setUser(null);
       localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
       localStorage.removeItem("user");
       throw error;
     }
   };
-
+  
   const logout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");

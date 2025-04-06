@@ -33,6 +33,7 @@ import lotes from "./modulos/cultivo/routers/router.lotes.js";
 // Rutas del módulo Usuarios
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
 import Autenticacion from './modulos/usuarios/routers/Autenticacion.router.js';  
+import Roles from './modulos/usuarios/routers/Roles.routes.js';  
 
 // Rutas del módulo Inventario
 import Bodega from './modulos/inventario/routers/Bodega.Router.js';
@@ -98,6 +99,7 @@ app.use('/api/cultivo', lotes);
 // Rutas del módulo Usuarios
 app.use('/api', Usuarios);
 app.use('/api', Autenticacion);
+app.use('/api', Roles);
 
 // Rutas del módulo Inventario
 app.use('/api/inv', Bodega);

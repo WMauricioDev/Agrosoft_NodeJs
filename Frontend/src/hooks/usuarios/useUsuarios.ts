@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { addToast } from "@heroui/react";
 
-const API_URL = "http://localhost:3000/api/usuarios/";
+const API_URL = "http://localhost:3000/api/";
 
 export interface Rol {
   id: number;

@@ -25,9 +25,10 @@ const UsuariosPage: React.FC = () => {
     rol_id: 1, // Por defecto "Aprendiz"
   });
 
-  if (!user || user.rol?.rol.toLowerCase() !== "administrador") {
+  if (!user || user.rol_id !== 4) {
     return <Navigate to="/perfil" replace />;
   }
+  
 
   const columns = [
     { name: "Nombre", uid: "nombre" },
