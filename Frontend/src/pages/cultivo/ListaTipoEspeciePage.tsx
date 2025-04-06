@@ -7,6 +7,7 @@ import ReuModal from '../../components/globales/ReuModal';
 import { ReuInput } from '@/components/globales/ReuInput';
 import Tabla from '@/components/globales/Tabla'; 
 import { EditIcon, Trash2 } from 'lucide-react';
+
 const ListaTipoEspeciePage: React.FC = () => {
   const [selectedTipoEspecie, setSelectedTipoEspecie] = useState<TipoEspecie | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -49,11 +50,7 @@ const ListaTipoEspeciePage: React.FC = () => {
     id: especie.id?.toString() || '',
     nombre: especie.nombre,
     descripcion: especie.descripcion,
-    imagen: especie.img
-      ? typeof especie.img === 'string'
-        ? especie.img
-        : URL.createObjectURL(especie.img)
-      : 'Sin imagen',
+    imagen: especie.img || 'Sin imagen', // Simplificado, ya que img es string
     acciones: (
       <>
         <button
@@ -66,8 +63,8 @@ const ListaTipoEspeciePage: React.FC = () => {
           className="text-red-500 hover:underline"
           onClick={() => handleDelete(especie)}
         >
-        <Trash2   size={22} color='red'/>
-      </button>
+          <Trash2 size={22} color='red'/>
+        </button>
       </>
     ),
   }));
@@ -146,8 +143,6 @@ const ListaTipoEspeciePage: React.FC = () => {
       </ReuModal>
     </DefaultLayout>
   );
-  
-  
 };
 
 export default ListaTipoEspeciePage;

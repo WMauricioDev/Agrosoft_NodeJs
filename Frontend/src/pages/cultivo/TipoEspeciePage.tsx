@@ -10,7 +10,7 @@ const TipoEspeciePage: React.FC = () => {
   const [tipoEspecie, setTipoEspecie] = useState<TipoEspecie>({
     nombre: "",
     descripcion: "",
-    img: null,
+    img: "", // Cambiado a string vacío
   });
 
   const mutation = useRegistrarTipoEspecie();
@@ -18,12 +18,13 @@ const TipoEspeciePage: React.FC = () => {
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setTipoEspecie((prev) => ({ ...prev, img: e.target.files![0] }));
+      setTipoEspecie((prev) => ({ ...prev, img: e.target.files![0].name })); // Solo el nombre
     }
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("Datos enviados:", tipoEspecie); // Depuración
     mutation.mutate(tipoEspecie);
   };
 

@@ -3,7 +3,7 @@ import axios from "axios";
 import { addToast } from "@heroui/react";
 import { Bancal } from "@/types/cultivo/Bancal"; 
 
-const API_URL = "http://127.0.0.1:8000/cultivo/Bancal/";
+const API_URL = "http://localhost:3000/api/cultivo/bancales/";
 
 const fetchBancales = async (): Promise<Bancal[]> => {
   const token = localStorage.getItem("access_token");
