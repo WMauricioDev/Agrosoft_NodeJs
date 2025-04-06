@@ -6,11 +6,12 @@ import { useNavigate } from "react-router-dom";
 import Tabla from "@/components/globales/Tabla";
 import { ReuInput } from "@/components/globales/ReuInput";
 import { Sensor, SensorData } from "@/types/iot/type";
+import { EditIcon, Trash2 } from "lucide-react";
 
 export default function DatosMeteorologicosPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const { data: historicos = [], isLoading, error } = useDatosMeteorologicosHistoricos(0, "");
-  const { sensores = [], isLoading: sensoresLoading, error: sensoresError } = useSensoresRegistrados();
+  const { sensores = [], isLoading: sensoresLoading } = useSensoresRegistrados();
   const navigate = useNavigate();
 
   const columns = [
@@ -19,6 +20,7 @@ export default function DatosMeteorologicosPage() {
     { name: "Temperatura (°C)", uid: "temperature" },
     { name: "Humedad (%)", uid: "humidity" },
     { name: "Fecha de Medición", uid: "fecha_medicion" },
+    { name: "Acciones", uid: "acciones" },
   ];
 
   const filteredHistoricos = useMemo(() => {
@@ -49,49 +51,44 @@ export default function DatosMeteorologicosPage() {
       temperature: dato.temperature ?? "N/A",
       humidity: dato.humidity ?? "N/A",
       fecha_medicion: dato.fecha_medicion ? new Date(dato.fecha_medicion).toLocaleString() : "N/A",
+      acciones: (
+        <>
+          <button className="mr-2">
+            <EditIcon size={18} color="gray" />
+          </button>
+          <button>
+            <Trash2 size={18} color="red" />
+          </button>
+        </>
+      ),
     }));
   }, [filteredHistoricos, sensores]);
 
   return (
     <DefaultLayout>
       <div className="w-full flex flex-col items-center min-h-screen p-6">
-        <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4 text-center">Datos Meteorológicos Históricos</h2>
-          <div className="mb-6">
-            <ReuInput
-              label="Buscar"
-              type="text"
-              placeholder="ID, nombre, fecha (15/), hora (12:), temp/hum (26.)"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <div className="w-full max-w-5xl">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Datos Meteorológicos Históricos</h2>
+
+          <div className="mb-2 flex justify-start">
+            <button
+              className="px-3 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg transform hover:scale-105"
+              onClick={() => navigate("/iot/sensores")}
+            >
+              Volver a Tiempo Real
+            </button>
+            <button
+              className="ml-2 px-3 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg transform hover:scale-105"
+              onClick={() => navigate("/iot/listar-sensores")}
+            >
+              Listar Sensores
+            </button>
           </div>
+
           {isLoading || sensoresLoading ? (
             <p className="text-gray-600 text-center">Cargando datos históricos...</p>
-          ) : error || sensoresError ? (
-            <p className="text-red-500 text-center">Error: {error?.message || sensoresError?.message}</p>
-          ) : formattedData.length === 0 ? (
-            <p className="text-gray-600 text-center">
-              {searchTerm ? `No hay datos para el filtro "${searchTerm}"` : "No hay datos históricos disponibles"}
-            </p>
           ) : (
-            <>
-              <Tabla columns={columns} data={formattedData} />
-              <div className="flex justify-between mt-4">
-                <button
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                  onClick={() => navigate("/iot/sensores")}
-                >
-                  Volver a Tiempo Real
-                </button>
-                <button
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  onClick={() => navigate("/iot/listar-sensores")}
-                >
-                  Listar Sensores
-                </button>
-              </div>
-            </>
+            <Tabla columns={columns} data={formattedData} />
           )}
         </div>
       </div>
