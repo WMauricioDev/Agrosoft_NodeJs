@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
 
 interface Sensor {
   id?: number;
@@ -20,7 +19,7 @@ export const useSensores = () => {
   useEffect(() => {
     const fetchSensores = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/iot/sensores/", {
+        const response = await fetch("http://localhost:3000/api/iot/sensores", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -45,22 +44,4 @@ export const useSensores = () => {
   }, [token]);
 
   return { sensores, isLoading, error };
-};
-
-export const useRegistrarSensor = () => {
-  const token = localStorage.getItem("access_token");
-  return useMutation({
-    mutationFn: async (sensor: Sensor) => {
-      const response = await fetch("http://127.0.0.1:8000/iot/sensores/", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(sensor),
-      });
-      if (!response.ok) throw new Error("Error al registrar el sensor");
-      return response.json();
-    },
-  });
 };

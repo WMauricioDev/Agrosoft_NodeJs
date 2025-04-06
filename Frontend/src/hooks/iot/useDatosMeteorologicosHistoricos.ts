@@ -10,7 +10,7 @@ export const useDatosMeteorologicosHistoricos = (sensorId: number, date: string)
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let url = "http://127.0.0.1:8000/iot/datosmetereologicos/";
+        let url = "http://localhost:3000/api/iot/datosmetereologicos";
         if (sensorId !== 0 && date) {
           url += `?fk_sensor=${sensorId}&fecha_medicion__date=${date}`;
         } else if (sensorId !== 0) {
@@ -18,12 +18,12 @@ export const useDatosMeteorologicosHistoricos = (sensorId: number, date: string)
         } else if (date) {
           url += `?fecha_medicion__date=${date}`;
         }
- 
+
         console.log("Solicitando datos desde:", url);
         const response = await fetch(url, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });

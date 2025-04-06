@@ -1,4 +1,3 @@
-// components/Iot/RegistrarSensorPage.tsx
 import { useState } from "react";
 import DefaultLayout from "@/layouts/default";
 import { ReuInput } from "@/components/globales/ReuInput";
@@ -26,12 +25,12 @@ const RegistrarSensorPage: React.FC = () => {
     }));
   };
 
-  // Manejar registro del sensor
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Manejar registro del sensor (POST a /api/iot/sensores)
+  const handleRegisterSensor = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem("access_token") || "";
     try {
-      const response = await fetch("http://127.0.0.1:8000/iot/sensores/", {
+      const response = await fetch("http://localhost:3000/api/iot/sensores", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -52,7 +51,7 @@ const RegistrarSensorPage: React.FC = () => {
         <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md mb-6">
           <h2 className="text-xl font-semibold text-gray-700 mb-4 text-center">Registro de Sensor</h2>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleRegisterSensor} className="space-y-4">
             <ReuInput
               label="Nombre"
               placeholder="Ingrese el nombre"

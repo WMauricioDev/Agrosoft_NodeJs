@@ -6,7 +6,7 @@ import swaggerSpec from './modulos/usuarios/views/Swagger.js';
 import cors from 'cors';
 
 // Rutas del módulo Cultivo
-//import fase_lunar from "./modulos/cultivo/routers/router.fase_lunar.js";
+// import fase_lunar from "./modulos/cultivo/routers/router.fase_lunar.js";
 // import cultivoLuna from "./modulos/cultivo/routers/router.cultivo_luna.js";
 import plantaciones from "./modulos/cultivo/routers/router.plantaciones.js";
 import tipoPlaga from "./modulos/cultivo/routers/router.tipo_plaga.js";
@@ -26,8 +26,9 @@ import residuos from "./modulos/cultivo/routers/router.residuos.js";
 import tipoEspecie from "./modulos/cultivo/routers/router.tipo_especie.js";
 import especies from "./modulos/cultivo/routers/router.especies.js";
 import cultivos from "./modulos/cultivo/routers/router.cultivos.js";
-import lotes from "./modulos/cultivo/routers/router.lotes.js"; // Corregido
+import lotes from "./modulos/cultivo/routers/router.lotes.js";
 import bancal from "./modulos/cultivo/routers/router.bancal.js";
+
 // Rutas del módulo Usuarios
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
 import Autenticacion from './modulos/usuarios/routers/Autenticacion.router.js';  
@@ -44,11 +45,10 @@ import Semillero_Insumo from './modulos/inventario/routers/SemilleroInsumo.Route
 import reporteInsumos from './modulos/inventario/routers/reporteInsumosRouter.js';
 
 // Rutas del módulo IoT
-import configuracion from "./modulos/IoT/routers/router.configuracion.js";
 import datosMeteorologicos from "./modulos/IoT/routers/router.datos_meteorologicos.js";
-import sensores from "./modulos/IoT/routers/router.sensores.js";
-import sensor_bancal from "./modulos/IoT/routers/router.sensor_bancal.js";
-//import tipo_sensor from "./modulos/IoT/router/router.tipo_sensor.js";
+import sensores from "./modulos/IoT/routers/router.sensores.js"; 
+// import tipo_sensor from "./modulos/IoT/router/router.tipo_sensor.js";
+
 // Rutas del módulo Finanzas
 import salario_minimo from "./modulos/finanzas/routers/salarioMinimoRoutes.js";
 import Registro_venta from "./modulos/finanzas/routers/registroVentaRoutes.js";
@@ -79,9 +79,9 @@ app.use('/api/cultivo', afecciones);
 app.use('/api/cultivo', productosControl);
 app.use('/api/cultivo', tiposControl);
 app.use('/api/cultivo', controles);
-//app.use('/api/cultivo', tareas);
-//app.use('/api/cultivo', programacion);
-//app.use('/api/cultivo', notificaciones);
+// app.use('/api/cultivo', tareas);
+// app.use('/api/cultivo', programacion);
+// app.use('/api/cultivo', notificaciones);
 app.use('/api/cultivo', tipoActividad);
 app.use('/api/cultivo', actividades);
 app.use('/api/cultivo', cosechas);
@@ -109,11 +109,9 @@ app.use('/api/inv', Semillero_Insumo);
 app.use('/api/inv', reporteInsumos);
 
 // Rutas del módulo IoT
-app.use('/api/iot', configuracion);
 app.use('/api/iot', datosMeteorologicos);
-app.use('/api/iot', sensores);
-app.use('/api/iot', sensor_bancal);
-//app.use('/api/iot', tipo_sensor);
+app.use('/api/iot', sensores); 
+// app.use('/api/iot', tipo_sensor);
 
 // Rutas del módulo Finanzas
 app.use('/api/fin', salario_minimo);
