@@ -56,8 +56,8 @@ const ListaBodegaHerramientaPage: React.FC = () => {
 
 
   const transformedData = (bodegaHerramientas ?? []).map((item: BodegaHerramienta) => {
-    const bodegaNombre = bodegas?.find((b: { id: number }) => b.id === item.bodega)?.nombre || "Desconocido";
-    const herramientaNombre = herramientas?.find((h: { id: number }) => h.id === item.herramienta)?.nombre || "Desconocido";
+    const bodegaNombre = bodegas?.find((b: { id: number }) => b.id === item.bodega_id)?.nombre || "Desconocido";
+    const herramientaNombre = herramientas?.find((h: { id: number }) => h.id === item.herramienta_id)?.nombre || "Desconocido";
     return {
       id: item.id?.toString() || "",
       bodega: bodegaNombre,
@@ -126,9 +126,9 @@ const ListaBodegaHerramientaPage: React.FC = () => {
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Bodega</label>
               <select
-                name="bodega"
-                value={selectedBodegaHerramienta.bodega}
-                onChange={(e) => setSelectedBodegaHerramienta({ ...selectedBodegaHerramienta, bodega: Number(e.target.value) })}
+                name="bodega_id"
+                value={selectedBodegaHerramienta.bodega_id}
+                onChange={(e) => setSelectedBodegaHerramienta({ ...selectedBodegaHerramienta, bodega_id: Number(e.target.value) })}
                 className="w-full p-2 border rounded"
               >
                 <option value="0">Seleccione una Bodega</option>
@@ -142,9 +142,9 @@ const ListaBodegaHerramientaPage: React.FC = () => {
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Herramienta</label>
               <select
-                name="herramienta"
-                value={selectedBodegaHerramienta.herramienta}
-                onChange={(e) => setSelectedBodegaHerramienta({ ...selectedBodegaHerramienta, herramienta: Number(e.target.value) })}
+                name="herramienta_id"
+                value={selectedBodegaHerramienta.herramienta_id}
+                onChange={(e) => setSelectedBodegaHerramienta({ ...selectedBodegaHerramienta, herramienta_id: Number(e.target.value) })}
                 className="w-full p-2 border rounded"
               >
                 <option value="0">Seleccione una Herramienta</option>

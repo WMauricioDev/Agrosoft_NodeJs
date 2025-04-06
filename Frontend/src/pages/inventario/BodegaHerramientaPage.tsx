@@ -13,8 +13,8 @@ const BodegaHerramientaPage: React.FC = () => {
   const { user } = useAuth();
   const [bodegaHerramienta, setBodegaHerramienta] = useState<BodegaHerramienta>({
     id: 0,
-    bodega: 0,
-    herramienta: 0,
+    bodega_id: 0,
+    herramienta_id: 0,
     cantidad: 0,
   });
 
@@ -23,27 +23,30 @@ const BodegaHerramientaPage: React.FC = () => {
   const mutation = useRegistrarBodegaHerramienta();
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setBodegaHerramienta((prev) => ({
-      ...prev,
-      [name]: Number(value),
-    }));
-  };
+ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const { name, value } = e.target;
+  setBodegaHerramienta((prev) => ({
+    ...prev,
+    [name]: name === 'cantidad' || name === 'bodega_id' || name === 'herramienta_id' 
+      ? Number(value) 
+      : value,
+  }));
+};
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!bodegaHerramienta.bodega || !bodegaHerramienta.herramienta) {
-      alert("Por favor, selecciona una bodega y una herramienta válidas.");
-      return;
-    }
-    mutation.mutate(bodegaHerramienta, {
-      onSuccess: () => {
-        setBodegaHerramienta({ id: 0, bodega: 0, herramienta: 0, cantidad: 0 });
-        navigate("/inventario/listarbodegaherramienta/");
-      },
-    });
-  };
+// Y en el handleSubmit, verifica mejor los valores:
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+  if (bodegaHerramienta.bodega_id === 0 || bodegaHerramienta.herramienta_id === 0) {
+    alert("Por favor, selecciona una bodega y una herramienta válidas.");
+    return;
+  }
+  mutation.mutate(bodegaHerramienta, {
+    onSuccess: () => {
+      setBodegaHerramienta({ id: 0, bodega_id: 0, herramienta_id: 0, cantidad: 0 });
+      navigate("/inventario/listarbodegaherramienta/");
+    },
+  });
+};
 
   return (
     <DefaultLayout>
@@ -54,8 +57,8 @@ const BodegaHerramientaPage: React.FC = () => {
         isSubmitting={mutation.isPending}
       >
         <select
-          name="bodega"
-          value={bodegaHerramienta.bodega}
+          name="bodega_id"
+          value={bodegaHerramienta.bodega_id}
           onChange={handleChange}
           className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 transition-all duration-200"
         >
@@ -67,8 +70,8 @@ const BodegaHerramientaPage: React.FC = () => {
           ))}
         </select>
         <select
-          name="herramienta"
-          value={bodegaHerramienta.herramienta}
+          name="herramienta_id"
+          value={bodegaHerramienta.herramienta_id}
           onChange={handleChange}
           className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 transition-all duration-200"
         >

@@ -116,7 +116,7 @@ rutaBodegaHerramienta.post("/bodega_herramienta", verificarToken, registrarBodeg
  *       200:
  *         description: Herramienta actualizada correctamente
  */
-rutaBodegaHerramienta.put("/bodega_herramienta/:id_bodegaHerramienta", verificarToken, actualizarBodegaHerramienta);
+rutaBodegaHerramienta.put("/bodega_herramienta/:id", verificarToken, actualizarBodegaHerramienta);
 
 /**
  * @swagger
@@ -137,6 +137,6 @@ rutaBodegaHerramienta.put("/bodega_herramienta/:id_bodegaHerramienta", verificar
  *       200:
  *         description: Herramienta eliminada correctamente
  */
-rutaBodegaHerramienta.delete("/bodega_herramienta/:id_bodegaHerramienta", verificarToken, eliminarBodegaHerramienta);
+rutaBodegaHerramienta.delete("/bodega_herramienta/:id", verificarToken, eliminarBodegaHerramienta);
 
 export default rutaBodegaHerramienta;
