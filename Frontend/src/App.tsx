@@ -61,7 +61,7 @@ import ListaSalarioPage from './pages/finanzas/ListaSalarioPage';
 import UsuariosSecondPage from './pages/usuarios/RegisterSecondPage';
 import Reportes from './pages/reportes/Reportes';
 import CosechaGraficasPage from './pages/cultivo/CosechasGraficasPage';
-
+import GraficasPage from './pages/graficas/GraficaUser';
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
@@ -157,6 +157,8 @@ const App: React.FC = () => {
           <Route path="/pricing" element={<PrivateRoute><PricingPage /></PrivateRoute>} />
           <Route path="/mapa" element={<PrivateRoute><Mapa /></PrivateRoute>} />
           <Route path="/graficas/" element={<PrivateRoute><CosechaGraficasPage /></PrivateRoute>} />
+          <Route path="/graficas/usuarios" element={<GraficasPage />} />
+
           <Route path="/blog" element={<PrivateRoute><BlogPage /></PrivateRoute>} />
           <Route path="/about" element={<PrivateRoute><AboutPage /></PrivateRoute>} />
           <Route path="*" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
