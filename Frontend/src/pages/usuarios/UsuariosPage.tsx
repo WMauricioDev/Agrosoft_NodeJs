@@ -8,10 +8,12 @@ import { useAuth } from "@/context/AuthContext";
 import ReuModal from "@/components/globales/ReuModal";
 import { ReuInput } from "@/components/globales/ReuInput";
 import { EditIcon, Trash2 } from "lucide-react";
+import { useRegistrarUsuario } from "@/hooks/usuarios/useRegistrarUsuario";
 
 const UsuariosPage: React.FC = () => {
   const { user } = useAuth();
-  const { data: usuarios = [], isLoading, error, updateUsuario, deleteUsuario, registrarUsuario, roles } = useUsuarios();
+  const { data: usuarios = [], isLoading, error, updateUsuario, deleteUsuario, roles } = useUsuarios();
+  const { registrarUsuario } = useRegistrarUsuario();
   const navigate = useNavigate();
   const [selectedUsuario, setSelectedUsuario] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -25,9 +27,10 @@ const UsuariosPage: React.FC = () => {
     rol_id: 1, // Por defecto "Aprendiz"
   });
 
-  if (!user || user.rol?.rol.toLowerCase() !== "administrador") {
+  if (!user || Number(user.rol_id) !== 4) {
     return <Navigate to="/perfil" replace />;
   }
+    
 
   const columns = [
     { name: "Nombre", uid: "nombre" },

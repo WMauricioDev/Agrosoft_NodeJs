@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { addToast } from "@heroui/react";
 
-const API_URL = "http://127.0.0.1:8000/usuarios/";
+const API_URL = "http://localhost:3000/api/";
 
 export interface NuevoUsuario {
   nombre: string;
@@ -16,10 +16,23 @@ export const useRegistrarUsuario = () => {
   const queryClient = useQueryClient();
 
   const registrarUsuario = async (usuario: NuevoUsuario) => {
-    const response = await axios.post(`${API_URL}registro/`, { 
-      ...usuario, 
-      rol_id: 1  // Se asigna automáticamente el rol "Aprendiz"
-    });
+    const token = localStorage.getItem("access_token");
+    if (!token) throw new Error("No se encontró el token de autenticación.");
+
+    const response = await axios.post(
+      `${API_URL}usuarios/`,
+      { 
+        ...usuario, 
+        rol_id: 1 
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
     return response.data;
   };
 
@@ -27,10 +40,18 @@ export const useRegistrarUsuario = () => {
     mutationFn: registrarUsuario,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["usuarios"] });
-      addToast({ title: "Éxito", description: "Usuario registrado con éxito", timeout: 3000 });
+      addToast({
+        title: "Éxito",
+        description: "Usuario registrado con éxito",
+        timeout: 3000,
+      });
     },
     onError: (error) => {
-      addToast({ title: "Error", description: error.message || "Error al registrar el usuario", timeout: 3000 });
+      addToast({
+        title: "Error",
+        description: error.message || "Error al registrar el usuario",
+        timeout: 3000,
+      });
     },
   });
 
@@ -40,3 +61,4 @@ export const useRegistrarUsuario = () => {
     error: mutation.error ? mutation.error.message : null,
   };
 };
+

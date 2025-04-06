@@ -3,7 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-// Configuración de multer para almacenar imágenes
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = "uploads/especies/";
@@ -36,7 +36,7 @@ export const postEspecies = async (req, res) => {
       }
 
       const sql = `
-        INSERT INTO especies (nombre, descripcion, img, largo_crecimiento, fk_tipo_especie) 
+        INSERT INTO especies_especie (nombre, descripcion, img, "largoCrecimiento", fk_tipo_especie_id) 
         VALUES ($1, $2, $3, $4, $5) 
         RETURNING id
       `;
@@ -59,7 +59,7 @@ export const postEspecies = async (req, res) => {
 
 export const getEspecies = async (req, res) => {
   try {
-    const sql = "SELECT id, nombre, descripcion, img, largo_crecimiento, fk_tipo_especie FROM especies";
+    const sql = `SELECT id, nombre, descripcion, img, "largoCrecimiento", fk_tipo_especie_id FROM especies_especie`;
     const result = await pool.query(sql);
     return res.status(200).json(result.rows);
   } catch (error) {
@@ -71,7 +71,7 @@ export const getEspecies = async (req, res) => {
 export const getIdEspecies = async (req, res) => {
   try {
     const { id } = req.params;
-    const sql = "SELECT id, nombre, descripcion, img, largo_crecimiento, fk_tipo_especie FROM especies WHERE id = $1";
+    const sql = `SELECT id, nombre, descripcion, img, "largoCrecimiento", fk_tipo_especie_id FROM especies_especie WHERE id = $1`;
     const result = await pool.query(sql, [id]);
     if (result.rows.length > 0) {
       return res.status(200).json(result.rows[0]);
@@ -93,10 +93,9 @@ export const updateEspecies = async (req, res) => {
       return res.status(400).json({ message: "El nombre y el tipo de especie son requeridos" });
     }
 
-    // Nota: No manejamos img como archivo en PUT porque el frontend no lo envía como tal
     const sql = `
-      UPDATE especies 
-      SET nombre = $1, descripcion = $2, largo_crecimiento = $3, fk_tipo_especie = $4 
+      UPDATE especies_especie 
+      SET nombre = $1, descripcion = $2, "largoCrecimiento" = $3, fk_tipo_especie_id = $4 
       WHERE id = $5
     `;
     const values = [nombre, descripcion, largoCrecimiento, fk_tipo_especie, id];
@@ -116,8 +115,7 @@ export const deleteEspecies = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Opcional: Eliminar la imagen del servidor si existe
-    const sqlSelect = "SELECT img FROM especies WHERE id = $1";
+    const sqlSelect = `SELECT img FROM especies_especie WHERE id = $1`;
     const imgResult = await pool.query(sqlSelect, [id]);
     if (imgResult.rows.length > 0 && imgResult.rows[0].img) {
       const imgPath = path.join(process.cwd(), imgResult.rows[0].img);
@@ -126,7 +124,7 @@ export const deleteEspecies = async (req, res) => {
       }
     }
 
-    const sql = "DELETE FROM especies WHERE id = $1";
+    const sql = `DELETE FROM especies_especie WHERE id = $1`;
     const result = await pool.query(sql, [id]);
 
     if (result.rowCount > 0) {

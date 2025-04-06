@@ -12,7 +12,7 @@ const UsuariosSecondPage: React.FC = () => {
     apellido: "",
     email: "",
     username: "",
-    password: "",  // Se cambió de "password" a "password" para coincidir con el hook
+    password: "",  
   });
 
   const [mostrarPassword, setMostrarPassword] = useState(false);

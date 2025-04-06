@@ -7,7 +7,7 @@ export const postCultivos = async (req, res) => {
             return res.status(400).json({ message: "Faltan campos requeridos" });
         }
         const sql = `
-            INSERT INTO cultivos (nombre, unidad_de_medida, activo, fechaSiembra, fk_especie, fk_bancal) 
+            INSERT INTO cultivos_cultivo (nombre, unidad_de_medida, activo, "fechaSiembra", "Especie_id", "Bancal_id") 
             VALUES ($1, $2, $3, $4, $5, $6) 
             RETURNING id
         `;
@@ -28,7 +28,10 @@ export const postCultivos = async (req, res) => {
 export const getCultivos = async (req, res) => {
     try {
         const { activo } = req.query;
-        let sql = "SELECT id, nombre, unidad_de_medida, activo, fechaSiembra, fk_especie AS Especie, fk_bancal AS Bancal FROM cultivos";
+        let sql = `
+            SELECT id, nombre, unidad_de_medida, activo, "fechaSiembra", "Especie_id" AS Especie, "Bancal_id" AS Bancal 
+            FROM cultivos_cultivo
+        `;
         const values = [];
 
         if (activo !== undefined) {
@@ -49,8 +52,8 @@ export const getIdCultivos = async (req, res) => {
     try {
         const { id } = req.params;
         const sql = `
-            SELECT id, nombre, unidad_de_medida, activo, fechaSiembra, fk_especie AS Especie, fk_bancal AS Bancal 
-            FROM cultivos 
+            SELECT id, nombre, unidad_de_medida, activo, "fechaSiembra", "Especie_id" AS Especie, "Bancal_id" AS Bancal 
+            FROM cultivos_cultivo 
             WHERE id = $1
         `;
         const result = await pool.query(sql, [id]);
@@ -73,8 +76,8 @@ export const updateCultivos = async (req, res) => {
             return res.status(400).json({ message: "Faltan campos requeridos" });
         }
         const sql = `
-            UPDATE cultivos 
-            SET nombre = $1, unidad_de_medida = $2, activo = $3, fechaSiembra = $4, fk_especie = $5, fk_bancal = $6 
+            UPDATE cultivos_cultivo 
+            SET nombre = $1, unidad_de_medida = $2, activo = $3, "fechaSiembra" = $4, "Especie_id" = $5, "Bancal_id" = $6 
             WHERE id = $7
         `;
         const result = await pool.query(sql, [nombre, unidad_de_medida, activo, fechaSiembra, Especie, Bancal, id]);
@@ -84,14 +87,14 @@ export const updateCultivos = async (req, res) => {
         return res.status(404).json({ message: "No se pudo actualizar el cultivo" });
     } catch (error) {
         console.error('Error en updateCultivos:', error);
-        return res.status(500).json({ message: "Error en el servidor", error: error.message });
+        return res.status(500).json({ message: "Error en el servidorIEC", error: error.message });
     }
 };
 
 export const deleteCultivos = async (req, res) => {
     try {
         const { id } = req.params;
-        const sql = "DELETE FROM cultivos WHERE id = $1";
+        const sql = "DELETE FROM cultivos_cultivo WHERE id = $1";
         const result = await pool.query(sql, [id]);
         if (result.rowCount > 0) {
             return res.status(200).json({ message: "Cultivo eliminado correctamente" });

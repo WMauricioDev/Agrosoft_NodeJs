@@ -1,11 +1,11 @@
 import { Router } from "express";
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
 import { 
-    postTipos_control, 
-    getTipos_control, 
-    getIdTipos_control, 
-    updateTipos_control, 
-    deleteTipos_control 
+    postTipoControl, 
+    getTipo_Control, 
+    getTipoControlById, 
+    updateTipoControl, 
+    deleteTipoControl 
 } from "../controller/controller.tipos_control.js";
 
 const RouterTipos_control = Router();
@@ -44,7 +44,7 @@ const RouterTipos_control = Router();
  *       400:
  *         description: Error en la solicitud
  */
-RouterTipos_control.post("/tipos_control", verificarToken, postTipos_control);
+RouterTipos_control.post("/tipos_control", verificarToken, postTipoControl);
 
 /**
  * @swagger
@@ -60,7 +60,7 @@ RouterTipos_control.post("/tipos_control", verificarToken, postTipos_control);
  *       401:
  *         description: No autorizado
  */
-RouterTipos_control.get("/tipos_control", verificarToken, getTipos_control);
+RouterTipos_control.get("/tipos_control", verificarToken, getTipo_Control);
 
 /**
  * @swagger
@@ -83,7 +83,7 @@ RouterTipos_control.get("/tipos_control", verificarToken, getTipos_control);
  *       404:
  *         description: Tipo de control no encontrado
  */
-RouterTipos_control.get("/tipos_control/:id", verificarToken, getIdTipos_control);
+RouterTipos_control.get("/tipos_control/:id", verificarToken, getTipoControlById);
 
 /**
  * @swagger
@@ -121,7 +121,7 @@ RouterTipos_control.get("/tipos_control/:id", verificarToken, getIdTipos_control
  *       404:
  *         description: Tipo de control no encontrado
  */
-RouterTipos_control.put("/tipos_control/:id", verificarToken, updateTipos_control);
+RouterTipos_control.put("/tipos_control/:id", verificarToken, updateTipoControl);
 
 /**
  * @swagger
@@ -144,6 +144,6 @@ RouterTipos_control.put("/tipos_control/:id", verificarToken, updateTipos_contro
  *       404:
  *         description: Tipo de control no encontrado
  */
-RouterTipos_control.delete("/tipos_control/:id", verificarToken, deleteTipos_control);
+RouterTipos_control.delete("/tipos_control/:id", verificarToken, deleteTipoControl);
 
 export default RouterTipos_control;
