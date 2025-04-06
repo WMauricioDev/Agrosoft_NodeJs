@@ -7,7 +7,7 @@ export const postLote = async (req, res) => {
             return res.status(400).json({ message: "Faltan campos requeridos" });
         }
         const sql = `
-            INSERT INTO lotes (nombre, descripcion, activo, tam_x, tam_y, pos_x, pos_y) 
+            INSERT INTO lotes_lote (nombre, descripcion, activo, tam_x, tam_y, pos_x, pos_y) 
             VALUES ($1, $2, $3, $4, $5, $6, $7) 
             RETURNING id
         `;
@@ -29,7 +29,7 @@ export const getLote = async (req, res) => {
     try {
         const sql = `
             SELECT id, nombre, descripcion, activo, tam_x, tam_y, pos_x, pos_y 
-            FROM lotes 
+            FROM lotes_lote 
             ORDER BY nombre
         `;
         const result = await pool.query(sql);
@@ -45,7 +45,7 @@ export const getIdLote = async (req, res) => {
         const { id } = req.params;
         const sql = `
             SELECT id, nombre, descripcion, activo, tam_x, tam_y, pos_x, pos_y 
-            FROM lotes 
+            FROM lotes_lote 
             WHERE id = $1
         `;
         const result = await pool.query(sql, [id]);
@@ -68,7 +68,7 @@ export const updateLote = async (req, res) => {
             return res.status(400).json({ message: "Faltan campos requeridos" });
         }
         const sql = `
-            UPDATE lotes 
+            UPDATE lotes_lote 
             SET nombre = $1, descripcion = $2, activo = $3, tam_x = $4, tam_y = $5, pos_x = $6, pos_y = $7 
             WHERE id = $8
         `;
@@ -86,7 +86,7 @@ export const updateLote = async (req, res) => {
 export const deleteLote = async (req, res) => {
     try {
         const { id } = req.params;
-        const sql = "DELETE FROM lotes WHERE id = $1";
+        const sql = "DELETE FROM lotes_lote WHERE id = $1";
         const result = await pool.query(sql, [id]);
         if (result.rowCount > 0) {
             return res.status(200).json({ message: "Lote eliminado correctamente" });
