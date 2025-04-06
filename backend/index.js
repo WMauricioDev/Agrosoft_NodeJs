@@ -28,6 +28,7 @@ import especies from "./modulos/cultivo/routers/router.especies.js";
 import cultivos from "./modulos/cultivo/routers/router.cultivos.js";
 import lotes from "./modulos/cultivo/routers/router.lotes.js";
 import bancal from "./modulos/cultivo/routers/router.bancal.js";
+import reporteCosechas from "./modulos/cultivo/routers/router.reporteCosechas.js"; // Nueva importación
 
 // Rutas del módulo Usuarios
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
@@ -54,7 +55,6 @@ import salario_minimo from "./modulos/finanzas/routers/salarioMinimoRoutes.js";
 import Registro_venta from "./modulos/finanzas/routers/registroVentaRoutes.js";
 import Inventario_producto from "./modulos/finanzas/routers/inventarioProductoRoutes.js";
 import Venta from "./modulos/finanzas/routers/ventaRoutes.js";
-
 
 const app = express();
 app.use(cors({
@@ -92,6 +92,7 @@ app.use('/api/cultivo', especies);
 app.use('/api/cultivo', cultivos);
 app.use('/api/cultivo', lotes);
 app.use('/api/cultivo', bancal);
+app.use('/api/cultivo', reporteCosechas);
 
 // Rutas del módulo Usuarios
 app.use('/api', Usuarios);
