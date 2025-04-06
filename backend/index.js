@@ -29,6 +29,7 @@ import cultivos from "./modulos/cultivo/routers/router.cultivos.js";
 import bancal from "./modulos/cultivo/routers/router.bancal.js";
 import lotes from "./modulos/cultivo/routers/router.lotes.js";
 
+
 // Rutas del módulo Usuarios
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
 import Autenticacion from './modulos/usuarios/routers/Autenticacion.router.js';  
@@ -41,6 +42,7 @@ import Herramientas from './modulos/inventario/routers/Herramientas.Router.js';
 import Insumos from './modulos/inventario/routers/Insumos.Router.js';
 import Semilleros from './modulos/inventario/routers/Semillero.Router.js';
 import Semillero_Insumo from './modulos/inventario/routers/SemilleroInsumo.Router.js';
+import reporteInsumos from './modulos/inventario/routers/reporteInsumosRouter.js';
 
 // Rutas del módulo IoT
 import configuracion from "./modulos/IoT/routers/router.configuracion.js";
@@ -54,6 +56,7 @@ import salario_minimo from "./modulos/finanzas/routers/salarioMinimoRoutes.js";
 import Registro_venta from "./modulos/finanzas/routers/registroVentaRoutes.js";
 import Inventario_producto from "./modulos/finanzas/routers/inventarioProductoRoutes.js";
 import Venta from "./modulos/finanzas/routers/ventaRoutes.js";
+
 
 const app = express();
 app.use(cors({
@@ -104,6 +107,7 @@ app.use('/api/inv', Herramientas);
 app.use('/api/inv', Insumos);
 app.use('/api/inv', Semilleros);
 app.use('/api/inv', Semillero_Insumo);
+app.use('/api/inv', reporteInsumos);
 
 // Rutas del módulo IoT
 app.use('/api/iot', configuracion);

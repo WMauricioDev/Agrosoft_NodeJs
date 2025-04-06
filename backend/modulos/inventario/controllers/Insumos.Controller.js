@@ -13,7 +13,7 @@ export const registrarInsumo = async (req, res) => {
         } = req.body;
 
         const fecha_registro = new Date();
-        const fecha_actualizacion = new Date(); // <- se agrega aquí
+        const fecha_actualizacion = new Date(); 
 
         const sql = `
             INSERT INTO insumos_insumo (
