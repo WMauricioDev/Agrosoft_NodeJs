@@ -4,6 +4,6 @@ import { generarReporteActividades } from "../controller/reporteActividades.js";
 
 const RouterReporteActividades = Router();
 
-RouterReporteActividades.post("/reporte/actividades", verificarToken, generarReporteActividades);
+RouterReporteActividades.post("/reporteactividades/pdf", verificarToken, generarReporteActividades);
 
 export default RouterReporteActividades;

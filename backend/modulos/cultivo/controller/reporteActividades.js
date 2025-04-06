@@ -11,9 +11,9 @@ export const generarReporteActividades = async (req, res) => {
         const { rows: actividades } = await pool.query(`
             SELECT a.*, ta.nombre AS tipo_actividad_nombre, c.nombre AS cultivo_nombre, u.nombre AS usuario_nombre
             FROM actividades_actividad a
-            LEFT JOIN tipos_actividad ta ON a.tipo_actividad_id = ta.id
+            LEFT JOIN tipo_actividad_tipoactividad ta ON a.tipo_actividad_id = ta.id
             LEFT JOIN cultivos_cultivo c ON a.cultivo_id = c.id
-            LEFT JOIN usuarios_usuario u ON a.usuario_id = u.id
+            LEFT JOIN usuarios_usuarios u ON a.usuario_id = u.id
             ORDER BY a.fecha_inicio DESC
         `);
         
