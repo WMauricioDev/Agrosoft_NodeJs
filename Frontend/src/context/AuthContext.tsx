@@ -1,9 +1,10 @@
+
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface Rol {
   id: number;
-  nombre: 'admin' | 'aprendiz';
+  nombre: 'administrador' | 'aprendiz';
   permisos: string[];
 }
 
@@ -66,6 +67,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
   
       const userData: User = await userResponse.json();
+      console.log("👤 Usuario recibido:", userData); 
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
   

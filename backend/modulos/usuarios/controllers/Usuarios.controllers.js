@@ -29,10 +29,22 @@ export const RegistrarUsuarios = async (req, res) => {
 
 export const listarUsuarios = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM usuarios_usuarios');
+    const result = await pool.query(`
+      SELECT 
+        u.id,
+        u.nombre,
+        u.apellido,
+        u.username,
+        u.email,
+        u.rol_id,
+        r.nombre AS rol_nombre
+      FROM usuarios_usuarios u
+      JOIN roles_roles r ON u.rol_id = r.id
+    `);
+
     res.status(200).json(result.rows);
   } catch (error) {
-    console.error(error);
+    console.error('Error al listar los usuarios:', error);
     res.status(500).json({ message: 'Error al listar los usuarios' });
   }
 };
@@ -42,14 +54,28 @@ export const ActualizarUsuarios = async (req, res) => {
     const { nombre, apellido, email, password, username, rol_id } = req.body;
     const id = req.params.id;
 
-    const sql = `
-      UPDATE usuarios_usuarios
-      SET nombre=$1, apellido=$2, email=$3, password=$4, username=$5, rol_id=$6
-      WHERE id=$7
-    `;
-    const result = await pool.query(sql, [
-      nombre, apellido, email, password, username, rol_id, id
-    ]);
+    let sql;
+    let values;
+
+    if (password) {
+      // Si se envía una nueva contraseña
+      sql = `
+        UPDATE usuarios_usuarios
+        SET nombre=$1, apellido=$2, email=$3, password=$4, username=$5, rol_id=$6
+        WHERE id=$7
+      `;
+      values = [nombre, apellido, email, password, username, rol_id, id];
+    } else {
+      // Si no se envía la contraseña (se mantiene la anterior)
+      sql = `
+        UPDATE usuarios_usuarios
+        SET nombre=$1, apellido=$2, email=$3, username=$4, rol_id=$5
+        WHERE id=$6
+      `;
+      values = [nombre, apellido, email, username, rol_id, id];
+    }
+
+    const result = await pool.query(sql, values);
 
     if (result.rowCount > 0) {
       return res.status(200).json({ message: 'Usuario actualizado exitosamente' });
@@ -80,8 +106,20 @@ export const EliminarUsuarios = async (req, res) => {
 
 export const BuscarUsuarios = async (req, res) => {
   try {
-    const email = req.params.email;
-    const result = await pool.query('SELECT * FROM usuarios_usuarios WHERE email=$1', [email]);
+    const id = req.params.id;
+    const result = await pool.query(`
+      SELECT 
+        u.id,
+        u.nombre,
+        u.apellido,
+        u.username,
+        u.email,
+        u.rol_id,
+        r.nombre AS rol_nombre
+      FROM usuarios_usuarios u
+      JOIN roles_roles r ON u.rol_id = r.id
+      WHERE u.id = $1
+    `, [id]); 
 
     if (result.rows.length > 0) {
       return res.status(200).json({ message: 'Usuario encontrado', usuario: result.rows[0] });
@@ -89,7 +127,7 @@ export const BuscarUsuarios = async (req, res) => {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
   } catch (error) {
-    console.error(error);
+    console.error('Error al buscar el usuario:', error);
     res.status(500).json({ message: 'Error al buscar el usuario' });
   }
 };
@@ -98,10 +136,13 @@ export const UsuarioActual = async (req, res) => {
   try {
     const userId = req.userId;
 
-    const result = await pool.query(
-      'SELECT id, nombre, apellido, email, rol_id FROM usuarios_usuarios WHERE id=$1',
-      [userId]
-    );
+    const result = await pool.query(`
+      SELECT 
+        u.id, u.nombre, u.apellido, u.email, u.username, u.rol_id, r.nombre AS rol_nombre
+      FROM usuarios_usuarios u
+      JOIN roles_roles r ON u.rol_id = r.id
+      WHERE u.id = $1
+    `, [userId]);
 
     if (result.rows.length > 0) {
       return res.status(200).json(result.rows[0]);

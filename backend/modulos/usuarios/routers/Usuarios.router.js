@@ -11,7 +11,7 @@ import verificarToken from '../middlewares/verificarToken.js';
 
 const router = Router();
 router.get('/usuarios/me',verificarToken,UsuarioActual)
-router.get('/usuarios/:identificacion', BuscarUsuarios);
+router.get('/usuarios/:id', BuscarUsuarios);
 router.get('/usuarios', listarUsuarios);
 router.post('/usuarios', verificarToken, RegistrarUsuarios);
 router.put('/usuarios/:id', verificarToken, ActualizarUsuarios);
