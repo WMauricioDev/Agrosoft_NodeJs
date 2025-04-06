@@ -115,7 +115,7 @@ rutaBodegaInsumo.post("/bodega_insumo", verificarToken, registrarBodegaInsumo);
  *       200:
  *         description: Insumo actualizado correctamente
  */
-rutaBodegaInsumo.put("/bodega_insumo/:id_bodega_insumo", verificarToken, actualizarBodegaInsumo);
+rutaBodegaInsumo.put("/bodega_insumo/:id", verificarToken, actualizarBodegaInsumo);
 
 /**
  * @swagger
@@ -136,6 +136,6 @@ rutaBodegaInsumo.put("/bodega_insumo/:id_bodega_insumo", verificarToken, actuali
  *       200:
  *         description: Insumo eliminado correctamente
  */
-rutaBodegaInsumo.delete("/bodega_insumo/:id_bodega_insumo", verificarToken, eliminarBodegaInsumo);
+rutaBodegaInsumo.delete("/bodega_insumo/:id", verificarToken, eliminarBodegaInsumo);
 
 export default rutaBodegaInsumo;
