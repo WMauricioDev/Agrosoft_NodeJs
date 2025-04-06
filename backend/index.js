@@ -28,7 +28,8 @@ import especies from "./modulos/cultivo/routers/router.especies.js";
 import cultivos from "./modulos/cultivo/routers/router.cultivos.js";
 import lotes from "./modulos/cultivo/routers/router.lotes.js";
 import bancal from "./modulos/cultivo/routers/router.bancal.js";
-import reporteCosechas from "./modulos/cultivo/routers/router.reporteCosechas.js"; // Nueva importación
+import reporteCosechas from "./modulos/cultivo/routers/router.reporteCosechas.js";
+import reporteActividades from "./modulos/cultivo/routers/router.reporteActividades.js";
 
 // Rutas del módulo Usuarios
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
@@ -93,6 +94,7 @@ app.use('/api/cultivo', cultivos);
 app.use('/api/cultivo', lotes);
 app.use('/api/cultivo', bancal);
 app.use('/api/cultivo', reporteCosechas);
+app.use('/api/cultivo', reporteActividades);
 
 // Rutas del módulo Usuarios
 app.use('/api', Usuarios);
