@@ -1,28 +1,22 @@
 import { Router } from "express";
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
-import { 
-    postTipo_especie, 
-    getTipo_especie, 
-    getIdTipo_especie, 
-    updateTipo_especie, 
-    deleteTipo_especie 
-} from "../controller/controller.tipo_especie.js";
+import { postTipo_especie, getTipo_especie, getIdTipo_especie, updateTipo_especie, deleteTipo_especie } from "../controller/controller.tipo_especie.js";
 
-const RouterTipo_especie = Router();
+const RouterTipoEspecie = Router();
 
 /**
  * @swagger
  * tags:
- *   name: Tipo de Especie
- *   description: Gestión de los tipos de especies
+ *   name: Tipos de Especies
+ *   description: Endpoints para gestionar tipos de especies
  */
 
 /**
  * @swagger
- * /tipo_especie:
+ * /api/cultivo/tipo_especies:
  *   post:
- *     summary: Crea un nuevo tipo de especie
- *     tags: [Tipo de Especie]
+ *     summary: Registrar un nuevo tipo de especie
+ *     tags: [Tipos de Especies]
  *     security:
  *       - BearerAuth: []
  *     requestBody:
@@ -34,43 +28,43 @@ const RouterTipo_especie = Router();
  *             properties:
  *               nombre:
  *                 type: string
- *                 description: Nombre del tipo de especie
+ *                 example: "Frutal"
  *               descripcion:
  *                 type: string
- *                 description: Descripción del tipo de especie
+ *                 example: "Especies de árboles frutales"
  *               img:
  *                 type: string
- *                 description: URL de la imagen del tipo de especie
+ *                 example: "frutal.jpg"
  *     responses:
  *       201:
- *         description: Tipo de especie creado con éxito
+ *         description: Tipo de especie registrado correctamente
  *       400:
  *         description: Error en la solicitud
  */
-RouterTipo_especie.post("/tipo_especie", verificarToken, postTipo_especie);
+RouterTipoEspecie.post("/tipo_especies", verificarToken, postTipo_especie);
 
 /**
  * @swagger
- * /tipo_especie:
+ * /api/cultivo/tipo_especies:
  *   get:
- *     summary: Obtiene todos los tipos de especies
- *     tags: [Tipo de Especie]
+ *     summary: Obtener la lista de tipos de especies
+ *     tags: [Tipos de Especies]
  *     security:
  *       - BearerAuth: []
  *     responses:
  *       200:
- *         description: Lista de tipos de especies obtenida con éxito
+ *         description: Lista de tipos de especies obtenida correctamente
  *       401:
  *         description: No autorizado
  */
-RouterTipo_especie.get("/tipo_especie", verificarToken, getTipo_especie);
+RouterTipoEspecie.get("/tipo_especies", verificarToken, getTipo_especie);
 
 /**
  * @swagger
- * /tipo_especie/{id}:
+ * /api/cultivo/tipo_especies/{id}:
  *   get:
- *     summary: Obtiene un tipo de especie por ID
- *     tags: [Tipo de Especie]
+ *     summary: Obtener un tipo de especie por ID
+ *     tags: [Tipos de Especies]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -79,21 +73,21 @@ RouterTipo_especie.get("/tipo_especie", verificarToken, getTipo_especie);
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del tipo de especie a buscar
+ *         description: ID del tipo de especie a obtener
  *     responses:
  *       200:
- *         description: Tipo de especie encontrado con éxito
+ *         description: Tipo de especie obtenido correctamente
  *       404:
  *         description: Tipo de especie no encontrado
  */
-RouterTipo_especie.get("/tipo_especie/:id", verificarToken, getIdTipo_especie);
+RouterTipoEspecie.get("/tipo_especies/:id", verificarToken, getIdTipo_especie);
 
 /**
  * @swagger
- * /tipo_especie/{id}:
+ * /api/cultivo/tipo_especies/{id}:
  *   put:
- *     summary: Actualiza un tipo de especie por ID
- *     tags: [Tipo de Especie]
+ *     summary: Actualizar un tipo de especie
+ *     tags: [Tipos de Especies]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -112,29 +106,29 @@ RouterTipo_especie.get("/tipo_especie/:id", verificarToken, getIdTipo_especie);
  *             properties:
  *               nombre:
  *                 type: string
- *                 description: Nuevo nombre del tipo de especie
+ *                 example: "Hortaliza"
  *               descripcion:
  *                 type: string
- *                 description: Nueva descripción del tipo de especie
+ *                 example: "Especies de hortalizas"
  *               img:
  *                 type: string
- *                 description: Nueva URL de la imagen del tipo de especie
+ *                 example: "hortaliza.jpg"
  *     responses:
  *       200:
- *         description: Tipo de especie actualizado con éxito
+ *         description: Tipo de especie actualizado correctamente
  *       400:
  *         description: Error en la solicitud
  *       404:
  *         description: Tipo de especie no encontrado
  */
-RouterTipo_especie.put("/tipo_especie/:id", verificarToken, updateTipo_especie);
+RouterTipoEspecie.put("/tipo_especies/:id", verificarToken, updateTipo_especie);
 
 /**
  * @swagger
- * /tipo_especie/{id}:
+ * /api/cultivo/tipo_especies/{id}:
  *   delete:
- *     summary: Elimina un tipo de especie por ID
- *     tags: [Tipo de Especie]
+ *     summary: Eliminar un tipo de especie por ID
+ *     tags: [Tipos de Especies]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -146,10 +140,10 @@ RouterTipo_especie.put("/tipo_especie/:id", verificarToken, updateTipo_especie);
  *         description: ID del tipo de especie a eliminar
  *     responses:
  *       200:
- *         description: Tipo de especie eliminado con éxito
+ *         description: Tipo de especie eliminado correctamente
  *       404:
  *         description: Tipo de especie no encontrado
  */
-RouterTipo_especie.delete("/tipo_especie/:id", verificarToken, deleteTipo_especie);
+RouterTipoEspecie.delete("/tipo_especies/:id", verificarToken, deleteTipo_especie);
 
-export default RouterTipo_especie;
+export default RouterTipoEspecie;

@@ -13,7 +13,7 @@ const RouterActividades = Router();
 
 /**
  * @swagger
- * /actividades:
+ * /api/cultivo/actividades:
  *   post:
  *     summary: Crea una nueva actividad
  *     tags: [Actividades]
@@ -26,25 +26,32 @@ const RouterActividades = Router();
  *           schema:
  *             type: object
  *             properties:
- *               fk_cultivo:
- *                 type: integer
- *               fk_usuario:
- *                 type: integer
- *               fk_insumo:
- *                 type: integer
- *               fk_programacion:
- *                 type: integer
- *               fk_tipo_actividad:
- *                 type: integer
- *               titulo:
- *                 type: string
  *               descripcion:
  *                 type: string
- *               fecha:
+ *               fecha_inicio:
  *                 type: string
- *                 format: date
- *               cantidad_producto:
+ *                 format: date-time
+ *               fecha_fin:
+ *                 type: string
+ *                 format: date-time
+ *               tipo_actividad:
+ *                 type: integer
+ *               usuario:
+ *                 type: integer
+ *               cultivo:
+ *                 type: integer
+ *               insumo:
+ *                 type: integer
+ *               cantidadUsada:
  *                 type: number
+ *               estado:
+ *                 type: string
+ *                 enum: [PENDIENTE, EN_PROCESO, COMPLETADA, CANCELADA]
+ *               prioridad:
+ *                 type: string
+ *                 enum: [ALTA, MEDIA, BAJA]
+ *               instrucciones_adicionales:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Actividad creada correctamente
@@ -55,7 +62,7 @@ RouterActividades.post("/actividades", verificarToken, postActividades);
 
 /**
  * @swagger
- * /actividades:
+ * /api/cultivo/actividades:
  *   get:
  *     summary: Obtiene todas las actividades
  *     tags: [Actividades]
@@ -71,7 +78,7 @@ RouterActividades.get("/actividades", verificarToken, getActividades);
 
 /**
  * @swagger
- * /actividades/{id}:
+ * /api/cultivo/actividades/{id}:
  *   get:
  *     summary: Obtiene una actividad por ID
  *     tags: [Actividades]
@@ -93,7 +100,7 @@ RouterActividades.get("/actividades/:id", verificarToken, getIdActividades);
 
 /**
  * @swagger
- * /actividades/{id}:
+ * /api/cultivo/actividades/{id}:
  *   put:
  *     summary: Actualiza una actividad por ID
  *     tags: [Actividades]
@@ -112,25 +119,32 @@ RouterActividades.get("/actividades/:id", verificarToken, getIdActividades);
  *           schema:
  *             type: object
  *             properties:
- *               fk_cultivo:
- *                 type: integer
- *               fk_usuario:
- *                 type: integer
- *               fk_insumo:
- *                 type: integer
- *               fk_programacion:
- *                 type: integer
- *               fk_tipo_actividad:
- *                 type: integer
- *               titulo:
- *                 type: string
  *               descripcion:
  *                 type: string
- *               fecha:
+ *               fecha_inicio:
  *                 type: string
- *                 format: date
- *               cantidad_producto:
+ *                 format: date-time
+ *               fecha_fin:
+ *                 type: string
+ *                 format: date-time
+ *               tipo_actividad:
+ *                 type: integer
+ *               usuario:
+ *                 type: integer
+ *               cultivo:
+ *                 type: integer
+ *               insumo:
+ *                 type: integer
+ *               cantidadUsada:
  *                 type: number
+ *               estado:
+ *                 type: string
+ *                 enum: [PENDIENTE, EN_PROCESO, COMPLETADA, CANCELADA]
+ *               prioridad:
+ *                 type: string
+ *                 enum: [ALTA, MEDIA, BAJA]
+ *               instrucciones_adicionales:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Actividad actualizada exitosamente
@@ -141,7 +155,7 @@ RouterActividades.put("/actividades/:id", verificarToken, updateActividades);
 
 /**
  * @swagger
- * /actividades/{id}:
+ * /api/cultivo/actividades/{id}:
  *   delete:
  *     summary: Elimina una actividad por ID
  *     tags: [Actividades]

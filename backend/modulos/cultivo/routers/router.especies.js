@@ -13,37 +13,7 @@ const RouterEspecies = Router();
 
 /**
  * @swagger
- * components:
- *   schemas:
- *     Especie:
- *       type: object
- *       required:
- *         - nombre
- *         - fk_tipo_especie
- *       properties:
- *         id:
- *           type: integer
- *           description: ID de la especie
- *         nombre:
- *           type: string
- *           description: Nombre de la especie
- *         descripcion:
- *           type: string
- *           description: Descripción de la especie
- *         img:
- *           type: string
- *           description: URL de la imagen de la especie
- *         tiempo_crecimiento:
- *           type: string
- *           description: Tiempo de crecimiento de la especie
- *         fk_tipo_especie:
- *           type: integer
- *           description: ID del tipo de especie asociado
- */
-
-/**
- * @swagger
- * /especies:
+ * /api/cultivo/especies:
  *   post:
  *     summary: Registra una nueva especie
  *     tags: [Especies]
@@ -52,9 +22,21 @@ const RouterEspecies = Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/Especie'
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *               descripcion:
+ *                 type: string
+ *               largoCrecimiento:
+ *                 type: integer
+ *               fk_tipo_especie:
+ *                 type: integer
+ *               img:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: Especie registrada correctamente
@@ -65,7 +47,7 @@ RouterEspecies.post("/especies", verificarToken, postEspecies);
 
 /**
  * @swagger
- * /especies:
+ * /api/cultivo/especies:
  *   get:
  *     summary: Obtiene todas las especies registradas
  *     tags: [Especies]
@@ -74,12 +56,6 @@ RouterEspecies.post("/especies", verificarToken, postEspecies);
  *     responses:
  *       200:
  *         description: Lista de especies
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Especie'
  *       401:
  *         description: No autorizado
  */
@@ -87,7 +63,7 @@ RouterEspecies.get("/especies", verificarToken, getEspecies);
 
 /**
  * @swagger
- * /especies/{id}:
+ * /api/cultivo/especies/{id}:
  *   get:
  *     summary: Obtiene una especie por ID
  *     tags: [Especies]
@@ -102,10 +78,6 @@ RouterEspecies.get("/especies", verificarToken, getEspecies);
  *     responses:
  *       200:
  *         description: Datos de la especie
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Especie'
  *       404:
  *         description: Especie no encontrada
  */
@@ -113,7 +85,7 @@ RouterEspecies.get("/especies/:id", verificarToken, getIdEspecies);
 
 /**
  * @swagger
- * /especies/{id}:
+ * /api/cultivo/especies/{id}:
  *   put:
  *     summary: Actualiza una especie por ID
  *     tags: [Especies]
@@ -130,18 +102,29 @@ RouterEspecies.get("/especies/:id", verificarToken, getIdEspecies);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Especie'
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *               descripcion:
+ *                 type: string
+ *               largoCrecimiento:
+ *                 type: integer
+ *               fk_tipo_especie:
+ *                 type: integer
  *     responses:
  *       200:
  *         description: Especie actualizada correctamente
  *       400:
  *         description: Error en la solicitud
+ *       404:
+ *         description: Especie no encontrada
  */
 RouterEspecies.put("/especies/:id", verificarToken, updateEspecies);
 
 /**
  * @swagger
- * /especies/{id}:
+ * /api/cultivo/especies/{id}:
  *   delete:
  *     summary: Elimina una especie por ID
  *     tags: [Especies]

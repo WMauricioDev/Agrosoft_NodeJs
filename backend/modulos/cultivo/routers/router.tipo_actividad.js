@@ -19,7 +19,7 @@ const RouterTipo_actividad = Router();
 
 /**
  * @swagger
- * /tipo_actividad:
+ * /api/cultivo/tipo_actividad:
  *   post:
  *     summary: Crea un nuevo tipo de actividad
  *     tags: [Tipo de Actividad]
@@ -38,12 +38,6 @@ const RouterTipo_actividad = Router();
  *               descripcion:
  *                 type: string
  *                 description: Descripción del tipo de actividad
- *               duracion_estimada:
- *                 type: integer
- *                 description: Duración estimada en minutos
- *               frecuencia:
- *                 type: string
- *                 description: Frecuencia de la actividad
  *     responses:
  *       201:
  *         description: Tipo de actividad creado con éxito
@@ -54,7 +48,7 @@ RouterTipo_actividad.post("/tipo_actividad", verificarToken, postTipo_actividad)
 
 /**
  * @swagger
- * /tipo_actividad:
+ * /api/cultivo/tipo_actividad:
  *   get:
  *     summary: Obtiene todos los tipos de actividades
  *     tags: [Tipo de Actividad]
@@ -70,7 +64,7 @@ RouterTipo_actividad.get("/tipo_actividad", verificarToken, getTipo_actividad);
 
 /**
  * @swagger
- * /tipo_actividad/{id}:
+ * /api/cultivo/tipo_actividad/{id}:
  *   get:
  *     summary: Obtiene un tipo de actividad por ID
  *     tags: [Tipo de Actividad]
@@ -81,7 +75,7 @@ RouterTipo_actividad.get("/tipo_actividad", verificarToken, getTipo_actividad);
  *         name: id
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
  *         description: ID del tipo de actividad a buscar
  *     responses:
  *       200:
@@ -93,7 +87,7 @@ RouterTipo_actividad.get("/tipo_actividad/:id", verificarToken, getIdTipo_activi
 
 /**
  * @swagger
- * /tipo_actividad/{id}:
+ * /api/cultivo/tipo_actividad/{id}:
  *   put:
  *     summary: Actualiza un tipo de actividad por ID
  *     tags: [Tipo de Actividad]
@@ -104,7 +98,7 @@ RouterTipo_actividad.get("/tipo_actividad/:id", verificarToken, getIdTipo_activi
  *         name: id
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
  *         description: ID del tipo de actividad a actualizar
  *     requestBody:
  *       required: true
@@ -119,12 +113,6 @@ RouterTipo_actividad.get("/tipo_actividad/:id", verificarToken, getIdTipo_activi
  *               descripcion:
  *                 type: string
  *                 description: Nueva descripción del tipo de actividad
- *               duracion_estimada:
- *                 type: integer
- *                 description: Nueva duración estimada en minutos
- *               frecuencia:
- *                 type: string
- *                 description: Nueva frecuencia de la actividad
  *     responses:
  *       200:
  *         description: Tipo de actividad actualizado con éxito
@@ -137,7 +125,7 @@ RouterTipo_actividad.put("/tipo_actividad/:id", verificarToken, updateTipo_activ
 
 /**
  * @swagger
- * /tipo_actividad/{id}:
+ * /api/cultivo/tipo_actividad/{id}:
  *   delete:
  *     summary: Elimina un tipo de actividad por ID
  *     tags: [Tipo de Actividad]
@@ -148,7 +136,7 @@ RouterTipo_actividad.put("/tipo_actividad/:id", verificarToken, updateTipo_activ
  *         name: id
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
  *         description: ID del tipo de actividad a eliminar
  *     responses:
  *       200:

@@ -13,7 +13,7 @@ const RouterCultivos = Router();
 
 /**
  * @swagger
- * /cultivos:
+ * /api/cultivo/cultivos:
  *   post:
  *     summary: Registra un nuevo cultivo
  *     tags: [Cultivos]
@@ -30,12 +30,14 @@ const RouterCultivos = Router();
  *                 type: string
  *               unidad_de_medida:
  *                 type: string
- *               estado:
- *                 type: string
- *               fecha_siembra:
+ *               activo:
+ *                 type: boolean
+ *               fechaSiembra:
  *                 type: string
  *                 format: date
- *               fk_especie:
+ *               Especie:
+ *                 type: integer
+ *               Bancal:
  *                 type: integer
  *     responses:
  *       201:
@@ -47,12 +49,19 @@ RouterCultivos.post("/cultivos", verificarToken, postCultivos);
 
 /**
  * @swagger
- * /cultivos:
+ * /api/cultivo/cultivos:
  *   get:
  *     summary: Obtiene todos los cultivos registrados
  *     tags: [Cultivos]
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: activo
+ *         schema:
+ *           type: string
+ *           enum: [true, false]
+ *         description: Filtrar por estado activo/inactivo
  *     responses:
  *       200:
  *         description: Lista de cultivos
@@ -63,7 +72,7 @@ RouterCultivos.get("/cultivos", verificarToken, getCultivos);
 
 /**
  * @swagger
- * /cultivos/{id}:
+ * /api/cultivo/cultivos/{id}:
  *   get:
  *     summary: Obtiene un cultivo por ID
  *     tags: [Cultivos]
@@ -85,7 +94,7 @@ RouterCultivos.get("/cultivos/:id", verificarToken, getIdCultivos);
 
 /**
  * @swagger
- * /cultivos/{id}:
+ * /api/cultivo/cultivos/{id}:
  *   put:
  *     summary: Actualiza un cultivo por ID
  *     tags: [Cultivos]
@@ -108,24 +117,28 @@ RouterCultivos.get("/cultivos/:id", verificarToken, getIdCultivos);
  *                 type: string
  *               unidad_de_medida:
  *                 type: string
- *               estado:
- *                 type: string
- *               fecha_siembra:
+ *               activo:
+ *                 type: boolean
+ *               fechaSiembra:
  *                 type: string
  *                 format: date
- *               fk_especie:
+ *               Especie:
+ *                 type: integer
+ *               Bancal:
  *                 type: integer
  *     responses:
  *       200:
  *         description: Cultivo actualizado correctamente
  *       400:
  *         description: Error en la solicitud
+ *       404:
+ *         description: Cultivo no encontrado
  */
 RouterCultivos.put("/cultivos/:id", verificarToken, updateCultivos);
 
 /**
  * @swagger
- * /cultivos/{id}:
+ * /api/cultivo/cultivos/{id}:
  *   delete:
  *     summary: Elimina un cultivo por ID
  *     tags: [Cultivos]

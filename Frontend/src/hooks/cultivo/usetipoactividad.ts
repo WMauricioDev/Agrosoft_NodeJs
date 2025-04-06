@@ -3,15 +3,13 @@ import axios from "axios";
 import { addToast } from "@heroui/react";
 import { TipoActividad } from "@/types/cultivo/TipoActividad";
 
-const API_URL = "http://127.0.0.1:8000/cultivo/tipo_actividad/";
+const API_URL = "http://localhost:3000/api/cultivo/tipo_actividad/";
 
 const fetchTipoActividad = async (): Promise<TipoActividad[]> => {
-  const token = localStorage.getItem("access_token");
-
+  const token = localStorage.getItem("access_token"); 
   if (!token) {
     throw new Error("No se encontró el token de autenticación.");
   }
-
   const response = await axios.get(API_URL, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -22,21 +20,16 @@ const fetchTipoActividad = async (): Promise<TipoActividad[]> => {
 
 const registrarTipoActividad = async (tipoActividad: TipoActividad) => {
   const token = localStorage.getItem("access_token");
-
   if (!token) {
     throw new Error("No se encontró el token de autenticación.");
   }
-
-  const formData = new FormData();
-  formData.append("nombre", tipoActividad.nombre);
-  formData.append("descripcion", tipoActividad.descripcion);
-
-  return axios.post(API_URL, formData, {
+  const response = await axios.post(API_URL, tipoActividad, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
+  return response.data;
 };
 
 export const useTipoActividad = () => {
@@ -48,7 +41,7 @@ export const useTipoActividad = () => {
 
 export const useRegistrarTipoActividad = () => {
   return useMutation({
-    mutationFn: (tipoEspecie: TipoActividad) => registrarTipoActividad(tipoEspecie),
+    mutationFn: (tipoActividad: TipoActividad) => registrarTipoActividad(tipoActividad),
     onSuccess: () => {
       addToast({
         title: "Éxito",
@@ -69,10 +62,12 @@ export const useRegistrarTipoActividad = () => {
 const actualizarTipoActividad = async (id: number, tipoActividad: TipoActividad) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
-
   try {
     const response = await axios.put(`${API_URL}${id}/`, tipoActividad, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}` 
+      },
     });
     return response.data;
   } catch (error: any) {
@@ -102,7 +97,6 @@ export const useActualizarTipoActividad = () => {
 const eliminarTipoActividad = async (id: number) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
-
   return axios.delete(`${API_URL}${id}/`, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -121,4 +115,3 @@ export const useEliminarTipoActividad = () => {
     },
   });
 };
-

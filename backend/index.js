@@ -6,7 +6,7 @@ import swaggerSpec from './modulos/usuarios/views/Swagger.js';
 import cors from 'cors';
 
 // Rutas del módulo Cultivo
-import fase_lunar from "./modulos/cultivo/routers/router.fase_lunar.js";
+// import fase_lunar from "./modulos/cultivo/routers/router.fase_lunar.js";
 // import cultivoLuna from "./modulos/cultivo/routers/router.cultivo_luna.js";
 import plantaciones from "./modulos/cultivo/routers/router.plantaciones.js";
 import tipoPlaga from "./modulos/cultivo/routers/router.tipo_plaga.js";
@@ -26,9 +26,8 @@ import residuos from "./modulos/cultivo/routers/router.residuos.js";
 import tipoEspecie from "./modulos/cultivo/routers/router.tipo_especie.js";
 import especies from "./modulos/cultivo/routers/router.especies.js";
 import cultivos from "./modulos/cultivo/routers/router.cultivos.js";
-import bancal from "./modulos/cultivo/routers/router.bancal.js";
 import lotes from "./modulos/cultivo/routers/router.lotes.js";
-
+import bancal from "./modulos/cultivo/routers/router.bancal.js";
 
 // Rutas del módulo Usuarios
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
@@ -91,8 +90,8 @@ app.use('/api/cultivo', residuos);
 app.use('/api/cultivo', tipoEspecie);
 app.use('/api/cultivo', especies);
 app.use('/api/cultivo', cultivos);
-app.use('/api/cultivo', bancal);
 app.use('/api/cultivo', lotes);
+app.use('/api/cultivo', bancal);
 
 // Rutas del módulo Usuarios
 app.use('/api', Usuarios);
@@ -135,6 +134,3 @@ app.get('/documents', (req, res) => {
 app.listen(3000, () => {
     console.log('✅ Servidor iniciado en el puerto 3000');
 });
-
-  
-

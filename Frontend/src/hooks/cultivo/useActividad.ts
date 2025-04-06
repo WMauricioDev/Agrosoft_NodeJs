@@ -4,7 +4,7 @@ import { addToast } from "@heroui/react";
 import { Actividad } from "@/types/cultivo/Actividad";
 import { Insumo } from "@/types/inventario/Insumo";
 import { User } from "@/context/AuthContext";
-const API_URL = "http://127.0.0.1:8000/cultivo/actividades/";
+const API_URL = "http://localhost:3000/api/cultivo/actividades/";
 
 const fetchActividades = async (): Promise<Actividad[]> => {
     const token = localStorage.getItem("access_token");
