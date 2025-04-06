@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from "react";
 import DefaultLayout from "@/layouts/default";
 import { useUsuarios } from "@/hooks/usuarios/useUsuarios";
@@ -71,7 +72,7 @@ const UsuariosPage: React.FC = () => {
       apellido: usuario.apellido,
       email: usuario.email,
       username: usuario.username || "N/A",
-      rol: usuario.rol?.rol || "Sin rol",
+      rol: usuario.rol_nombre || "Sin rol",
       acciones: (
         <>
           <button className="mr-2" onClick={() => handleEdit(usuario)}>

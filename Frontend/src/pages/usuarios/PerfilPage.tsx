@@ -1,3 +1,4 @@
+
 import React, { useState, FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useUsuarios, UsuarioUpdate } from "@/hooks/usuarios/useUsuarios";
@@ -141,11 +142,11 @@ const PerfilPage: React.FC = () => {
             <TextField label="Email" value={user.email} disabled fullWidth sx={textFieldStyles} />
             <TextField label="Username" value={user.username || ""} disabled fullWidth sx={textFieldStyles} />
             <TextField
-  label="Rol"
-  value={user.rol_id?.nombre || "Sin rol"}
-  disabled
-  fullWidth
-  sx={textFieldStyles}
+label="Rol"
+value={user.rol_nombre || "Sin rol"}
+disabled
+fullWidth
+sx={textFieldStyles}
 />
             <TextField label="Contraseña" value="••••••••" disabled fullWidth sx={textFieldStyles} />
             <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
