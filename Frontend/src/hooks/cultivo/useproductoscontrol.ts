@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { addToast } from "@heroui/react";
 import { ProductoControl } from "@/types/cultivo/ProductosControl"; 
-const API_URL = "http://127.0.0.1:8000/cultivo/productoscontrol/";
+const API_URL = "http://localhost:3000/api/cultivo/productos_control";
 
 const fetchProductoControl = async (): Promise<ProductoControl[]> => {
   const token = localStorage.getItem("access_token");
@@ -30,26 +30,31 @@ const registrarProductoControl = async (productoControl: ProductoControl) => {
   formData.append("precio", productoControl.precio.toString());
   formData.append("nombre", productoControl.nombre);
   formData.append("compuestoActivo", productoControl.compuestoActivo);
-  formData.append("fichaTecnica", productoControl.fichaTecnica);
+  formData.append("fichaTecnica", productoControl.fichaTecnica); 
   formData.append("Contenido", productoControl.Contenido.toString());
   formData.append("tipoContenido", productoControl.tipoContenido);
   formData.append("unidades", productoControl.unidades.toString());
-
+  
   return axios.post(API_URL, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
   });
 };
+
+
 
 const actualizarProductoControl = async (id: number, productoControl: ProductoControl) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
   try {
-    const response = await axios.put(`${API_URL}${id}/`, productoControl, {
-      headers: { Authorization: `Bearer ${token}` },
+    const response = await axios.put(`${API_URL}/${id}/`, productoControl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
     });
     return response.data;
   } catch (error: any) {
@@ -62,7 +67,7 @@ const eliminarProductoControl = async (id: number) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
-  return axios.delete(`${API_URL}${id}/`, {
+  return axios.delete(`${API_URL}/${id}/`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
