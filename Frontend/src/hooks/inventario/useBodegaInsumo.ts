@@ -1,105 +1,105 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { BodegaInsumo } from "@/types/inventario/BodegaInsumo";
+import { addToast } from "@heroui/react";
 
-const API_URL = "http://127.0.0.1:8000/inventario/bodega_insumo/";
+const API_URL = "http://localhost:3000/api/inv/bodega_insumo/";
+
+const fetchBodegaInsumo = async (): Promise<BodegaInsumo[]> => {
+  const token = localStorage.getItem("access_token");
+  if (!token) throw new Error("No se encontró el token de autenticación.");
+
+  const response = await axios.get(API_URL, {
+      headers: { Authorization: `Bearer ${token}` },
+  });
+
+  return response.data;
+};
 
 export const useBodegaInsumos = () => {
-  return useQuery({
-    queryKey: ["bodega_insumos"],
-    queryFn: async () => {
-      const token = localStorage.getItem("access_token");
-      if (!token) throw new Error("No se encontró el token de autenticación.");
-
-      const response = await axios.get(API_URL, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log("📌 Bodega Insumos recibidos:", response.data);
-      return response.data;
-    },
+  return useQuery<BodegaInsumo[], Error>({
+      queryKey: ["bodegaInsumo"],
+      queryFn: fetchBodegaInsumo,
+      staleTime: 1000 * 60,
   });
+};
+
+const registrarBodegaInsumo = async (BodegaInsumo: BodegaInsumo) => {
+const token = localStorage.getItem("access_token");
+if (!token) throw new Error("No se encontró el token de autenticación.");
+
+const response = await axios.post(API_URL, BodegaInsumo, {
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+});
+return response.data;
 };
 
 export const useRegistrarBodegaInsumo = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async (bodegaInsumo: BodegaInsumo) => {
-      const token = localStorage.getItem("access_token");
-      if (!token) throw new Error("No se encontró el token de autenticación.");
-
-      const payload = {
-        bodega: Number(bodegaInsumo.bodega),
-        insumo: Number(bodegaInsumo.insumo),
-        cantidad: Number(bodegaInsumo.cantidad),
-      };
-
-      console.log("📌 Enviando al backend:", payload);
-
-      const response = await axios.post(API_URL, payload, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bodega_insumos"] });
-    },
-    onError: () => {
-      console.error("Error al registrar el Bodega Insumo");
-    },
+      mutationFn: registrarBodegaInsumo,
+      onSuccess: () => {
+          addToast({ title: "Éxito", description: "Registro guardado con éxito" });
+          queryClient.invalidateQueries({ queryKey: ["bodegaInsumo"] });
+      },
+      onError: () => {
+          addToast({ title: "Error", description: "Error al registrar" });
+      },
   });
 };
 
+
+const actualizarBodegaInsumo = async (BodegaInsumo: BodegaInsumo) => {
+  const token = localStorage.getItem("access_token");
+  if (!token) throw new Error("No se encontró el token de autenticación.");
+
+  const response = await axios.put(`${API_URL}${BodegaInsumo.id}`, BodegaInsumo, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
 export const useActualizarBodegaInsumo = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async (bodegaInsumo: BodegaInsumo) => {
-      const token = localStorage.getItem("access_token");
-      if (!token) throw new Error("No se encontró el token de autenticación.");
+      mutationFn: actualizarBodegaInsumo,
+      onSuccess: () => {
+          addToast({ title: "Éxito", description: "Registro actualizado con éxito" });
+          queryClient.invalidateQueries({ queryKey: ["bodegaInsumo"] });
+      },
+      onError: () => {
+          addToast({ title: "Error", description: "Error al actualizar" });
+      },
+  });
+};
 
-      const payload = {
-        bodega: Number(bodegaInsumo.bodega),
-        insumo: Number(bodegaInsumo.insumo),
-        cantidad: Number(bodegaInsumo.cantidad),
-      };
+const eliminarBodegaInsumo = async (id: number) => {
+  const token = localStorage.getItem("access_token");
+  if (!token) throw new Error("No se encontró el token de autenticación.");
 
-      console.log("📌 Enviando al backend:", payload);
-
-      const response = await axios.put(`${API_URL}${bodegaInsumo.id}/`, payload, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bodega_insumos"] });
-    },
-    onError: () => {
-      console.error("Error al actualizar el Bodega Insumo");
-    },
+  await axios.delete(`${API_URL}${id}/`, {
+      headers: { Authorization: `Bearer ${token}` },
   });
 };
 
 export const useEliminarBodegaInsumo = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (id: number) => {
-      const token = localStorage.getItem("access_token");
-      if (!token) throw new Error("No se encontró el token de autenticación.");
 
-      await axios.delete(`${API_URL}${id}/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bodega_insumos"] });
-    },
-    onError: () => {
-      console.error("No se pudo eliminar el Bodega Insumo");
-    },
+  return useMutation({
+      mutationFn: eliminarBodegaInsumo,
+      onSuccess: () => {
+          addToast({ title: "Éxito", description: "Registro eliminado con éxito" });
+          queryClient.invalidateQueries({ queryKey: ["bodegaInsumo"] });
+      },
+      onError: () => {
+          addToast({ title: "Error", description: "No se pudo eliminar el registro" });
+      },
   });
 };

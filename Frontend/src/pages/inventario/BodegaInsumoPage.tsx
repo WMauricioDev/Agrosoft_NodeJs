@@ -14,8 +14,8 @@ const BodegaInsumoPage: React.FC = () => {
   const { user } = useAuth();
   const [bodegaInsumo, setBodegaInsumo] = useState<BodegaInsumo>({
     id: 0,
-    bodega: 0,
-    insumo: 0,
+    bodega_id: 0,
+    insumo_id: 0,
     cantidad: 0,
   });
 
@@ -36,7 +36,7 @@ const BodegaInsumoPage: React.FC = () => {
     e.preventDefault();
     mutation.mutate(bodegaInsumo, {
       onSuccess: () => {
-        setBodegaInsumo({ id: 0, bodega: 0, insumo: 0, cantidad: 0 });
+        setBodegaInsumo({ id: 0, bodega_id: 0, insumo_id: 0, cantidad: 0 });
         navigate("/inventario/listarbodegainsumos/");
       },
     });
@@ -51,8 +51,8 @@ const BodegaInsumoPage: React.FC = () => {
         isSubmitting={mutation.isPending}
       >
         <select
-          name="bodega"
-          value={bodegaInsumo.bodega}
+          name="bodega_id"
+          value={bodegaInsumo.bodega_id}
           onChange={handleChange}
           className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 transition-all duration-200"
         >
@@ -64,8 +64,8 @@ const BodegaInsumoPage: React.FC = () => {
           ))}
         </select>
         <select
-          name="insumo"
-          value={bodegaInsumo.insumo}
+          name="insumo_id"
+          value={bodegaInsumo.insumo_id}
           onChange={handleChange}
           className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 transition-all duration-200"
         >
