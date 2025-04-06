@@ -8,7 +8,7 @@ import { useTipoPlagas } from "@/hooks/cultivo/usetipoplaga";
 
 const PlagaPage: React.FC = () => {
   const [plaga, setPlaga] = useState<Plaga>({
-    fk_tipo_plaga: 0,
+    fk_tipo_plaga_id: 0,
     nombre: "",
     descripcion: "",
     img: null,
@@ -26,7 +26,7 @@ const PlagaPage: React.FC = () => {
 
   const handleTipoPlagaChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const tipoPlagaId = parseInt(e.target.value, 10);
-    setPlaga((prev) => ({ ...prev, fk_tipo_plaga: tipoPlagaId }));
+    setPlaga((prev) => ({ ...prev, fk_tipo_plaga_id: tipoPlagaId }));
   };
 
   return (
@@ -39,14 +39,14 @@ const PlagaPage: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700">Tipo de Plaga</label>
             <select
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={plaga.fk_tipo_plaga || ""}
+              value={plaga.fk_tipo_plaga_id || ""}
               onChange={handleTipoPlagaChange}
             >
               <option value="">Seleccione un tipo de plaga</option>
             
                {tiposPlaga?.map((tipo) => (
                 <option key={tipo.id} value={tipo.id}>{tipo.nombre}</option>
-              ))} */
+              ))} 
             </select>
           </div>
 

@@ -3,7 +3,7 @@ import axios from "axios";
 import { addToast } from "@heroui/react";
 import { Plaga } from "@/types/cultivo/Plaga"; 
 
-const API_URL = "http://127.0.0.1:8000/cultivo/plaga/";
+const API_URL = "http://localhost:3000/api/cultivo/plagas/";
 
 const fetchPlagas = async (): Promise<Plaga[]> => {
   const token = localStorage.getItem("access_token");
@@ -16,41 +16,26 @@ const fetchPlagas = async (): Promise<Plaga[]> => {
 
 const registrarPlaga = async (plaga: Plaga) => {
   const token = localStorage.getItem("access_token");
-  if (!token) throw new Error("No se encontró el token de autenticación.");
 
-  const formData = new FormData();
-  formData.append("fk_tipo_plaga", plaga.fk_tipo_plaga?.toString() || "");
-  formData.append("nombre", plaga.nombre);
-  formData.append("descripcion", plaga.descripcion);
-  if (plaga.img) {
-    formData.append("img", plaga.img);
+  if (!token) {
+    throw new Error("No se encontró el token de autenticación.");
   }
 
-  return axios.post(API_URL, formData, {
+  return axios.post(API_URL, plaga, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
 };
 
-const actualizarPlaga = async (id: number, plaga: Plaga) => {
+
+const actualizarPlaga = async (id: number, Plaga: Plaga) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
-  const formData = new FormData();
-  formData.append("fk_tipo_plaga", plaga.fk_tipo_plaga?.toString() || "");
-  formData.append("nombre", plaga.nombre);
-  formData.append("descripcion", plaga.descripcion);
-  if (plaga.img) {
-    formData.append("img", plaga.img);
-  }
-
-  return axios.put(`${API_URL}${id}/`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-      Authorization: `Bearer ${token}`,
-    },
+  return axios.put(`${API_URL}${id}/`, Plaga, {
+    headers: { Authorization: `Bearer ${token}` },
   });
 };
 

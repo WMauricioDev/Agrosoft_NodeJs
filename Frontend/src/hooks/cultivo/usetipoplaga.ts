@@ -3,7 +3,7 @@ import axios from "axios";
 import { addToast } from "@heroui/react";
 import { TipoPlaga } from "@/types/cultivo/TipoPlaga";
 
-const API_URL = "http://127.0.0.1:8000/cultivo/tipo_plaga/";
+const API_URL = "http://localhost:3000/api/cultivo/tipo_plaga/";
 
 const fetchTipoPlagas = async (): Promise<TipoPlaga[]> => {
   const token = localStorage.getItem("access_token");
@@ -14,24 +14,21 @@ const fetchTipoPlagas = async (): Promise<TipoPlaga[]> => {
   return response.data;
 };
 
-const registrarTipoPlaga = async (tipoPlaga: TipoPlaga) => {
+const registrarTipoPlaga = async (tipo_plaga: TipoPlaga) => {
   const token = localStorage.getItem("access_token");
-  if (!token) throw new Error("No se encontró el token de autenticación.");
 
-  const formData = new FormData();
-  formData.append("nombre", tipoPlaga.nombre);
-  formData.append("descripcion", tipoPlaga.descripcion);
-  if (tipoPlaga.img) {
-    formData.append("img", tipoPlaga.img);
+  if (!token) {
+    throw new Error("No se encontró el token de autenticación.");
   }
 
-  return axios.post(API_URL, formData, {
+  return axios.post(API_URL, tipo_plaga, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
 };
+
 
 const actualizarTipoPlaga = async (id: number, tipoPlaga: TipoPlaga) => {
   const token = localStorage.getItem("access_token");
