@@ -8,10 +8,12 @@ import { useAuth } from "@/context/AuthContext";
 import ReuModal from "@/components/globales/ReuModal";
 import { ReuInput } from "@/components/globales/ReuInput";
 import { EditIcon, Trash2 } from "lucide-react";
+import { useRegistrarUsuario } from "@/hooks/usuarios/useRegistrarUsuario";
 
 const UsuariosPage: React.FC = () => {
   const { user } = useAuth();
-  const { data: usuarios = [], isLoading, error, updateUsuario, deleteUsuario, registrarUsuario, roles } = useUsuarios();
+  const { data: usuarios = [], isLoading, error, updateUsuario, deleteUsuario, roles } = useUsuarios();
+  const { registrarUsuario } = useRegistrarUsuario();
   const navigate = useNavigate();
   const [selectedUsuario, setSelectedUsuario] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

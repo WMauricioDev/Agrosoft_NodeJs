@@ -13,7 +13,9 @@ export interface User {
   apellido: string;
   email: string;
   username?: string;
-  rol_id: Rol; 
+  rol_id: Rol;
+  rol_nombre?: string | null;  // Nombre del rol
+ 
 }
 
 interface AuthContextType {
@@ -99,7 +101,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
-export const useAuth = (): AuthContextType => {
+export const  useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth debe usarse dentro de un AuthProvider");

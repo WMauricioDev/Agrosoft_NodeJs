@@ -16,6 +16,7 @@ export interface Usuario {
   email: string;
   username?: string;
   rol: Rol | null;
+
 }
 
 export interface UsuarioUpdate {
@@ -24,7 +25,8 @@ export interface UsuarioUpdate {
   apellido: string;
   email: string;
   username?: string;
-  rol_id: number | null;   
+  rol_id: number | null;  
+   
 }
 
 export const useUsuarios = () => {
