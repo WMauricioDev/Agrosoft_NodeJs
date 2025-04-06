@@ -3,7 +3,7 @@ import axios from "axios";
 import { addToast } from "@heroui/react";
 import { TipoControl } from "@/types/cultivo/TipoControl"; 
 
-const API_URL = "http://127.0.0.1:8000/cultivo/tipo_control/";
+const API_URL = "http://localhost:3000/api/cultivo/tipos_control/";
 
 const fetchTipoControl = async (): Promise<TipoControl[]> => {
   const token = localStorage.getItem("access_token");

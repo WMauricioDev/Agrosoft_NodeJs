@@ -29,7 +29,7 @@ const Register: React.FC = () => {
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/usuarios/registro/', {
+      const response = await fetch('http://localhost:3000/api/usuarios/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

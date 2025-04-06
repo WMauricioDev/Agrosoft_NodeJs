@@ -9,6 +9,7 @@ import { toast } from "react-hot-toast";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
+
 const PerfilPage: React.FC = () => {
   const { user, updateUser } = useAuth();
   const { updateUsuario } = useUsuarios();
@@ -67,7 +68,7 @@ const PerfilPage: React.FC = () => {
         apellido: editUser.apellido,
         email: editUser.email,
         username: editUser.username,
-        rol_id: editUser.rol?.id || null,
+        rol_id: editUser.rol_id?.id|| null,
       };
       console.log("Enviando al backend desde perfil:", usuarioToUpdate);
       const updatedUser = await updateUsuario(usuarioToUpdate);
@@ -139,7 +140,13 @@ const PerfilPage: React.FC = () => {
             <TextField label="Apellido" value={user.apellido} disabled fullWidth sx={textFieldStyles} />
             <TextField label="Email" value={user.email} disabled fullWidth sx={textFieldStyles} />
             <TextField label="Username" value={user.username || ""} disabled fullWidth sx={textFieldStyles} />
-            <TextField label="Rol" value={user.rol?.rol || "Sin rol"} disabled fullWidth sx={textFieldStyles} />
+            <TextField
+  label="Rol"
+  value={user.rol_id?.nombre || "Sin rol"}
+  disabled
+  fullWidth
+  sx={textFieldStyles}
+/>
             <TextField label="Contraseña" value="••••••••" disabled fullWidth sx={textFieldStyles} />
             <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
               <Button variant="contained" sx={{ backgroundColor: "#2ecc71" }} onClick={handleEdit}>
@@ -201,7 +208,7 @@ const PerfilPage: React.FC = () => {
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.8 }}>
               <TextField
                 label="Rol"
-                value={editUser.rol?.rol || "Sin rol"}
+                value={editUser.rol_id?.id || "Sin rol"}
                 disabled
                 fullWidth
                 sx={textFieldStyles}
