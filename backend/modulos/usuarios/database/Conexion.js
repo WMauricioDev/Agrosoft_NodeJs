@@ -12,6 +12,7 @@ const pool = new Pool({
   port: process.env.DB_PORT || 5432,
   database: process.env.DB_DATABASE || 'agrosoft_node',
 
+
 });
 
 export default pool;
