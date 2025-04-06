@@ -1,4 +1,3 @@
-// hooks/iot/useSensoresRegistrados.ts
 import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Sensor } from "@/types/iot/type";
@@ -10,11 +9,11 @@ export function useSensoresRegistrados() {
   const token = localStorage.getItem("access_token") || "";
   const queryClient = useQueryClient();
 
-  // Obtener sensores
+  // Obtener sensores (GET)
   useEffect(() => {
     const fetchSensores = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/iot/sensores/", {
+        const response = await fetch("http://localhost:3000/api/iot/sensores", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -35,10 +34,10 @@ export function useSensoresRegistrados() {
     else setError(new Error("No autenticado"));
   }, [token]);
 
-  // Actualizar sensor
+  // Actualizar sensor (PUT)
   const updateSensor = useMutation({
     mutationFn: async (sensor: Sensor) => {
-      const response = await fetch(`http://127.0.0.1:8000/iot/sensores/${sensor.id}/`, {
+      const response = await fetch(`http://localhost:3000/api/iot/sensores/${sensor.id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -56,10 +55,10 @@ export function useSensoresRegistrados() {
     onError: (err: Error) => setError(err),
   });
 
-  // Eliminar sensor
+  // Eliminar sensor (DELETE)
   const deleteSensor = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`http://127.0.0.1:8000/iot/sensores/${id}/`, {
+      const response = await fetch(`http://localhost:3000/api/iot/sensores/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -76,4 +75,4 @@ export function useSensoresRegistrados() {
   });
 
   return { sensores, isLoading, error, updateSensor, deleteSensor };
-}
+};

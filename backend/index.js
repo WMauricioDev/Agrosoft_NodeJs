@@ -46,10 +46,8 @@ import Semillero_Insumo from './modulos/inventario/routers/SemilleroInsumo.Route
 import reporteInsumos from './modulos/inventario/routers/reporteInsumosRouter.js';
 
 // Rutas del módulo IoT
-import configuracion from "./modulos/IoT/routers/router.configuracion.js";
 import datosMeteorologicos from "./modulos/IoT/routers/router.datos_meteorologicos.js";
-import sensores from "./modulos/IoT/routers/router.sensores.js";
-import sensor_bancal from "./modulos/IoT/routers/router.sensor_bancal.js";
+import sensores from "./modulos/IoT/routers/router.sensores.js"; 
 // import tipo_sensor from "./modulos/IoT/router/router.tipo_sensor.js";
 
 // Rutas del módulo Finanzas
@@ -112,10 +110,8 @@ app.use('/api/inv', Semillero_Insumo);
 app.use('/api/inv', reporteInsumos);
 
 // Rutas del módulo IoT
-app.use('/api/iot', configuracion);
 app.use('/api/iot', datosMeteorologicos);
-app.use('/api/iot', sensores);
-app.use('/api/iot', sensor_bancal);
+app.use('/api/iot', sensores); 
 // app.use('/api/iot', tipo_sensor);
 
 // Rutas del módulo Finanzas
