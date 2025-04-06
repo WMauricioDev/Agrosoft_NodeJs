@@ -10,7 +10,7 @@ export const reportesPorModulo: Record<string, { nombre: string; reporte: string
     cultivo: [
         { nombre: "Reporte de Cosechas", reporte: "reporteCosechas" },
         { nombre: "Reporte de lotes", reporte: "lote" },
-        { nombre: "Reporte de actividades", reporte: "actividades"},
+        { nombre: "Reporte de actividades", reporte: "reporteActividades"},
         { nombre: "Reporte de actividades", reporte: "Bancal"},
     ],
     inv: [
