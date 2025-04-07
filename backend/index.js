@@ -62,8 +62,7 @@ import Venta from "./modulos/finanzas/routers/ventaRoutes.js";
 
 //Graficas 
 import obtenerUsuariosPorRol from"./modulos/graficas/routes/graficas.routes.js"
-import  obtenerCosechasPorCultivo from"./modulos/graficas/routes/graficas.routes.js"
-
+import obtenerCosechasPorCultivo from"./modulos/graficas/routes/graficas.routes.js" 
 const app = express();
 app.use(cors({
     origin: 'http://localhost:5173', 
@@ -78,7 +77,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
 app.use ("/api/graf", obtenerUsuariosPorRol)
-app.use ("/api/graf", obtenerCosechasPorCultivo)
+app.use ("/api/graf", obtenerCosechasPorCultivo)  
+
 // Rutas del módulo Cultivo
 // app.use('/api/cultivo', fase_lunar);
 // app.use('/api/cultivo', cultivoLuna);

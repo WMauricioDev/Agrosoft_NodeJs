@@ -95,7 +95,7 @@ const menuItems = [
       { id: 36, label: "Insumos", path: "/graficas/insumos"},
       { id: 37, label: "Herramientas", path: "/graficas/herramientas" },
 
-      { id: 38, label: "Sensores", path: "/iot/sensores", icon: <FaTachometerAlt /> },
+      { id: 42, label: "Datos Históricos", path: "/graficas/datos-historicos", icon: <FaChartBar /> },
       { id: 39, label: "Humedad", path: "/iot/humedad", icon: <FaTemperatureHigh /> },
       { id: 40, label: "Cosechas", path: "/graficas/cosechas", icon: <FaLeaf /> },
     ],
