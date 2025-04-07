@@ -1,6 +1,5 @@
-import DefaultLayout from "@/layouts/default"; // asegúrate de importar el layout
+import DefaultLayout from "@/layouts/default"; 
 import GraficaUsuariosPorRol from "@/components/graficas/GraficaUser";
-
 export default function GraficasPage() {
   return (
     <DefaultLayout>

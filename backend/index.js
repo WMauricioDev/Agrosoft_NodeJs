@@ -35,6 +35,7 @@ import reporteActividades from "./modulos/cultivo/routers/router.reporteActivida
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
 import Autenticacion from './modulos/usuarios/routers/Autenticacion.router.js';  
 import Roles from './modulos/usuarios/routers/Roles.routes.js';  
+import { generarReporteUsuarios } from './modulos/usuarios/controllers/reporteUsuarios.js';
 
 // Rutas del módulo Inventario
 import Bodega from './modulos/inventario/routers/Bodega.Router.js';
@@ -106,6 +107,7 @@ app.use('/api/cultivo', reporteActividades);
 app.use('/api', Usuarios);
 app.use('/api', Autenticacion);
 app.use('/api', Roles);
+app.use("/api/usuarios", generarReporteUsuarios)
 
 // Rutas del módulo Inventario
 app.use('/api/inv', Bodega);
@@ -116,6 +118,7 @@ app.use('/api/inv', Insumos);
 app.use('/api/inv', Semilleros);
 app.use('/api/inv', Semillero_Insumo);
 app.use('/api/inv', reporteInsumos);
+
 
 // Rutas del módulo IoT
 app.use('/api/iot', datosMeteorologicos);
