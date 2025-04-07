@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import Tabla from "@/components/globales/Tabla";
 import { ReuInput } from "@/components/globales/ReuInput";
 import { Sensor, SensorData } from "@/types/iot/type";
-import { EditIcon, Trash2 } from "lucide-react";
 
 export default function DatosMeteorologicosPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,7 +19,6 @@ export default function DatosMeteorologicosPage() {
     { name: "Temperatura (°C)", uid: "temperature" },
     { name: "Humedad (%)", uid: "humidity" },
     { name: "Fecha de Medición", uid: "fecha_medicion" },
-    { name: "Acciones", uid: "acciones" },
   ];
 
   const filteredHistoricos = useMemo(() => {
@@ -51,16 +49,6 @@ export default function DatosMeteorologicosPage() {
       temperature: dato.temperature ?? "N/A",
       humidity: dato.humidity ?? "N/A",
       fecha_medicion: dato.fecha_medicion ? new Date(dato.fecha_medicion).toLocaleString() : "N/A",
-      acciones: (
-        <>
-          <button className="mr-2">
-            <EditIcon size={18} color="gray" />
-          </button>
-          <button>
-            <Trash2 size={18} color="red" />
-          </button>
-        </>
-      ),
     }));
   }, [filteredHistoricos, sensores]);
 
