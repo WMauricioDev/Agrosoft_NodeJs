@@ -51,6 +51,7 @@ import herramienta from './modulos/inventario/routers/reporteHerramientaRouter.j
 // Rutas del módulo IoT
 import datosMeteorologicos from "./modulos/IoT/routers/router.datos_meteorologicos.js";
 import sensores from "./modulos/IoT/routers/router.sensores.js"; 
+import RouterReporteDatosHistoricos from './modulos/IoT/routers/RouterReporteDatosHistoricos.js';
 // import tipo_sensor from "./modulos/IoT/router/router.tipo_sensor.js";
 
 // Rutas del módulo Finanzas
@@ -126,6 +127,7 @@ app.use('/api/inv', herramienta);
 // Rutas del módulo IoT
 app.use('/api/iot', datosMeteorologicos);
 app.use('/api/iot', sensores); 
+app.use('/api/iot', RouterReporteDatosHistoricos);
 // app.use('/api/iot', tipo_sensor);
 
 // Rutas del módulo Finanzas
