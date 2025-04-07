@@ -5,6 +5,6 @@ import {
 } from '../controllers/reporteUsuarios.js';
 
 const router = Router();
-router.get('/usuarios/reporte',generarReporteUsuarios)
+router.post('/usuarios/:formato',generarReporteUsuarios)
 
 export default router;
