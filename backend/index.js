@@ -46,6 +46,7 @@ import Insumos from './modulos/inventario/routers/Insumos.Router.js';
 import Semilleros from './modulos/inventario/routers/Semillero.Router.js';
 import Semillero_Insumo from './modulos/inventario/routers/SemilleroInsumo.Router.js';
 import reporteInsumos from './modulos/inventario/routers/reporteInsumosRouter.js';
+import herramienta from './modulos/inventario/routers/reporteHerramientaRouter.js';
 
 // Rutas del módulo IoT
 import datosMeteorologicos from "./modulos/IoT/routers/router.datos_meteorologicos.js";
@@ -118,6 +119,8 @@ app.use('/api/inv', Insumos);
 app.use('/api/inv', Semilleros);
 app.use('/api/inv', Semillero_Insumo);
 app.use('/api/inv', reporteInsumos);
+app.use('/api/inv', herramienta);
+
 
 
 // Rutas del módulo IoT
