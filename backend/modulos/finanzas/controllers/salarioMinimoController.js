@@ -2,9 +2,12 @@ import pool from "../../usuarios/database/Conexion.js";
 
 export const registrarSalario = async (req, res) => {
   try {
-    const { valor, fecha_aplicacion } = req.body;
-    const sql = `INSERT INTO salario_minimo (valor, fecha_aplicacion) VALUES ($1, $2)`;
-    const { rowCount } = await pool.query(sql, [valor, fecha_aplicacion]);
+    const { auxilio_transporte, salario_minimo, fecha_de_implementacion,fecha_de_vencimiento,
+      horas_laborales_mes,valor_hora_ordinaria } = req.body;
+    const sql = `INSERT INTO salario_salario (auxilio_transporte, salario_minimo, fecha_de_implementacion,fecha_de_vencimiento,
+    horas_laborales_mes,valor_hora_ordinaria) VALUES ($1, $2, $3, $4, $5, $6)`;
+    const { rowCount } = await pool.query(sql, [auxilio_transporte, salario_minimo, fecha_de_implementacion,fecha_de_vencimiento,
+      horas_laborales_mes,valor_hora_ordinaria]);
 
     if (rowCount > 0) {
       res.status(201).json({ message: 'Salario registrado' });
@@ -19,7 +22,7 @@ export const registrarSalario = async (req, res) => {
 
 export const listarSalarios = async (req, res) => {
   try {
-    const sql = 'SELECT * FROM salario_minimo';
+    const sql = 'SELECT * FROM salario_salario';
     const { rows } = await pool.query(sql);
 
     if (rows.length > 0) {
@@ -35,8 +38,8 @@ export const listarSalarios = async (req, res) => {
 
 export const eliminarSalario = async (req, res) => {
   try {
-    const id = req.params.id_salario;
-    const sql = 'DELETE FROM salario_minimo WHERE id = $1';
+    const id = req.params.id;
+    const sql = 'DELETE FROM salario_salario WHERE id = $1';
     const { rowCount } = await pool.query(sql, [id]);
 
     if (rowCount > 0) {
@@ -52,10 +55,13 @@ export const eliminarSalario = async (req, res) => {
 
 export const actualizarSalario = async (req, res) => {
   try {
-    const { valor, fecha_aplicacion } = req.body;
-    const id = req.params.id_salario;
-    const sql = `UPDATE salario_minimo SET valor = $1, fecha_aplicacion = $2 WHERE id = $3`;
-    const { rowCount } = await pool.query(sql, [valor, fecha_aplicacion, id]);
+    const { auxilio_transporte, salario_minimo, fecha_de_implementacion,fecha_de_vencimiento,
+      horas_laborales_mes,valor_hora_ordinaria } = req.body;
+    const id = req.params.id;;
+    const sql = `UPDATE salario_salario SET auxilio_transporte = $1, salario_minimo = $2, fecha_de_implementacion = $3, fecha_de_vencimiento = $4,
+    horas_laborales_mes = $5, valor_hora_ordinaria = $6 WHERE id = $7`;
+    const { rowCount } = await pool.query(sql, [auxilio_transporte, salario_minimo, fecha_de_implementacion,fecha_de_vencimiento,
+      horas_laborales_mes,valor_hora_ordinaria, id]);
 
     if (rowCount > 0) {
       res.status(200).json({ message: 'Salario actualizado' });
@@ -64,6 +70,5 @@ export const actualizarSalario = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error en el sistema' });
-  }
+    res.status(500).json({ message: 'Error en el sistema'});}
 };

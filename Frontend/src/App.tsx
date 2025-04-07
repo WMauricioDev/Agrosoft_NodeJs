@@ -64,8 +64,7 @@ import GraficasPage from './pages/graficas/GraficaUser';
 import GraficaCosechas from './pages/graficas/GraficaCosechas';
 import GraficaInsumos from './pages/graficas/GraficaInsumos';
 import GraficaHerramientas from './pages/graficas/GraficaHerramientas';
-import GraficasDatosHistoricosPage from './pages/graficas/GraficasDatosHistoricosPage';
-
+import GraficaIngresos from './pages/graficas/GraficaIngresos';
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
@@ -163,7 +162,7 @@ const App: React.FC = () => {
           <Route path="/graficas/usuarios" element={<GraficasPage />} />
           <Route path="/graficas/insumos" element={<GraficaInsumos />} />
           <Route path="/graficas/herramientas" element={<GraficaHerramientas />} />
-          <Route path="/graficas/historicos" element={<GraficasDatosHistoricosPage />} />
+          <Route path="/graficas/ingresos" element={<GraficaIngresos />} />
           <Route path="/blog" element={<PrivateRoute><BlogPage /></PrivateRoute>} />
           <Route path="/about" element={<PrivateRoute><AboutPage /></PrivateRoute>} />
           <Route path="*" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />

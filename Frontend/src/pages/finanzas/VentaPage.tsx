@@ -8,7 +8,7 @@ import { Venta } from "@/types/finanzas/Venta";
 
 const VentaPage: React.FC = () => {
   const [venta, setVenta] = useState<Venta>({
-    producto: 0,
+    producto_id: 0,
     cantidad: 0,
     precio: 0,
     total: 0,
@@ -19,11 +19,15 @@ const VentaPage: React.FC = () => {
   const { data: cultivos, isLoading: cultivosLoading } = useCultivos();
   const navigate = useNavigate();
 
-  const handleChange = (field: keyof Venta) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (field: keyof Venta) => (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { value } = e.target;
     setVenta((prev) => ({
       ...prev,
-      [field]: field === "cantidad" || field === "precio" ? Number(value) : value,
+      [field]: field === "cantidad" || field === "precio" || field === "producto_id"
+        ? Number(value)
+        : value,
     }));
   };
 
@@ -35,9 +39,9 @@ const VentaPage: React.FC = () => {
 
           <label className="block text-sm font-medium text-gray-700 mt-4">Producto</label>
           <select
-            name="producto"
-            value={venta.producto || ""}
-            onChange={handleChange("producto")}
+            name="producto_id"
+            value={venta.producto_id || ""}
+            onChange={handleChange("producto_id")}
             className="w-full mb-4 p-2 border rounded"
             disabled={cultivosLoading}
           >
@@ -77,12 +81,14 @@ const VentaPage: React.FC = () => {
             disabled={isRegistrando || cultivosLoading}
             onClick={(e) => {
               e.preventDefault();
+              const total = venta.cantidad * venta.precio;
+
               registrarVenta(
-                { ...venta, total: venta.cantidad * venta.precio },
+                { ...venta, total },
                 {
                   onSuccess: () => {
                     setVenta({
-                      producto: 0,
+                      producto_id: 0,
                       cantidad: 0,
                       precio: 0,
                       total: 0,

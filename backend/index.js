@@ -59,10 +59,11 @@ import salario_minimo from "./modulos/finanzas/routers/salarioMinimoRoutes.js";
 import Registro_venta from "./modulos/finanzas/routers/registroVentaRoutes.js";
 import Inventario_producto from "./modulos/finanzas/routers/inventarioProductoRoutes.js";
 import Venta from "./modulos/finanzas/routers/ventaRoutes.js";
-
+import router from './modulos/finanzas/routers/reporteIngresosRouter.js';
 //Graficas 
 import obtenerUsuariosPorRol from"./modulos/graficas/routes/graficas.routes.js"
-import obtenerCosechasPorCultivo from"./modulos/graficas/routes/graficas.routes.js" 
+import  obtenerCosechasPorCultivo from"./modulos/graficas/routes/graficas.routes.js"
+
 const app = express();
 app.use(cors({
     origin: 'http://localhost:5173', 
@@ -77,8 +78,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
 app.use ("/api/graf", obtenerUsuariosPorRol)
-app.use ("/api/graf", obtenerCosechasPorCultivo)  
-
+app.use ("/api/graf", obtenerCosechasPorCultivo)
 // Rutas del módulo Cultivo
 // app.use('/api/cultivo', fase_lunar);
 // app.use('/api/cultivo', cultivoLuna);
@@ -135,6 +135,8 @@ app.use('/api/fin', salario_minimo);
 app.use('/api/fin', Registro_venta);
 app.use('/api/fin', Inventario_producto);
 app.use('/api/fin', Venta);
+app.use('/api/fin', router);
+
 
 // Swagger Docs
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

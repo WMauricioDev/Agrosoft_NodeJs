@@ -48,7 +48,7 @@ const ListaVentaPage: React.FC = () => {
 
   const transformedData = (ventas ?? []).map((venta) => ({
     id: venta.id?.toString() || "",
-    producto: cultivos?.find((c) => c.id === venta.producto)?.nombre || "Desconocido",
+    producto: cultivos?.find((c) => c.id === venta.producto_id)?.nombre || "Desconocido",
     cantidad: venta.cantidad,
     precio: venta.precio,
     total: venta.total,
@@ -115,7 +115,7 @@ const ListaVentaPage: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mt-4">Producto</label>
               <select
                 name="producto"
-                value={selectedVenta.producto}
+                value={selectedVenta.producto_id}
                 onChange={(e) =>
                   setSelectedVenta((prev) => ({
                     ...prev!,

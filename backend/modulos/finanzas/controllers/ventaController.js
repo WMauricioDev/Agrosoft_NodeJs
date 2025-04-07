@@ -2,10 +2,10 @@ import pool from "../../usuarios/database/Conexion.js";
 
 export const registrarVenta = async (req, res) => {
   try {
-    const { fk_cosecha, precio_unitario, producto_vendido, cantidad, fecha_venta } = req.body;
-    const sql = `INSERT INTO Venta (fk_cosecha, precio_unitario, producto_vendido, cantidad, fecha_venta) 
+    const { cantidad, total, fecha, precio, producto_id } = req.body;
+    const sql = `INSERT INTO venta_venta (cantidad, total, fecha, precio, producto_id) 
                  VALUES ($1, $2, $3, $4, $5)`;
-    const { rowCount } = await pool.query(sql, [fk_cosecha, precio_unitario, producto_vendido, cantidad, fecha_venta]);
+    const { rowCount } = await pool.query(sql, [cantidad, total, fecha, precio, producto_id]);
 
     if (rowCount > 0) {
       res.status(201).json({ message: 'Venta registrada' });
@@ -20,7 +20,7 @@ export const registrarVenta = async (req, res) => {
 
 export const listarVentas = async (req, res) => {
   try {
-    const sql = 'SELECT * FROM Venta';
+    const sql = 'SELECT * FROM venta_venta';
     const { rows } = await pool.query(sql);
 
     if (rows.length > 0) {
@@ -37,7 +37,7 @@ export const listarVentas = async (req, res) => {
 export const eliminarVenta = async (req, res) => {
   try {
     const id = req.params.id;
-    const sql = 'DELETE FROM Venta WHERE id = $1';
+    const sql = 'DELETE FROM venta_venta WHERE id = $1';
     const { rowCount } = await pool.query(sql, [id]);
 
     if (rowCount > 0) {
@@ -53,12 +53,12 @@ export const eliminarVenta = async (req, res) => {
 
 export const actualizarVenta = async (req, res) => {
   try {
-    const { fk_cosecha, precio_unitario, producto_vendido, cantidad, fecha_venta } = req.body;
+    const { cantidad, total, fecha, precio, producto_id } = req.body;
     const id = req.params.id;
-    const sql = `UPDATE Venta 
-                 SET fk_cosecha = $1, precio_unitario = $2, producto_vendido = $3, cantidad = $4, fecha_venta = $5 
+    const sql = `UPDATE venta_venta 
+                 SET cantidad = $1, total = $2, fecha = $3, precio = $4, producto_id = $5 
                  WHERE id = $6`;
-    const { rowCount } = await pool.query(sql, [fk_cosecha, precio_unitario, producto_vendido, cantidad, fecha_venta, id]);
+    const { rowCount } = await pool.query(sql, [cantidad, total, fecha, precio, producto_id, id]);
 
     if (rowCount > 0) {
       res.status(200).json({ message: 'Venta actualizada' });
