@@ -62,6 +62,8 @@ import UsuariosSecondPage from './pages/usuarios/RegisterSecondPage';
 import Reportes from './pages/reportes/Reportes';
 import CosechaGraficasPage from './pages/cultivo/CosechasGraficasPage';
 import GraficasPage from './pages/graficas/GraficaUser';
+import GraficaInsumos from './pages/graficas/GraficaInsumos';
+import GraficaHerramientas from './pages/graficas/GraficaHerramientas';
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
@@ -150,7 +152,6 @@ const App: React.FC = () => {
           <Route path="/cultivo/listartipocontrol/" element={<PrivateRoute><ListaTipoControlPage /></PrivateRoute>} />
           <Route path="/cultivo/productoscontrol/" element={<PrivateRoute><ProductosControlPage /></PrivateRoute>} />
           <Route path="/cultivo/listarproductoscontrol/" element={<PrivateRoute><ListaProductoControlPage /></PrivateRoute>} />
-
           <Route path="/usuarios" element={<PrivateRoute><UsuariosPage /></PrivateRoute>} />
           <Route path="/iot/sensores" element={<PrivateRoute><SensoresPage /></PrivateRoute>} />
           <Route path="/iot/datosmetereologicos" element={<PrivateRoute><DatosMeteorologicosPage /></PrivateRoute>} />
@@ -158,7 +159,8 @@ const App: React.FC = () => {
           <Route path="/mapa" element={<PrivateRoute><Mapa /></PrivateRoute>} />
           <Route path="/graficas/" element={<PrivateRoute><CosechaGraficasPage /></PrivateRoute>} />
           <Route path="/graficas/usuarios" element={<GraficasPage />} />
-
+          <Route path="/graficas/insumos" element={<GraficaInsumos />} />
+          <Route path="/graficas/herramientas" element={<GraficaHerramientas />} />
           <Route path="/blog" element={<PrivateRoute><BlogPage /></PrivateRoute>} />
           <Route path="/about" element={<PrivateRoute><AboutPage /></PrivateRoute>} />
           <Route path="*" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />

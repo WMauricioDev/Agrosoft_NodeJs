@@ -11,8 +11,6 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || 'hate',
   port: process.env.DB_PORT || 5432,
   database: process.env.DB_DATABASE || 'dbagro3',
-
-
 });
 
 export default pool;
