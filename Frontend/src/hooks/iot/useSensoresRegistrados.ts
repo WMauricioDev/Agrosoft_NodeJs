@@ -37,6 +37,7 @@ export function useSensoresRegistrados() {
   // Actualizar sensor (PUT)
   const updateSensor = useMutation({
     mutationFn: async (sensor: Sensor) => {
+      console.log("Datos a enviar:", sensor);  
       const response = await fetch(`http://localhost:3000/api/iot/sensores/${sensor.id}`, {
         method: "PUT",
         headers: {
@@ -45,14 +46,21 @@ export function useSensoresRegistrados() {
         },
         body: JSON.stringify(sensor),
       });
-      if (!response.ok) throw new Error("Error al actualizar el sensor");
+      if (!response.ok) {
+        const errorText = await response.text();  
+        console.error("Error en la respuesta del servidor:", errorText);  
+        throw new Error(`Error al actualizar el sensor: ${response.status} - ${errorText}`);
+      }
       return response.json() as Promise<Sensor>;
     },
     onSuccess: (updatedSensor: Sensor) => {
       setSensores((prev) => prev.map((s) => (s.id === updatedSensor.id ? updatedSensor : s)));
       queryClient.invalidateQueries({ queryKey: ["sensores"] });
     },
-    onError: (err: Error) => setError(err),
+    onError: (err: Error) => {
+      console.error("Error al actualizar el sensor:", err);
+      setError(err);
+    },
   });
 
   // Eliminar sensor (DELETE)
@@ -75,4 +83,4 @@ export function useSensoresRegistrados() {
   });
 
   return { sensores, isLoading, error, updateSensor, deleteSensor };
-};
+}

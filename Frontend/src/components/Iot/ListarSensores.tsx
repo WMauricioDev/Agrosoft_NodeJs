@@ -1,3 +1,4 @@
+// components/Iot/ListarSensores.tsx
 import { useState, useMemo } from "react";
 import DefaultLayout from "@/layouts/default";
 import { useSensoresRegistrados } from "@/hooks/iot/useSensoresRegistrados";
@@ -34,10 +35,10 @@ export default function ListarSensores() {
       acciones: (
         <>
           <button className="mr-2" onClick={() => handleEdit(sensor)}>
-            <EditIcon size={18} color="gray" />
+            <EditIcon size={22} color="black" />
           </button>
           <button onClick={() => handleDelete(sensor)}>
-            <Trash2 size={18} color="red" />
+            <Trash2 size={22} color="red" />
           </button>
         </>
       ),
@@ -120,6 +121,7 @@ export default function ListarSensores() {
         title="Editar Sensor"
         onConfirm={() => {
           if (selectedSensor?.id) {
+            console.log("Datos a enviar:", selectedSensor); // Para depurar
             updateSensor.mutate(selectedSensor);
             setIsEditModalOpen(false);
           }
