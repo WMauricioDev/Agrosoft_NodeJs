@@ -37,6 +37,7 @@ export const listarUsuarios = async (req, res) => {
         u.username,
         u.email,
         u.rol_id,
+        u.fecha_registro,
         r.nombre AS rol_nombre
       FROM usuarios_usuarios u
       JOIN roles_roles r ON u.rol_id = r.id
