@@ -94,6 +94,7 @@ const menuItems = [
       { id: 30, label: "Usuarios", path: "/graficas/usuarios", icon: <FaUser /> },
       { id: 31, label: "Sensores", path: "/iot/sensores", icon: <FaTachometerAlt /> },
       { id: 32, label: "Humedad", path: "/iot/humedad", icon: <FaTemperatureHigh /> },
+      { id: 33, label: "Cosechas", path: "/graficas/cosechas", icon: <FaLeaf /> },
     ],
   },
 ];
