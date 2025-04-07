@@ -46,6 +46,7 @@ import Insumos from './modulos/inventario/routers/Insumos.Router.js';
 import Semilleros from './modulos/inventario/routers/Semillero.Router.js';
 import Semillero_Insumo from './modulos/inventario/routers/SemilleroInsumo.Router.js';
 import reporteInsumos from './modulos/inventario/routers/reporteInsumosRouter.js';
+import herramienta from './modulos/inventario/routers/reporteHerramientaRouter.js';
 
 // Rutas del módulo IoT
 import datosMeteorologicos from "./modulos/IoT/routers/router.datos_meteorologicos.js";
@@ -61,6 +62,7 @@ import Venta from "./modulos/finanzas/routers/ventaRoutes.js";
 
 //Graficas 
 import obtenerUsuariosPorRol from"./modulos/graficas/routes/graficas.routes.js"
+import  obtenerCosechasPorCultivo from"./modulos/graficas/routes/graficas.routes.js"
 
 const app = express();
 app.use(cors({
@@ -76,6 +78,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
 app.use ("/api/graf", obtenerUsuariosPorRol)
+app.use ("/api/graf", obtenerCosechasPorCultivo)
 // Rutas del módulo Cultivo
 // app.use('/api/cultivo', fase_lunar);
 // app.use('/api/cultivo', cultivoLuna);
@@ -117,6 +120,8 @@ app.use('/api/inv', Insumos);
 app.use('/api/inv', Semilleros);
 app.use('/api/inv', Semillero_Insumo);
 app.use('/api/inv', reporteInsumos);
+app.use('/api/inv', herramienta);
+
 
 
 // Rutas del módulo IoT
