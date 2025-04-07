@@ -24,8 +24,6 @@ const LotesPage: React.FC = () => {
 
   return (
     <DefaultLayout>
-      <div className="w-full flex flex-col items-center min-h-screen p-6">
-        <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md mb-6">
           <Formulario title="Registro de Lote">
             <ReuInput
               label="Nombre"
@@ -107,8 +105,7 @@ const LotesPage: React.FC = () => {
           >
             Listar lotes
           </button>
-        </div>
-      </div>
+    
     </DefaultLayout>
   );
 };

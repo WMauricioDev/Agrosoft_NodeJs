@@ -28,12 +28,14 @@ import especies from "./modulos/cultivo/routers/router.especies.js";
 import cultivos from "./modulos/cultivo/routers/router.cultivos.js";
 import lotes from "./modulos/cultivo/routers/router.lotes.js";
 import bancal from "./modulos/cultivo/routers/router.bancal.js";
-import reporteCosechas from "./modulos/cultivo/routers/router.reporteCosechas.js"; // Nueva importación
+import reporteCosechas from "./modulos/cultivo/routers/router.reporteCosechas.js";
+import reporteActividades from "./modulos/cultivo/routers/router.reporteActividades.js";
 
 // Rutas del módulo Usuarios
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
 import Autenticacion from './modulos/usuarios/routers/Autenticacion.router.js';  
 import Roles from './modulos/usuarios/routers/Roles.routes.js';  
+import { generarReporteUsuarios } from './modulos/usuarios/controllers/reporteUsuarios.js';
 
 // Rutas del módulo Inventario
 import Bodega from './modulos/inventario/routers/Bodega.Router.js';
@@ -57,6 +59,9 @@ import Registro_venta from "./modulos/finanzas/routers/registroVentaRoutes.js";
 import Inventario_producto from "./modulos/finanzas/routers/inventarioProductoRoutes.js";
 import Venta from "./modulos/finanzas/routers/ventaRoutes.js";
 
+//Graficas 
+import obtenerUsuariosPorRol from"./modulos/graficas/routes/graficas.routes.js"
+
 const app = express();
 app.use(cors({
     origin: 'http://localhost:5173', 
@@ -70,6 +75,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
+app.use ("/api/graf", obtenerUsuariosPorRol)
 // Rutas del módulo Cultivo
 // app.use('/api/cultivo', fase_lunar);
 // app.use('/api/cultivo', cultivoLuna);
@@ -94,11 +100,13 @@ app.use('/api/cultivo', cultivos);
 app.use('/api/cultivo', lotes);
 app.use('/api/cultivo', bancal);
 app.use('/api/cultivo', reporteCosechas);
+app.use('/api/cultivo', reporteActividades);
 
 // Rutas del módulo Usuarios
 app.use('/api', Usuarios);
 app.use('/api', Autenticacion);
 app.use('/api', Roles);
+app.use("/api/usuarios", generarReporteUsuarios)
 
 // Rutas del módulo Inventario
 app.use('/api/inv', Bodega);
@@ -109,6 +117,7 @@ app.use('/api/inv', Insumos);
 app.use('/api/inv', Semilleros);
 app.use('/api/inv', Semillero_Insumo);
 app.use('/api/inv', reporteInsumos);
+
 
 // Rutas del módulo IoT
 app.use('/api/iot', datosMeteorologicos);

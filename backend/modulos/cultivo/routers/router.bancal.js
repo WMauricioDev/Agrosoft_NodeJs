@@ -1,6 +1,6 @@
 import { Router } from "express";
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
-import { postBancal, getBancal, getIdBancal, updateBancal, deleteBancal } from "../controller/controller.bancal.js";
+import { postBancal, getBancales, getIdBancal, updateBancal, deleteBancal } from "../controller/controller.bancal.js";
 
 const RouterBancal = Router();
 
@@ -66,7 +66,7 @@ RouterBancal.post("/bancales", verificarToken, postBancal);
  *       401:
  *         description: No autorizado
  */
-RouterBancal.get("/bancales", verificarToken, getBancal);
+RouterBancal.get("/bancales", verificarToken, getBancales);
 
 /**
  * @swagger

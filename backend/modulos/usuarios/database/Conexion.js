@@ -11,7 +11,6 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || 'adso2024',
   port: process.env.DB_PORT || 5432,
   database: process.env.DB_DATABASE || 'nodejs',
-
 });
 
 export default pool;
