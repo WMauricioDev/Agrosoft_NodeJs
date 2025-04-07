@@ -37,10 +37,19 @@ export const obtenerDatosParaReporte = async (fecha_inicio, fecha_fin, fk_sensor
 // Generar el reporte PDF
 export const generarReporteDatosHistoricos = async (req, res) => {
   try {
-    const { fecha_inicio, fecha_fin, fk_sensor } = req.body;
+    let { fecha_inicio, fecha_fin, fk_sensor } = req.body;
 
-    if (!fecha_inicio || !fecha_fin) {
-      return res.status(400).json({ message: "Se requieren las fechas de inicio y fin" });
+    // Si no se proporciona, usar fechas por defecto
+    const hoy = new Date();
+    const hace30Dias = new Date();
+    hace30Dias.setDate(hoy.getDate() - 30);
+
+    if (!fecha_inicio) {
+      fecha_inicio = hace30Dias.toISOString().split('T')[0];
+    }
+
+    if (!fecha_fin) {
+      fecha_fin = hoy.toISOString().split('T')[0];
     }
 
     const datosHistoricos = await obtenerDatosParaReporte(fecha_inicio, fecha_fin, fk_sensor);
@@ -92,7 +101,7 @@ export const generarReporteDatosHistoricos = async (req, res) => {
     const startX = 50;
     let startY = doc.y;
     const cellPadding = 5;
-    const colWidths = [50, 120, 90, 90, 100]; // ajustado para que todo encaje
+    const colWidths = [50, 120, 90, 90, 100];
 
     doc.font('Helvetica-Bold');
     let x = startX;
