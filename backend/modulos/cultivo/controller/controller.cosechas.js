@@ -20,8 +20,8 @@ export const postCosechas = async (req, res) => {
             RETURNING id
         `;
         const result = await pool.query(sql, [
-            parseInt(id_cultivo), // Convertir a entero
-            parseInt(cantidad),   // Convertir a entero
+            parseInt(id_cultivo),
+            parseInt(cantidad),   
             unidades_de_medida,
             fecha
         ]);
