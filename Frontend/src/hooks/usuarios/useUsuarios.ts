@@ -8,16 +8,17 @@ const API_URL = `${BASE_URL}`;
 
 
 export interface Rol {
-  id: number;
-  rol: string;
+  id: number | string;
+  nombre: string;
 }
+
 
 export interface Usuario {
   id: number;
   nombre: string;
   apellido: string;
   email: string;
-  numero_de_documento: number;
+  numero_documento: number;
   username?: string;
   rol: Rol | null;
 }
@@ -49,7 +50,7 @@ export const useUsuarios = () => {
   const fetchRoles = async (): Promise<Rol[]> => {
     const token = localStorage.getItem("access_token");
     if (!token) throw new Error("No se encontró el token de autenticación.");
-    const response = await api.get(`${API_URL}roles/`, {
+    const response = await api.get(`${API_URL}/api/roles/`, {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
     if (!Array.isArray(response.data)) throw new Error("La API no devolvió un array de roles.");
@@ -125,7 +126,7 @@ export const useToggleStaff = () => {
 
   return useMutation({
     mutationFn: async ({ id, nuevoValor }: { id: number; nuevoValor: boolean }) => {
-      const response = await api.patch(`${API_URL}usuarios/${id}/`, {
+      const response = await api.patch(`${API_URL}/api/usuarios/staff/${id}/`, {
         is_staff: nuevoValor,
       });
       return { id, nuevoValor };

@@ -15,6 +15,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ hideText }) => {
 
   console.log("Usuario en UserMenu:", user);
 
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };

@@ -5,7 +5,7 @@ const API_URL = `${BASE_URL}`;
 
 interface Rol {
   id: number;
-  nombre: 'admin' | 'aprendiz';
+  nombre: string;
   permisos: string[];
 }
 
@@ -72,7 +72,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem("refresh_token", data.refresh);
       setAuthenticated(true);
 
-      const userResponse = await fetch(`${API_URL}/api/usuarios/me/`, {
+      const userResponse = await fetch(`${API_URL}/api/usuarios/me`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${data.token}`,
@@ -81,6 +81,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
 
    const userData: User = await userResponse.json();
+  console.log("Respuesta del backend usuario actual):", userData);
 
 
       setUser(userData);

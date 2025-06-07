@@ -49,7 +49,7 @@ const UsuariosPage: React.FC = () => {
     setUsuariosLocal(usuariosAPI);
   }, [usuariosAPI]);
 
-  if (!user || user.rol?.rol.toLowerCase() !== "administrador") {
+  if (!user || user.rol?.nombre !== "Administrador") {
     return <Navigate to="/perfil" replace />;
   }
 
@@ -107,50 +107,50 @@ const UsuariosPage: React.FC = () => {
     setModalMasivoAbierto(false);
   };
 
-  const formattedData = useMemo(() => {
-    return usuariosLocal.map((usuario) => ({
-      id: usuario.id,
-      nombre: usuario.nombre,
-      apellido: usuario.apellido,
-      email: usuario.email,
-      numero_documento: usuario.numero_documento,
-      username: usuario.username || "N/A",
-      is_staff: usuario.is_staff, // ✅ esto faltaba
-      rol: usuario.rol?.rol || "Sin rol",
-    estado: (
-<Switcher
-  size="sm"
-  isSelected={usuario.is_staff}
-  color={usuario.is_staff ? "success" : "danger"}
-  onChange={(e) => {
-    const nuevoValor = e.target.checked;
-    toggleStaff.mutate(
-      { id: usuario.id, nuevoValor },
-      {
-        onSuccess: () => {
-          setUsuariosLocal((prev) =>
-            prev.map((u) =>
-              u.id === usuario.id ? { ...u, is_staff: nuevoValor } : u
-            )
-          );
-          addToast({
-            title: "Éxito",
-            description: `Estado actualizado a ${nuevoValor ? "Activo" : "Inactivo"}`,
-            timeout: 3000,
-            color: "success",
-          });
-        },
-        onError: () => {
-          addToast({
-            title: "Error",
-            description: "No se pudo actualizar el estado.",
-            timeout: 3000,
-            color: "danger",
-          });
-        },
-      }
-    );
-  }}
+    const formattedData = useMemo(() => {
+      return usuariosLocal.map((usuario) => ({
+        id: usuario.id,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        email: usuario.email,
+        numero_documento: usuario.numero_documento,
+        username: usuario.username || "N/A",
+        is_staff: usuario.is_staff, // ✅ esto faltaba
+        rol: usuario.rol?.nombre || "Sin rol",
+      estado: (
+  <Switcher
+    size="sm"
+    isSelected={usuario.is_staff}
+    color={usuario.is_staff ? "success" : "danger"}
+    onChange={(e) => {
+      const nuevoValor = e.target.checked;
+      toggleStaff.mutate(
+        { id: usuario.id, nuevoValor },
+        {
+          onSuccess: () => {
+            setUsuariosLocal((prev) =>
+              prev.map((u) =>
+                u.id === usuario.id ? { ...u, is_staff: nuevoValor } : u
+              )
+            );
+            addToast({
+              title: "Éxito",
+              description: `Estado actualizado a ${nuevoValor ? "Activo" : "Inactivo"}`,
+              timeout: 3000,
+              color: "success",
+            });
+          },
+          onError: () => {
+            addToast({
+              title: "Error",
+              description: "No se pudo actualizar el estado.",
+              timeout: 3000,
+              color: "danger",
+            });
+          },
+        }
+      );
+    }}
 />
     ),
 
@@ -174,12 +174,12 @@ const UsuariosPage: React.FC = () => {
           + Registrar
         </button>
 
-        <button
+        {/* <button
           onClick={() => setModalMasivoAbierto(true)}
           className="px-3 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg transform hover:scale-105"
         >
           + Registro Masivo
-        </button>
+        </button> */}
       </div>
 
       <RegistroMasivoModal
@@ -270,7 +270,7 @@ const UsuariosPage: React.FC = () => {
             <option value="">Seleccione un rol</option>
             {roles?.map((rol) => (
               <option key={rol.id} value={rol.id}>
-                {rol.rol}
+                {rol.nombre}
               </option>
             ))}
           </select>
