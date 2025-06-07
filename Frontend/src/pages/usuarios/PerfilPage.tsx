@@ -66,6 +66,7 @@ const PerfilPage: React.FC = () => {
     try {
       const usuarioToUpdate: UsuarioUpdate = {
         id: editUser.id,
+        numero_documento: editUser.numero_documento,
         nombre: editUser.nombre,
         apellido: editUser.apellido,
         email: editUser.email,
@@ -161,12 +162,12 @@ const PerfilPage: React.FC = () => {
             <TextField label="Apellido" value={user.apellido} disabled fullWidth sx={textFieldStyles} />
             <TextField label="Email" value={user.email} disabled fullWidth sx={textFieldStyles} />
             <TextField label="Username" value={user.username || ""} disabled fullWidth sx={textFieldStyles} />
-            <TextField label="Rol" value={user.rol?.rol || "Sin rol"} disabled fullWidth sx={textFieldStyles} />
+            <TextField label="Rol" value={user.rol?.nombre || "Sin rol"} disabled fullWidth sx={textFieldStyles} />
             <TextField label="Contraseña" value="••••••••" disabled fullWidth sx={textFieldStyles} />
             <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
               <Button variant="contained" sx={{ backgroundColor: "#2ecc71" }} onClick={handleEdit}>
                 Editar
-              </Button>
+              </Button> 
             </Box>
           </Box>
         ) : (
@@ -223,7 +224,7 @@ const PerfilPage: React.FC = () => {
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.8 }}>
               <TextField
                 label="Rol"
-                value={editUser.rol?.rol || "Sin rol"}
+                value={editUser.rol?.nombre || "Sin rol"}
                 disabled
                 fullWidth
                 sx={textFieldStyles}

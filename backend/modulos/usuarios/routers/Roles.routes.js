@@ -67,7 +67,7 @@ router.get('/roles', listarRoles);
  *       400:
  *         description: Límite de roles alcanzado o solicitud incorrecta
  */
-router.post('/roles', verificarToken, RegistrarRoles);
+// router.post('/roles', verificarToken, RegistrarRoles);
 
 /**
  * @swagger
@@ -100,7 +100,7 @@ router.post('/roles', verificarToken, RegistrarRoles);
  *       404:
  *         description: Rol no encontrado
  */
-router.put('/roles/:id', verificarToken, ActualizarRoles);
+// router.put('/roles/:id', verificarToken, ActualizarRoles);
 
 /**
  * @swagger
@@ -123,6 +123,6 @@ router.put('/roles/:id', verificarToken, ActualizarRoles);
  *       404:
  *         description: Rol no encontrado
  */
-router.delete('/roles/:id', verificarToken, EliminarRoles);
+// router.delete('/roles/:id', verificarToken, EliminarRoles);
 
 export default router;

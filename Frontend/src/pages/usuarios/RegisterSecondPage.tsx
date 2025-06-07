@@ -11,6 +11,11 @@ const UsuariosSecondPage: React.FC = () => {
     nombre: "",
     apellido: "",
     numero_documento: 0,
+    username: "",
+    password: "",
+    email: "",
+    rol_id: "1",
+    is_staff: true,
   });
 
   const { registrarUsuario, isLoading } = useRegistrarUsuario();
@@ -19,11 +24,13 @@ const UsuariosSecondPage: React.FC = () => {
   const handleSubmit = async () => {
     const numeroStr = usuario.numero_documento.toString();
 
-    // Verificar campos vacíos
     if (
       !usuario.nombre.trim() ||
       !usuario.apellido.trim() ||
-      usuario.numero_documento === 0
+      usuario.numero_documento === 0 ||
+      !usuario.username.trim() ||
+      !usuario.password.trim() ||
+      !usuario.email.trim()
     ) {
       addToast({
         title: "Error",
@@ -34,9 +41,11 @@ const UsuariosSecondPage: React.FC = () => {
       return;
     }
 
-    // Validar que nombre y apellido no contengan números
     const contieneNumeros = /\d/;
-    if (contieneNumeros.test(usuario.nombre) || contieneNumeros.test(usuario.apellido)) {
+    if (
+      contieneNumeros.test(usuario.nombre) ||
+      contieneNumeros.test(usuario.apellido)
+    ) {
       addToast({
         title: "Error",
         description: "El nombre y el apellido no deben contener números.",
@@ -46,7 +55,6 @@ const UsuariosSecondPage: React.FC = () => {
       return;
     }
 
-    // Validar número de documento entre 7 y 19 dígitos
     if (
       usuario.numero_documento <= 0 ||
       numeroStr.length < 7 ||
@@ -63,7 +71,16 @@ const UsuariosSecondPage: React.FC = () => {
 
     try {
       await registrarUsuario(usuario);
-      setUsuario({ nombre: "", apellido: "", numero_documento: 0 });
+      setUsuario({
+        nombre: "",
+        apellido: "",
+        numero_documento: 0,
+        username: "",
+        password: "",
+        email: "",
+        rol_id: "1",
+        is_staff: true,
+      });
 
       addToast({
         title: "Éxito",
@@ -113,6 +130,27 @@ const UsuariosSecondPage: React.FC = () => {
           onChange={(e) =>
             setUsuario({ ...usuario, numero_documento: Number(e.target.value) })
           }
+        />
+        <ReuInput
+          label="Correo electrónico"
+          placeholder="Ingrese el correo electrónico"
+          type="email"
+          value={usuario.email}
+          onChange={(e) => setUsuario({ ...usuario, email: e.target.value })}
+        />
+        <ReuInput
+          label="Username"
+          placeholder="Ingrese el username de usuario"
+          type="text"
+          value={usuario.username}
+          onChange={(e) => setUsuario({ ...usuario, username: e.target.value })}
+        />
+        <ReuInput
+          label="Contraseña"
+          placeholder="Ingrese la contraseña"
+          type="password"
+          value={usuario.password}
+          onChange={(e) => setUsuario({ ...usuario, password: e.target.value })}
         />
 
         <div className="col-span-1 md:col-span-2 flex justify-center">
