@@ -1,12 +1,13 @@
 import { Router } from "express";
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
 import { 
-    postTipo_especie, 
-    getTipo_especie, 
-    getIdTipo_especie, 
-    updateTipo_especie, 
-    deleteTipo_especie 
+  postTipo_especie, 
+  getTipo_especie, 
+  getIdTipo_especie, 
+  updateTipo_especie, 
+  deleteTipo_especie 
 } from "../controller/controller.tipo_especie.js";
+import upload from "../../usuarios/middlewares/Multer.js";
 
 const RouterTipo_especie = Router();
 
@@ -28,7 +29,7 @@ const RouterTipo_especie = Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -40,14 +41,20 @@ const RouterTipo_especie = Router();
  *                 description: Descripción del tipo de especie
  *               img:
  *                 type: string
- *                 description: URL de la imagen del tipo de especie
+ *                 format: binary
+ *                 description: Imagen del tipo de especie
  *     responses:
  *       201:
  *         description: Tipo de especie creado con éxito
  *       400:
  *         description: Error en la solicitud
  */
-RouterTipo_especie.post("/tipo_especie", verificarToken, postTipo_especie);
+RouterTipo_especie.post(
+  "/tipo_especie",
+  verificarToken,
+  upload.single("img"),
+  postTipo_especie
+);
 
 /**
  * @swagger
@@ -106,7 +113,7 @@ RouterTipo_especie.get("/tipo_especie/:id", verificarToken, getIdTipo_especie);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -118,7 +125,8 @@ RouterTipo_especie.get("/tipo_especie/:id", verificarToken, getIdTipo_especie);
  *                 description: Nueva descripción del tipo de especie
  *               img:
  *                 type: string
- *                 description: Nueva URL de la imagen del tipo de especie
+ *                 format: binary
+ *                 description: Nueva imagen del tipo de especie
  *     responses:
  *       200:
  *         description: Tipo de especie actualizado con éxito
@@ -127,8 +135,12 @@ RouterTipo_especie.get("/tipo_especie/:id", verificarToken, getIdTipo_especie);
  *       404:
  *         description: Tipo de especie no encontrado
  */
-RouterTipo_especie.put("/tipo_especie/:id", verificarToken, updateTipo_especie);
-
+RouterTipo_especie.put(
+  "/tipo_especie/:id",
+  verificarToken,
+  upload.single("img"),
+  updateTipo_especie
+);
 /**
  * @swagger
  * /tipo_especie/{id}:
