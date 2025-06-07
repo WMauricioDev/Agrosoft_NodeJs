@@ -1,8 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/components/utils/axios"; 
 import { addToast } from "@heroui/react";
 
-const API_URL = "http://127.0.0.1:8000/usuarios/";
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = `${BASE_URL}/usuarios/`;
+
 
 export interface Rol {
   id: number;
@@ -14,6 +17,7 @@ export interface Usuario {
   nombre: string;
   apellido: string;
   email: string;
+  numero_de_documento: number;
   username?: string;
   rol: Rol | null;
 }
@@ -23,6 +27,7 @@ export interface UsuarioUpdate {
   nombre: string;
   apellido: string;
   email: string;
+  numero_de_documento: number;
   username?: string;
   rol_id: number | null;   
 }
@@ -33,17 +38,18 @@ export const useUsuarios = () => {
   const fetchUsuarios = async (): Promise<Usuario[]> => {
     const token = localStorage.getItem("access_token");
     if (!token) throw new Error("No se encontró el token de autenticación.");
-    const response = await axios.get(`${API_URL}usuarios/`, {
+    const response = await api.get(`${API_URL}usuarios/`, {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
     if (!Array.isArray(response.data)) throw new Error("La API no devolvió un array de usuarios.");
     return response.data;
   };
 
+  
   const fetchRoles = async (): Promise<Rol[]> => {
     const token = localStorage.getItem("access_token");
     if (!token) throw new Error("No se encontró el token de autenticación.");
-    const response = await axios.get(`${API_URL}roles/`, {
+    const response = await api.get(`${API_URL}roles/`, {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
     if (!Array.isArray(response.data)) throw new Error("La API no devolvió un array de roles.");
@@ -53,7 +59,7 @@ export const useUsuarios = () => {
   const updateUsuario = async (usuario: UsuarioUpdate): Promise<Usuario> => {
     const token = localStorage.getItem("access_token");
     if (!token) throw new Error("No se encontró el token de autenticación.");
-    const response = await axios.put(`${API_URL}usuarios/${usuario.id}/`, usuario, {
+    const response = await api.put(`${API_URL}usuarios/${usuario.id}/`, usuario, {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
     return response.data; 
@@ -61,7 +67,7 @@ export const useUsuarios = () => {
   const deleteUsuario = async (id: number): Promise<void> => {
     const token = localStorage.getItem("access_token");
     if (!token) throw new Error("No se encontró el token de autenticación.");
-    await axios.delete(`${API_URL}usuarios/${id}/`, {
+    await api.delete(`${API_URL}usuarios/${id}/`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   };
@@ -87,10 +93,10 @@ export const useUsuarios = () => {
         oldData ? oldData.map((u) => (u.id === updatedUsuario.id ? updatedUsuario : u)) : [updatedUsuario]
       );
       queryClient.invalidateQueries({ queryKey: ["usuarios"] });
-      addToast({ title: "Éxito", description: "Usuario actualizado con éxito", timeout: 3000 });
+      addToast({ title: "Éxito", description: "Usuario actualizado con éxito", timeout: 3000, color:"success"});
     },
     onError: (error) => {
-      addToast({ title: "Error", description: error.message || "Error al actualizar el usuario", timeout: 3000 });
+      addToast({ title: "Error", description: error.message || "Error al actualizar el usuario", timeout: 3000, color:"danger" });
     },
   });
 
@@ -98,10 +104,10 @@ export const useUsuarios = () => {
     mutationFn: deleteUsuario,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["usuarios"] });
-      addToast({ title: "Éxito", description: "Usuario eliminado con éxito", timeout: 3000 });
+      addToast({ title: "Éxito", description: "Usuario eliminado con éxito", timeout: 3000, color:"success" });
     },
     onError: () => {
-      addToast({ title: "Error", description: "Error al eliminar el usuario", timeout: 3000 });
+      addToast({ title: "Error", description: "Error al eliminar el usuario", timeout: 3000, color:"danger" });
     },
   });
 
@@ -112,4 +118,20 @@ export const useUsuarios = () => {
     updateUsuario: updateMutation.mutateAsync,
     deleteUsuario: deleteMutation.mutate,
   };
+};
+
+export const useToggleStaff = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, nuevoValor }: { id: number; nuevoValor: boolean }) => {
+      const response = await api.patch(`${API_URL}usuarios/${id}/`, {
+        is_staff: nuevoValor,
+      });
+      return { id, nuevoValor };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["usuarios"] });
+    },
+  });
 };

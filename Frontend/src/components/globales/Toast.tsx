@@ -6,6 +6,7 @@ interface ToastOptions {
   description?: string;
   timeout?: number;
   hideIcon?: boolean;
+  color?: "Default" | "Primary" | "Secondary" | "Success" | "Warning" | "Danger";
 }
 
 export const Toast = ({icon, title, description, timeout = 3000, hideIcon = false }: ToastOptions) => {

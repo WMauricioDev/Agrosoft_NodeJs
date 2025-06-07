@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+{/*import React, { useEffect, useState, useRef } from "react";
 import { addToast } from "@heroui/toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
@@ -12,10 +12,10 @@ interface Notification {
 }
 
 interface BodegaInsumoNotificationsProps {
-  userId1: number;
+  userId2: number;
 }
 
-const BodegaInsumoNotifications: React.FC<BodegaInsumoNotificationsProps> = ({ userId1 }) => {
+const BodegaInsumoNotifications: React.FC<BodegaInsumoNotificationsProps> = ({ userId2 }) => {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -26,11 +26,11 @@ const BodegaInsumoNotifications: React.FC<BodegaInsumoNotificationsProps> = ({ u
   const SOCKET_URL = `ws://${window.location.hostname}:8000/ws/inventario/bodega_insumo/`;
 
   const connectWebSocket = () => {
-    if (!isAuthenticated || !userId1) return;
+    if (!isAuthenticated || !userId2) return;
 
     const token = localStorage.getItem("access_token");
     if (!token) {
-      console.log("⛔ No hay token disponible");
+      console.log(" No hay token disponible");
       return;
     }
 
@@ -39,7 +39,7 @@ const BodegaInsumoNotifications: React.FC<BodegaInsumoNotificationsProps> = ({ u
     socketRef.current = new WebSocket(wsUrl);
 
     socketRef.current.onopen = () => {
-      console.log("✅ Conexión WebSocket establecida correctamente");
+      console.log(" Conexión WebSocket establecida correctamente");
       if (reconnectTimer.current) {
         clearTimeout(reconnectTimer.current);
         reconnectTimer.current = null;
@@ -50,11 +50,11 @@ const BodegaInsumoNotifications: React.FC<BodegaInsumoNotificationsProps> = ({ u
     socketRef.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log("📩 Nuevo mensaje recibido:", data);
+        console.log(" Nuevo mensaje recibido:", data);
 
         const messageId = data.message_id || (data.id ? `${data.type}-${data.id}` : `${data.type}-${Date.now()}`);
         if (receivedIds.current.has(messageId)) {
-          console.log("⚠️ Notificación duplicada ignorada:", messageId);
+          console.log("Notificación duplicada ignorada:", messageId);
           return;
         }
         receivedIds.current.add(messageId);
@@ -72,7 +72,7 @@ const BodegaInsumoNotifications: React.FC<BodegaInsumoNotificationsProps> = ({ u
         if (now - lastRefetch > 2000) {
           queryClient.invalidateQueries({ queryKey: ["bodega_insumos"] });
           localStorage.setItem("lastRefetch", now.toString());
-          console.log("🔄 Refetch disparado");
+          console.log(" Refetch disparado");
         }
 
         if (data.type === "initial_state" && data.message) {
@@ -123,11 +123,11 @@ const BodegaInsumoNotifications: React.FC<BodegaInsumoNotificationsProps> = ({ u
     };
 
     socketRef.current.onerror = (error) => {
-      console.error("❌ Error en WebSocket:", error);
+      console.error(" Error en WebSocket:", error);
     };
 
     socketRef.current.onclose = () => {
-      console.log("🔌 WebSocket cerrado. Reconectando...");
+      console.log("WebSocket cerrado. Reconectando...");
       socketRef.current = null;
       if (!reconnectTimer.current && isAuthenticated) {
         reconnectTimer.current = setTimeout(() => {
@@ -138,7 +138,7 @@ const BodegaInsumoNotifications: React.FC<BodegaInsumoNotificationsProps> = ({ u
   };
 
   useEffect(() => {
-    if (!isAuthenticated || !userId1) {
+    if (!isAuthenticated || !userId2) {
       if (socketRef.current) {
         socketRef.current.close();
         socketRef.current = null;
@@ -157,9 +157,9 @@ const BodegaInsumoNotifications: React.FC<BodegaInsumoNotificationsProps> = ({ u
         clearTimeout(reconnectTimer.current);
       }
     };
-  }, [isAuthenticated, userId1]);
+  }, [isAuthenticated, userId2]);
 
-  if (!isAuthenticated || !userId1) return null;
+  if (!isAuthenticated || !userId2) return null;
 
   return (
     <div className="mt-4 w-72 bg-white p-3 rounded-lg shadow-lg border border-gray-200 transition-all duration-300 ml-auto">
@@ -205,4 +205,4 @@ const BodegaInsumoNotifications: React.FC<BodegaInsumoNotificationsProps> = ({ u
   );
 };
 
-export default BodegaInsumoNotifications;
+export default BodegaInsumoNotifications;*/}

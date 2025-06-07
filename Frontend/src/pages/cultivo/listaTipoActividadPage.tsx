@@ -13,6 +13,7 @@ const ListaTipoActividadPage: React.FC = () => {
     nombre: "",
     descripcion: "",
   });
+  
 
   const [selectedTipoActividad, setSelectedTipoActividad] = useState<TipoActividad | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

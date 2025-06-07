@@ -1,52 +1,107 @@
-import React from "react";
-import { useDatosMeteorologicos } from "@/hooks/iot/useDatosMeteorologicos";
+import { useState, useMemo } from "react";
 import DefaultLayout from "@/layouts/default";
-import { Link } from "react-router-dom";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import { useSensores } from "@/hooks/iot/sensores/useSensores";
+import { useDatosMeteorologicosHistoricos } from "@/hooks/iot/datos_sensores/useDatosMeteorologicosHistoricos";
+import { useNavigate } from "react-router-dom";
+import { Sensor, TipoSensor } from "@/types/iot/type";
+import { useWebSocketData } from "@/hooks/iot/datos_sensores/useWebSocketData";
+import { DataTypeSelector } from "@/components/Iot/sensores/DataTypeSelector2";
+import { SensorSelector } from "@/components/Iot/sensores/SensorSelector";
+import { SensorDataCards } from "@/components/Iot/sensores/SensorDataCards";
+import { SensorCharts } from "@/components/Iot/sensores/SensorCharts";
 
-export default function SensoresPage() {
-  const { data: latestData = [], chartData = [], isLoading, error } = useDatosMeteorologicos();
+const dataTypes: TipoSensor[] = [
+  {
+    label: "Temperatura (°C)",
+    key: "temperatura",
+    icon: <i className="fas fa-thermometer-half text-red-500" />,
+    tipo_sensor_id: 1,
+    decimals: 3,
+    unidad_medida: "°C",
+  },
+  {
+    label: "Humedad (%)",
+    key: "humedad_ambiente",
+    icon: <i className="fas fa-tint text-blue-500" />,
+    tipo_sensor_id: 2,
+    decimals: 1,
+    unidad_medida: "%",
+  },
+];
 
-  const displayData = latestData.length > 0 ? latestData : [
-    { fk_sensor: 1, temperature: 0, humidity: 0, message: error ? "Error al conectar" : "Esperando datos..." }
-  ];
-  const graphData = chartData.map((sensor, index) => ({
-    name: sensor.fecha_medicion ? new Date(sensor.fecha_medicion).toLocaleTimeString() : `Dato ${index + 1}`,
-    temperature: sensor.temperature,
-    humidity: sensor.humidity,
-  }));
+const SensoresPage: React.FC = () => {
+  const [selectedDataType, setSelectedDataType] = useState<TipoSensor>(dataTypes[0]);
+  const [selectedSensor, setSelectedSensor] = useState<number | "todos">("todos");
+  const { sensores, isLoading: sensoresLoading, error: sensoresError } = useSensores();
+  const { isLoading: historicosLoading, error: historicosError } = useDatosMeteorologicosHistoricos();
+  const { realTimeData } = useWebSocketData(sensores);
+  const navigate = useNavigate();
+
+  const filteredSensores = useMemo(() => {
+    return sensores.filter((sensor: Sensor) => sensor.tipo_sensor === selectedDataType.key);
+  }, [sensores, selectedDataType]);
+
+  if (sensoresLoading || historicosLoading) {
+    return (
+      <DefaultLayout>
+        <div className="w-full flex items-center justify-center h-screen bg-gray-50">
+          <p className="text-gray-700 text-lg">Cargando datos...</p>
+        </div>
+      </DefaultLayout>
+    );
+  }
+
+  if (sensoresError || historicosError) {
+    return (
+      <DefaultLayout>
+        <div className="w-full flex flex-col items-center justify-center h-screen bg-gray-50">
+          <p className="text-red-500 text-center mb-4">{sensoresError?.message || historicosError?.message}</p>
+          <button
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            onClick={() => window.location.reload()}
+          >
+            Reintentar
+          </button>
+        </div>
+      </DefaultLayout>
+    );
+  }
 
   return (
     <DefaultLayout>
-      <div className="w-full flex flex-col items-center min-h-screen p-6">
-        <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4 text-center">Sensores Activos en Tiempo Real</h2>
-          {isLoading ? (
-            <p className="text-gray-600 text-center">Cargando datos...</p>
-          ) : (
-            <>
-              {error && <div className="text-center text-red-500 mb-4">Error: {error.message}</div>}
-              <LineChart width={600} height={300} data={graphData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="temperature" stroke="#8884d8" name="Temperatura (°C)" />
-                <Line type="monotone" dataKey="humidity" stroke="#82ca9d" name="Humedad (%)" />
-              </LineChart>
-              <div className="flex justify-between mt-4">
-                <Link to="/iot/registrar-sensor" className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                  Registrar Sensor
-                </Link>
-                <Link to="/iot/datosmetereologicos" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                  Ver Datos Históricos
-                </Link>
-              </div>
-            </>
-          )}
+      <div className="w-full flex flex-col items-center bg-gray-50 px-3 py-2">
+        <div className="w-full max-w-6xl flex flex-col items-center gap-2">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Datos en Tiempo Real</h1>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
+            <DataTypeSelector
+              selectedDataType={selectedDataType}
+              setSelectedDataType={(type) => {
+                setSelectedDataType(type);
+                setSelectedSensor("todos");
+              }}
+              dataTypes={dataTypes}
+            />
+            <SensorSelector
+              selectedSensor={selectedSensor}
+              setSelectedSensor={setSelectedSensor}
+              filteredSensores={filteredSensores}
+            />
+          </div>
+          <SensorDataCards
+            realTimeData={realTimeData}
+            selectedSensor={selectedSensor}
+            dataTypes={dataTypes}
+            navigate={navigate}
+          />
+          <SensorCharts
+            realTimeData={realTimeData}
+            selectedDataType={selectedDataType}
+            selectedSensor={selectedSensor}
+          />
         </div>
       </div>
     </DefaultLayout>
   );
-}
+};
+
+export default SensoresPage;

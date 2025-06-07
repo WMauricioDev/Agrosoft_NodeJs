@@ -10,11 +10,10 @@ import ReuModal from "@/components/globales/ReuModal";
 import { ReuInput } from "@/components/globales/ReuInput";
 import Tabla from "@/components/globales/Tabla";
 import { EditIcon, Trash2 } from 'lucide-react';
-import BodegaInsumoNotifications from "@/components/inventario/BodegaInsumoNotifications";
 import { useAuth } from "@/context/AuthContext";
 
 const ListaBodegaInsumoPage: React.FC = () => {
-  const { user } = useAuth();
+  const {} = useAuth();
   const [selectedBodegaInsumo, setSelectedBodegaInsumo] = useState<BodegaInsumo | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -104,20 +103,28 @@ const ListaBodegaInsumoPage: React.FC = () => {
       ) : (
         <Tabla columns={columns} data={transformedData} />
       )}
-      <BodegaInsumoNotifications userId1={user.id} />
-
       <ReuModal
         isOpen={isEditModalOpen}
         onOpenChange={setIsEditModalOpen}
         title="Editar Bodega Insumo"
         onConfirm={() => {
           if (selectedBodegaInsumo && selectedBodegaInsumo.id !== undefined) {
-            updateMutation.mutate(selectedBodegaInsumo, {
-              onSuccess: () => {
-                setIsEditModalOpen(false);
-                refetch();
+            updateMutation.mutate(
+              {
+                id: selectedBodegaInsumo.id!,
+                bodegaInsumo: {
+                  bodega: selectedBodegaInsumo.bodega,
+                  insumo: selectedBodegaInsumo.insumo,
+                  cantidad: selectedBodegaInsumo.cantidad,
+                },
               },
-            });
+              {
+                onSuccess: () => {
+                  setIsEditModalOpen(false);
+                  refetch();
+                },
+              }
+            );
           }
         }}
       >

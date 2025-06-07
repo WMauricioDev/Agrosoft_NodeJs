@@ -1,15 +1,17 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
-import { Box, Typography, Link, Divider } from '@mui/material';
+import { Box, Typography, Link, Divider, useTheme, useMediaQuery } from '@mui/material';
 import { motion } from 'framer-motion';
 import Login from '../../components/usuarios/Login';
 import { Link as RouterLink } from 'react-router-dom';
 import AgrosisLogotic from '../../assets/def_AGROSIS_LOGOTIC.png';
-import LogoSena from '../../assets/logo2.png';
+import LogoSena from '../../assets/logob.png';
 
 const LoginPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   if (isAuthenticated) {
     return <Navigate to="/" replace={true} />;
@@ -24,8 +26,8 @@ const LoginPage: React.FC = () => {
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
-        backgroundColor: '#27a35e',
-      }}
+        backgroundColor: '#27a35e', // Verde más oscuro
+      }} 
     >
       {/* Fondo con línea horizontal curva (~) */}
       <Box
@@ -71,7 +73,7 @@ const LoginPage: React.FC = () => {
           src={AgrosisLogotic}
           alt="AGROSIS Logotic Small"
           style={{
-            width: '140px',
+            width: isSmallScreen ? '100px' : '140px',
             height: 'auto',
           }}
         />
@@ -82,15 +84,15 @@ const LoginPage: React.FC = () => {
         sx={{
           position: 'absolute',
           bottom: 16,
-          left: 16,
+          left: 22,
           zIndex: 1,
         }}
       >
         <img
-          src={LogoSena}
+          src={LogoSena} 
           alt="Logo SENA"
           style={{
-            width: '100px',
+            width: isSmallScreen ? '700px' : '130px', 
             height: 'auto',
           }}
         />
@@ -99,16 +101,15 @@ const LoginPage: React.FC = () => {
       {/* Contenedor principal */}
       <Box
         sx={{
-          display: 'flex',
-          width: { xs: '85%', sm: '70%', md: '50%' },
-          maxWidth: '800px',
-          minHeight: '450px',
+          width: { xs: '90%', sm: '70%', md: '50%' },
+          maxWidth: '600px',
           backgroundColor: '#fff',
           borderRadius: '24px',
           boxShadow: '0 15px 40px rgba(0,0,0,0.1)',
           position: 'relative',
           zIndex: 2,
           overflow: 'hidden',
+          p: { xs: 2, sm: 4 },
         }}
       >
         {/* Mitad izquierda: Formulario */}
@@ -118,24 +119,24 @@ const LoginPage: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            p: { xs: 2, sm: 4 },
+            p: { xs: 3, sm: 4 },
           }}
         >
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        >
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+              color: '#1a202c',
+              textAlign: 'center',
+              mb: 1,
+            }}
           >
-            <Typography
-              variant="h4"
-              gutterBottom
-              sx={{
-                fontWeight: 'bold',
-                color: '#1a202c',
-                textAlign: 'center',
-                mb: 1,
-              }}
-            >
               Iniciar Sesión
             </Typography>
             <Typography
@@ -151,7 +152,7 @@ const LoginPage: React.FC = () => {
             <Login />
             <Link
               component={RouterLink}
-              to="/forgot-password"  // Enlace a la página de recuperación
+              to="/forgot-password"
               sx={{
                 mt: 2,
                 color: '#718096',
@@ -185,71 +186,20 @@ const LoginPage: React.FC = () => {
           </motion.div>
         </Box>
 
-        {/* Línea divisora vertical */}
-        <Divider
-          orientation="vertical"
-          flexItem
-          sx={{
-            borderColor: '#e2e8f0',
-            borderWidth: '2px',
-            borderStyle: 'solid',
-            height: '80%',
-            alignSelf: 'center',
-          }}
-        />
-
-        {/* Mitad derecha: Sección decorativa */}
-        <Box
-          sx={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            p: { xs: 2, sm: 4 },
-            backgroundColor: '#e5e7eb',
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: 'easeOut', delay: 0.5 }}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
+        {/* Línea divisora vertical: solo visible en md+ */}
+        {!isSmallScreen && (
+          <Divider
+            orientation="vertical"
+            flexItem
+            sx={{
+              borderColor: '#e2e8f0',
+              borderWidth: '2px',
+              borderStyle: 'solid',
+              height: '80%',
+              alignSelf: 'center',
             }}
-          >
-            <Typography
-              variant="h2"
-              sx={{
-                fontWeight: 'bold',
-                color: '#27a35e',
-                letterSpacing: '2px',
-              }}
-            >
-              AGROSIS
-            </Typography>
-            <img
-              src={AgrosisLogotic}
-              alt="AGROSIS Logotic"
-              style={{
-                width: '240px',
-                height: 'auto',
-                marginTop: '10px',
-                marginBottom: '10px',
-              }}
-            />
-            <Typography
-              variant="subtitle1"
-              sx={{
-                color: '#718096',
-              }}
-            >
-              Innovación para el futuro
-            </Typography>
-          </motion.div>
-        </Box>
+          />
+        )}
       </Box>
     </Box>
   );

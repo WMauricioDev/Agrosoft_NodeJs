@@ -1,10 +1,10 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent,FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import DefaultLayout from "@/layouts/default";
 import { ReuInput } from "../../components/globales/ReuInput";
 import { TipoPlaga } from "../../types/cultivo/TipoPlaga"; 
 import { useRegistrarTipoPlaga } from "../../hooks/cultivo/usetipoplaga"; 
-
+import Formulario from "@/components/globales/Formulario";
 const TipoPlagaPage: React.FC = () => {
   const [tipoPlaga, setTipoPlaga] = useState<TipoPlaga>({
     nombre: "",
@@ -21,11 +21,20 @@ const TipoPlagaPage: React.FC = () => {
     }
   };
 
+  const handleSubmit =(e: FormEvent<HTMLFormElement>)=>{
+    e.preventDefault();
+    mutation.mutate(tipoPlaga);
+  };
+
+
   return (
     <DefaultLayout>
-      <div className="w-full flex flex-col items-center min-h-screen p-6">
-        <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4 text-center">Registro de Tipo de Plaga</h2>
+      <Formulario
+      title=" Registro deTipo Plaga"
+        onSubmit={handleSubmit}
+        isSubmitting={mutation.isPending}
+        buttonText="Guardar"
+        > 
 
           <ReuInput
             label="Nombre"
@@ -43,7 +52,10 @@ const TipoPlagaPage: React.FC = () => {
             onChange={(e) => setTipoPlaga({ ...tipoPlaga, descripcion: e.target.value })}
           />
 
-          <div className="mb-6">
+    <div className="col-span-1 sm:col-span-2">
+    <label htmlFor="imagen" className="block mt-2 text-sm font-medium text-gray-700">
+              Imagen
+            </label>
             <input
               type="file"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -51,32 +63,20 @@ const TipoPlagaPage: React.FC = () => {
               onChange={handleFileChange}
               accept="image/*"
             />
-            <label htmlFor="imagen" className="block mt-2 text-sm font-medium text-gray-700">
-              Imagen
-            </label>
+            
           </div>
 
+          <div className="col-span-1 md:col-span-2 flex justify-center">
           <button
-            className="w-full px-4 py-2 bg-green-600 text-white rounded-lg mt-4 hover:bg-green-700"
-            type="submit"
-            disabled={mutation.isPending}
-            onClick={(e) => {
-              e.preventDefault();
-              mutation.mutate(tipoPlaga);
-            }}
-          >
-            {mutation.isPending ? "Registrando..." : "Guardar"}
-          </button>
-
-          <button
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg mt-4 hover:bg-blue-700"
+            className="w-full max-w-md px-4 py-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-all duration-200 shadow-md hover:shadow-lg font-medium text-sm uppercase tracking-wide"
+            type="button"
             onClick={() => navigate("/cultivo/listartipoplaga/")}
           >
             Listar Tipo de Plaga
           </button>
-        </div>
-      </div>
-    </DefaultLayout>
+          </div>
+              </Formulario>
+          </DefaultLayout>
   );
 };
 

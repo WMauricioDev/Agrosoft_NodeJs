@@ -10,7 +10,6 @@ interface Bodega {
   nombre: string;
   ubicacion: string;
   capacidad: number;
-  direccion: string;
   telefono: string;
   activo: boolean;
 }
@@ -21,7 +20,6 @@ const BodegaPage: React.FC = () => {
     nombre: "",
     ubicacion: "",
     capacidad: 0,
-    direccion: "",
     telefono: "",
     activo: true,
   });
@@ -37,7 +35,6 @@ const BodegaPage: React.FC = () => {
           nombre: "",
           ubicacion: "",
           capacidad: 0,
-          direccion: "",
           telefono: "",
           activo: true,
         });
@@ -73,13 +70,6 @@ const BodegaPage: React.FC = () => {
           type="number"
           value={String(bodega.capacidad)}
           onChange={(e) => setBodega({ ...bodega, capacidad: Number(e.target.value) })}
-        />
-        <ReuInput
-          label="Dirección"
-          placeholder="Ingrese la dirección"
-          type="text"
-          value={bodega.direccion}
-          onChange={(e) => setBodega({ ...bodega, direccion: e.target.value })}
         />
         <ReuInput
           label="Teléfono"

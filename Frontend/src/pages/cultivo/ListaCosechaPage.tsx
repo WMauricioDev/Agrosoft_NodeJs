@@ -7,7 +7,8 @@ import ReuModal from "@/components/globales/ReuModal";
 import Tabla from "@/components/globales/Tabla";
 import { useNavigate } from "react-router-dom";
 import { EditIcon, Trash2 } from 'lucide-react';
-
+import { useUnidadesMedida } from "@/hooks/inventario/useInsumo";
+import { UnidadMedida } from "@/types/inventario/Insumo";
 const ListarCosechaPage: React.FC = () => {
   const [selectedCosecha, setSelectedCosecha] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -17,6 +18,7 @@ const ListarCosechaPage: React.FC = () => {
   const { data: cultivos } = useCultivos();
   const actualizarMutation = useActualizarCosecha();
   const eliminarMutation = useEliminarCosecha();
+  const { data: unidadesMedida } = useUnidadesMedida();
   const navigate = useNavigate();
 
   const columns = [
@@ -52,7 +54,7 @@ const ListarCosechaPage: React.FC = () => {
     id: cosecha.id?.toString() || '',
     cultivo: cultivos?.find((cultivo) => cultivo.id === cosecha.id_cultivo)?.nombre || 'Sin cultivo',
     cantidad: cosecha.cantidad,
-    unidades_de_medida: cosecha.unidades_de_medida,
+    unidades_de_medida: unidadesMedida?.find((um) => um.id === cosecha.unidades_de_medida)?.nombre || 'Sin unidad',
     fecha: new Date(cosecha.fecha).toLocaleDateString(),
     acciones: (
       <>
@@ -141,18 +143,25 @@ const ListarCosechaPage: React.FC = () => {
             }))
           }
         />
-        <ReuInput
-          label="Unidades de Medida"
-          placeholder="Ingrese las unidades de medida"
-          type="text"
-          value={selectedCosecha?.unidades_de_medida || ''}
-          onChange={(e) =>
-            setSelectedCosecha((prev: any) => ({
-              ...prev,
-              unidades_de_medida: e.target.value,
-            }))
-          }
-        />
+       <div className="mb-6">
+      <label className="block text-sm font-medium text-gray-700">Unidad de Medida</label>
+      <select
+        value={selectedCosecha?.unidades_de_medida || 0}
+        onChange={(e) =>
+          setSelectedCosecha((prev: any) => ({
+            ...prev,
+            unidades_de_medida: parseInt(e.target.value),
+          }))
+          
+        }
+        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+      >
+        <option value="">Seleccione una unidad</option>
+        {unidadesMedida?.map((unidad: UnidadMedida) => (
+          <option key={unidad.id} value={unidad.id}>{unidad.nombre}</option>
+        ))}
+      </select>
+    </div>
         <ReuInput
           label="Fecha"
           placeholder="Ingrese la fecha"

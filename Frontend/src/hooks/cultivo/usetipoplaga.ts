@@ -1,14 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/components/utils/axios"; 
 import { addToast } from "@heroui/react";
 import { TipoPlaga } from "@/types/cultivo/TipoPlaga";
 
-const API_URL = "http://127.0.0.1:8000/cultivo/tipo_plaga/";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+const API_URL = `${BASE_URL}/cultivo/tipo_plaga/`;
 
 const fetchTipoPlagas = async (): Promise<TipoPlaga[]> => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
-  const response = await axios.get(API_URL, {
+  const response = await api.get(API_URL, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
@@ -25,7 +27,7 @@ const registrarTipoPlaga = async (tipoPlaga: TipoPlaga) => {
     formData.append("img", tipoPlaga.img);
   }
 
-  return axios.post(API_URL, formData, {
+  return api.post(API_URL, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
@@ -37,7 +39,7 @@ const actualizarTipoPlaga = async (id: number, tipoPlaga: TipoPlaga) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
-  return axios.put(`${API_URL}${id}/`, tipoPlaga, {
+  return api.put(`${API_URL}${id}/`, tipoPlaga, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
@@ -46,7 +48,7 @@ const eliminarTipoPlaga = async (id: number) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
-  return axios.delete(`${API_URL}${id}/`, {
+  return api.delete(`${API_URL}${id}/`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
@@ -62,12 +64,28 @@ export const useRegistrarTipoPlaga = () => {
   return useMutation({
     mutationFn: registrarTipoPlaga,
     onSuccess: () => {
-      addToast({ title: "Éxito", description: "Tipo de plaga registrado con éxito", timeout: 3000 });
+      addToast({ title: "Éxito", description: "Tipo de plaga registrado con éxito", timeout: 3000, color:"success" });
     },
-    onError: () => {
-      addToast({ title: "Error", description: "Error al registrar el tipo de plaga", timeout: 3000 });
+    onError: (error: any) => {
+      if (error.response?.status === 403) {
+        addToast({
+          title: "Acceso denegado",
+          description: "No tienes permiso para realizar esta acción, contacta a un adminstrador.",
+          timeout: 3000,
+          color:"danger"
+        });
+      } else {
+        addToast({
+          title: "Error",
+          description: "Error al registrar Tipo de  plaga",
+          timeout: 3000,
+          color:"danger"
+        });
+      }
     },
+    
   });
+  
 };
 
 export const useActualizarTipoPlaga = () => {
@@ -76,12 +94,28 @@ export const useActualizarTipoPlaga = () => {
     mutationFn: ({ id, tipoPlaga }: { id: number; tipoPlaga: TipoPlaga }) => actualizarTipoPlaga(id, tipoPlaga),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tipoPlagas"] });
-      addToast({ title: "Éxito", description: "Tipo de plaga actualizado con éxito", timeout: 3000 });
+      addToast({ title: "Éxito", description: "Tipo de plaga actualizado con éxito", timeout: 3000, color:"success" });
     },
-    onError: () => {
-      addToast({ title: "Error", description: "Error al actualizar el tipo de plaga", timeout: 3000 });
+    onError: (error: any) => {
+      if (error.response?.status === 403) {
+        addToast({
+          title: "Acceso denegado",
+          description: "No tienes permiso para realizar esta acción, contacta a un adminstrador.",
+          timeout: 3000,
+          color:"warning"
+        });
+      } else {
+        addToast({
+          title: "Error",
+          description: "Error al actualizar Tipo de  plaga",
+          timeout: 3000,
+          color:"danger"
+        });
+      }
     },
+    
   });
+  
 };
 
 export const useEliminarTipoPlaga = () => {
@@ -90,10 +124,27 @@ export const useEliminarTipoPlaga = () => {
     mutationFn: (id: number) => eliminarTipoPlaga(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tipoPlagas"] });
-      addToast({ title: "Éxito", description: "Tipo de plaga eliminado con éxito", timeout: 3000 });
+      addToast({ title: "Éxito", description: "Tipo de plaga eliminado con éxito", timeout: 3000, color:"success" });
     },
-    onError: () => {
-      addToast({ title: "Error", description: "Error al eliminar el tipo de plaga", timeout: 3000 });
+    
+    onError: (error: any) => {
+      if (error.response?.status === 403) {
+        addToast({
+          title: "Acceso denegado",
+          description: "No tienes permiso para realizar esta acción, contacta a un adminstrador.",
+          timeout: 3000,
+          color:"warning"
+        });
+      } else {
+        addToast({
+          title: "Error",
+          description: "Error al eliminar la plaga",
+          timeout: 3000,
+          color:"danger"
+        });
+      }
     },
+    
   });
+  
 };

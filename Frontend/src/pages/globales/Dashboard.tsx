@@ -1,265 +1,314 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import DefaultLayout from "@/layouts/default";
 import { motion } from "framer-motion";
-import { LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
-import { Droplet, Wind, Sunrise, Sunset, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import CustomSpinner from "@/components/globales/Spinner";
+import { useVenta } from "@/hooks/finanzas/useVenta"; 
+import { useDatosMeteorologicosHistoricos } from "@/hooks/iot/datos_sensores/useDatosMeteorologicosHistoricos";
+import { useActividades } from "@/hooks/cultivo/useActividad";
+import { useSensores } from "@/hooks/iot/sensores/useSensores";
+import { useInsumos } from "@/hooks/inventario/useInsumo"; 
+import { FaTemperatureHigh, FaTint, FaDollarSign, FaBox, FaMicrochip } from "react-icons/fa";
+import { SensorData } from "@/types/iot/type";  
+import { Sensor } from "@/types/iot/type";
+import { Listbox } from "@headlessui/react";
+import { useNavigate } from "react-router-dom";
 
-interface WeatherData {
-  coord: { lon: number; lat: number };
-  weather: { id: number; main: string; description: string; icon: string }[];
-  main: { temp: number; humidity: number };
-  wind: { speed: number };
-  sys: { sunrise: number; sunset: number };
-  dt: number;
-  name: string;
+// Tipos de datos para los gráficos
+const dataTypes = [
+  { label: "Temperatura (°C)", key: "temperatura" as keyof SensorData, icon: <FaTemperatureHigh className="text-red-500" />, sensorId: 1 },
+  { label: "Humedad (%)", key: "humedad_ambiente" as keyof SensorData, icon: <FaTint className="text-blue-500" />, sensorId: 2 },
+];
+
+// Definimos una interfaz para los datos mensuales (simulados)
+interface MonthlyData {
+  mes: string;
+  ingresos: number;
+  costos: number;
 }
 
-interface Activity {
-  title: string;
-  date: string;
-  time: string;
-}
+const Dashboard = () => {
+  const [selectedDataType, setSelectedDataType] = useState<keyof SensorData>("temperatura");
+  const currentDate = new Date();
+  const navigate = useNavigate();
 
-const Dashboard: React.FC = () => {
-  const [weather, setWeather] = useState<WeatherData | null>(null);
-  const currentDate = new Date("2025-04-03");
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  // Hooks para obtener datos
+  const { ventas, isLoading: loadingVentas, isError: errorVentas, error: errorVentasError } = useVenta();
+  const { data: historicos = [], isLoading: loadingHistoricos, error: errorHistoricos } = useDatosMeteorologicosHistoricos();
+  const { data: actividades, isLoading: loadingActividades, error: errorActividades } = useActividades();
+  const { sensores = [], isLoading: loadingSensores, error: errorSensores } = useSensores();
+  const { data: insumos, isLoading: loadingInsumos, error: errorInsumos } = useInsumos();
 
-  const activities: Activity[] = [
-    { title: "Riego automático", date: "2025-03-30", time: "06:00 AM" },
-    { title: "Revisión de bancales", date: "2025-04-05", time: "10:00 AM" },
-    { title: "Fertilización", date: "2025-04-10", time: "08:00 AM" },
-    { title: "Cosecha parcial", date: "2025-03-25", time: "09:00 AM" },
+  // Procesar datos de actividades
+  const activities = actividades?.map((actividad) => ({
+    id: actividad.id || `${actividad.descripcion}-${actividad.fecha_inicio}`,
+    title: actividad.descripcion || "Actividad sin descripción",
+    date: actividad.fecha_inicio?.split("T")[0] || currentDate.toISOString().split("T")[0],
+    time: actividad.fecha_inicio?.split("T")[1]?.slice(0, 5) || "00:00",
+    estado: actividad.estado || "PENDIENTE",
+  })) || [];
+
+  const pastActivities = activities.filter((activity) => new Date(activity.date) < currentDate);
+  const futureActivities = activities.filter((activity) => new Date(activity.date) >= currentDate);
+
+  // Datos para las tarjetas superiores
+  const ganancias = ventas.reduce((acc, venta) => {
+    const ingreso = (venta.monto_entregado || 0) - (venta.cambio || 0);
+    return acc + ingreso;
+  }, 0) || 0;
+  const totalInsumos = insumos?.length || 0;
+  const sensoresActivos = sensores?.filter((sensor: Sensor) => sensor.estado === "activo").length || 0;
+
+  // Datos para el gráfico de barras (ingresos y costos por mes)
+  const barChartData: MonthlyData[] = ventas.length > 0
+    ? [
+        {
+          mes: currentDate.toLocaleDateString("es-ES", { month: "short", year: "numeric" }),
+          ingresos: ganancias,
+          costos: 0, // No tenemos datos de costos, se puede ajustar si se agrega un endpoint para costos
+        },
+      ]
+    : [];
+
+  // Datos para el gráfico de líneas (datos históricos, últimos 7 días)
+  const lineChartData = historicos
+    .filter((dato: SensorData) => {
+      const value = dato[selectedDataType];
+      const date = new Date(dato.fecha_medicion).getTime();
+      const sevenDaysAgo = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
+      return value !== null && value !== undefined && date >= sevenDaysAgo;
+    })
+    .sort((a, b) => new Date(a.fecha_medicion).getTime() - new Date(b.fecha_medicion).getTime())
+    .slice(-50) // Limitar a 50 puntos para evitar saturación
+    .map((dato, index) => ({
+      id: `dato-${dato.id}-${index}`,
+      fecha: new Date(dato.fecha_medicion).toLocaleDateString("es-ES", { day: "numeric", month: "short" }),
+      value: dato[selectedDataType] ?? 0,
+    }));
+
+  // Datos para el gráfico circular (progreso de actividades)
+  const completedActivities = activities.filter((a) => a.estado === "COMPLETADA").length;
+  const pendingActivities = activities.filter((a) => a.estado === "PENDIENTE").length;
+  const pieChartData = [
+    { name: "Completado", value: completedActivities },
+    { name: "Pendiente", value: pendingActivities },
   ];
 
-  const pastActivities = activities.filter(
-    (activity) => new Date(activity.date) < currentDate
-  );
-  const futureActivities = activities.filter(
-    (activity) => new Date(activity.date) >= currentDate
-  );
+  const COLORS = ["#10b981", "#1e3a8a"];
 
-  const notifications = [
-    "Recordatorio: Revisar inventario de herramientas esta semana.",
-    "Alerta: Posible lluvia fuerte mañana por la tarde.",
-  ];
+  // Mostrar un spinner mientras se cargan los datos
+  if (loadingVentas || loadingHistoricos || loadingActividades || loadingSensores || loadingInsumos) {
+    return (
+      <DefaultLayout>
+        <div className="flex justify-center items-center h-screen">
+          <CustomSpinner label="Cargando datos..." color="primary" variant="wave" className="text-primary" />
+        </div>
+      </DefaultLayout>
+    );
+  }
 
-  const salesData = [
-    { day: "Sem1", amount: 5000 },
-    { day: "Sem2", amount: 6000 },
-    { day: "Sem3", amount: 4500 },
-    { day: "Sem4", amount: 5500 },
-  ];
-
-  useEffect(() => {
-    fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=Pitalito&appid=1912de4d8f25e4b41824e3920aed0598&units=metric&lang=es`
-    )
-      .then((response) => response.json())
-      .then((data) => setWeather(data))
-      .catch((error) => console.error("Error fetching weather data:", error));
-  }, []);
-
-  const handleWheelScroll = (event: React.WheelEvent<HTMLDivElement>) => {
-    if (scrollContainerRef.current) {
-      event.preventDefault();
-      const delta = event.deltaY;
-      scrollContainerRef.current.scrollLeft += delta;
-    }
-  };
-
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -300, behavior: "smooth" });
-    }
-  };
-
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 300, behavior: "smooth" });
-    }
-  };
-
-  const backgroundImage = "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80&brightness=50";
-  const weatherBackgroundImage = "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80&brightness=60";
+  // Mostrar errores si los hay
+  if (errorVentas || errorHistoricos || errorActividades || errorSensores || errorInsumos) {
+    return (
+      <DefaultLayout>
+        <div className="text-center py-12 text-red-500">
+          <p className="text-xl">Error al cargar los datos</p>
+          <p>{errorVentasError?.message || errorHistoricos?.message || errorActividades?.message || errorSensores?.message || errorInsumos?.message}</p>
+        </div>
+      </DefaultLayout>
+    );
+  }
 
   return (
     <DefaultLayout>
-      <section
-        className="flex flex-col items-center justify-center gap-8 py-10 px-4 min-h-screen bg-cover bg-center overflow-x-hidden"
-        style={{
-          backgroundImage: `url(${backgroundImage}), linear-gradient(to bottom, #e0f7fa, #ffffff)`,
-          backgroundSize: "cover",
-        }}
-      >
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Dashboard</h1>
+
+      {/* Tarjetas superiores */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white rounded-xl shadow-md p-6 text-center border border-green-200"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl p-8 w-full max-w-[calc(100%-80px)] text-center bg-cover bg-center relative"
-          style={{
-            backgroundImage: `url(${weatherBackgroundImage}), linear-gradient(to bottom, #f0f4f8, #ffffff)`,
-            backgroundSize: "cover",
-          }}
         >
-          <div className="relative z-10">
-            <h1 className="text-3xl font-bold font-poppins text-white mb-4">Clima en Pitalito</h1>
-            {weather ? (
-              <div className="space-y-4">
-                <div className="flex justify-center items-center space-x-4 flex-wrap">
-                  <img
-                    src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-                    alt="weather icon"
-                    className="w-16 h-16 sm:w-20 sm:h-20"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://via.placeholder.com/80";
-                    }}
-                  />
-                  <div>
-                    <p className="text-4xl sm:text-5xl font-bold text-white">{Math.round(weather.main.temp)}°C</p>
-                    <p className="text-lg sm:text-xl capitalize text-white">{weather.weather[0].description}</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full">
-                  <div className="flex items-center justify-center space-x-2 text-white">
-                    <Droplet className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
-                    <p className="text-sm sm:text-base">{weather.main.humidity}%</p>
-                  </div>
-                  <div className="flex items-center justify-center space-x-2 text-white">
-                    <Wind className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
-                    <p className="text-sm sm:text-base">{weather.wind.speed} m/s</p>
-                  </div>
-                  <div className="flex items-center justify-center space-x-2 text-white">
-                    <Sunrise className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
-                    <p className="text-sm sm:text-base">{new Date(weather.sys.sunrise * 1000).toLocaleTimeString()}</p>
-                  </div>
-                  <div className="flex items-center justify-center space-x-2 text-white">
-                    <Sunset className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
-                    <p className="text-sm sm:text-base">{new Date(weather.sys.sunset * 1000).toLocaleTimeString()}</p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <p className="text-gray-500">Cargando...</p>
-            )}
-          </div>
+          <p className="text-lg font-semibold text-gray-700 flex items-center justify-center gap-2">
+            <FaDollarSign className="text-green-500" /> Ganancias
+          </p>
+          <p className="text-2xl sm:text-3xl font-bold mt-2 text-green-600">${ganancias.toLocaleString()}</p>
         </motion.div>
+        <motion.div
+          className="bg-white rounded-xl shadow-md p-6 text-center border border-yellow-200"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <p className="text-lg font-semibold text-gray-700 flex items-center justify-center gap-2">
+            <FaBox className="text-yellow-500" /> Insumos
+          </p>
+          <p className="text-2xl sm:text-3xl font-bold mt-2 text-yellow-600">{totalInsumos}</p>
+        </motion.div>
+        <motion.div
+          className="bg-white rounded-xl shadow-md p-6 text-center border border-blue-200"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <p className="text-lg font-semibold text-gray-700 flex items-center justify-center gap-2">
+            <FaMicrochip className="text-blue-500" /> Sensores Activos
+          </p>
+          <p className="text-2xl sm:text-3xl font-bold mt-2 text-blue-600">{sensoresActivos}</p>
+        </motion.div>
+      </div>
 
-        <div className="relative w-full max-w-[calc(100%-80px)] mx-auto">
-          <button
-            onClick={scrollLeft}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800/50 text-white p-2 rounded-full hover:bg-gray-800 z-10"
+      {/* Gráficos */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          <motion.div
+            className="bg-white p-6 rounded-xl shadow-md"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-
-          <div
-            ref={scrollContainerRef}
-            onWheel={handleWheelScroll}
-            className="flex flex-row gap-0 py-4 overflow-x-auto hide-scrollbar"
-            style={{ scrollBehavior: "smooth" }}
-          >
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white/70 backdrop-blur-lg rounded-xl shadow-xl p-6 hover:shadow-2xl transition-shadow min-w-[300px] mr-2"
-            >
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Actividades Futuras</h2>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                {futureActivities.slice(0, 3).map((activity, index) => (
-                  <li key={index}>
-                    {activity.title} - {activity.date}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-white/70 backdrop-blur-lg rounded-xl shadow-xl p-6 hover:shadow-2xl transition-shadow min-w-[300px] mr-2"
-            >
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Actividades Vencidas</h2>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                {pastActivities.slice(0, 3).map((activity, index) => (
-                  <li key={index}>
-                    {activity.title} - {activity.date}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="bg-white/70 backdrop-blur-lg rounded-xl shadow-xl p-6 hover:shadow-2xl transition-shadow min-w-[300px] mr-2"
-            >
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Ganancias del Mes</h2>
-              <LineChart width={250} height={150} data={salesData}>
-                <XAxis dataKey="day" />
+            <h2 className="text-lg font-semibold text-gray-700 mb-4">Ganancias y Costos</h2>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={barChartData}>
+                <XAxis dataKey="mes" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="amount" stroke="#10B981" />
-              </LineChart>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="bg-white/70 backdrop-blur-lg rounded-xl shadow-xl p-6 hover:shadow-2xl transition-shadow min-w-[300px] mr-2"
-            >
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Notificaciones</h2>
-              <ul className="list-none text-gray-700 space-y-2">
-                {notifications.map((notification, index) => (
-                  <li key={index} className="flex items-center space-x-2">
-                    <AlertCircle className="w-5 h-5 text-blue-500" />
-                    <p className="text-sm">{notification}</p>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="bg-white/70 backdrop-blur-lg rounded-xl shadow-xl p-6 hover:shadow-2xl transition-shadow min-w-[300px] mr-2"
-            >
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Estadísticas</h2>
-              <div className="space-y-2 text-gray-700">
-                <p><strong>Cultivos Activos:</strong> 5</p>
-                <p><strong>Tareas Pendientes:</strong> 3</p>
-              </div>
-            </motion.div>
-          </div>
-
-          <button
-            onClick={scrollRight}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800/50 text-white p-2 rounded-full hover:bg-gray-800 z-10"
+                <Bar dataKey="ingresos" fill="#10b981" />
+                <Bar dataKey="costos" fill="#1e3a8a" />
+              </BarChart>
+            </ResponsiveContainer>
+          </motion.div>
+          <motion.div
+            className="bg-white p-6 rounded-xl shadow-md"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <ChevronRight className="w-6 h-6" />
-          </button>
+            <h2 className="text-lg font-semibold text-gray-700 mb-4">Datos Meteorológicos (Últimos 7 Días)</h2>
+            <div className="mb-4">
+              <Listbox value={selectedDataType} onChange={setSelectedDataType}>
+                <div className="relative">
+                  <Listbox.Button className="w-full rounded-lg bg-white border border-gray-200 text-gray-800 px-4 py-2 text-left cursor-pointer hover:bg-gray-100">
+                    {dataTypes.find(dt => dt.key === selectedDataType)?.label}
+                  </Listbox.Button>
+                  <Listbox.Options className="absolute z-10 mt-1 w-full rounded-lg bg-white shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    {dataTypes.map((type) => (
+                      <Listbox.Option
+                        key={type.sensorId}
+                        value={type.key}
+                        className={({ active, selected }) =>
+                          `cursor-pointer px-4 py-2 ${
+                            active ? 'bg-blue-100 text-blue-800' : 'text-gray-700'
+                          } ${selected ? 'font-medium' : ''}`
+                        }
+                      >
+                        <div className="flex items-center gap-2">
+                          {type.icon}
+                          <span>{type.label}</span>
+                        </div>
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </div>
+              </Listbox>
+            </div>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={lineChartData}>
+                <XAxis dataKey="fecha" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="value" stroke="#3b82f6" />
+              </LineChart>
+            </ResponsiveContainer>
+            {lineChartData.length === 0 && (
+              <p className="text-gray-600 text-center mt-4">
+                No hay datos disponibles para {dataTypes.find(dt => dt.key === selectedDataType)?.label}.
+              </p>
+            )}
+          </motion.div>
         </div>
-      </section>
+        <motion.div
+          className="bg-white p-6 rounded-xl shadow-md"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">Progreso de Actividades</h2>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={pieChartData}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {pieChartData.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+          <p className="text-center text-sm mt-2 text-gray-700">
+            {completedActivities + pendingActivities > 0
+              ? `${((completedActivities / (completedActivities + pendingActivities)) * 100).toFixed(1)}% Completado`
+              : "0% Completado"}
+          </p>
+        </motion.div>
+      </div>
 
-      <style jsx>{`
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-          overflow-x: auto;
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          margin-left: 40px;
-          margin-right: 40px;
-        }
-      `}</style>
+      {/* Actividades */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <motion.div
+          className="bg-white p-6 rounded-xl shadow-md border border-purple-200"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">Actividades Futuras</h2>
+          <ul className="list-disc list-inside text-gray-700 space-y-2 text-sm">
+            {futureActivities.slice(0, 3).map((activity) => (
+              <li key={activity.id}>
+                {activity.title} - {activity.date}
+              </li>
+            ))}
+            {futureActivities.length === 0 && (
+              <li className="text-gray-500">No hay actividades futuras</li>
+            )}
+          </ul>
+        </motion.div>
+        <motion.div
+          className="bg-white p-6 rounded-xl shadow-md border border-purple-200"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">Actividades Vencidas</h2>
+          <ul className="list-disc list-inside text-gray-700 space-y-2 text-sm">
+            {pastActivities.slice(0, 3).map((activity) => (
+              <li key={activity.id}>
+                {activity.title} - {activity.date}
+              </li>
+            ))}
+            {pastActivities.length === 0 && (
+              <li className="text-gray-500">No hay actividades vencidas</li>
+            )}
+          </ul>
+          <motion.button
+            className="mt-4 bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-md hover:bg-purple-700"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/cultivo/listaractividad')}
+          >
+            Revisar Ahora
+          </motion.button>
+        </motion.div>
+      </div>
     </DefaultLayout>
   );
 };

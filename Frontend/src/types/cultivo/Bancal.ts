@@ -1,9 +1,9 @@
 export interface Bancal {
     id?: number;
     nombre: string;
-    TamX: number;
-    TamY: number;
-    posX: number;
-    posY: number;
-    fk_lote: number;
+    tam_x: number;
+    tam_y: number;
+    latitud: number;
+    longitud: number;
+    lote: number;
   }

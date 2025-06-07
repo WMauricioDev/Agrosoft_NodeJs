@@ -6,7 +6,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
+  const [numeroDeDocumento, setNumeroDeDocumento] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -19,7 +19,7 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      await login(email, password);
+      await login(Number(numeroDeDocumento), password);
     } catch (err) {
       setError('Error de autenticación. Verifica tus credenciales.');
     } finally {
@@ -30,13 +30,13 @@ const Login: React.FC = () => {
   const textFieldStyles = {
     '& .MuiOutlinedInput-root': {
       borderRadius: '12px',
-      backgroundColor: '#fff', // Fondo blanco
+      backgroundColor: '#fff',
       transition: 'all 0.3s ease-in-out',
       '& fieldset': { borderColor: '#e2e8f0' },
       '&:hover fieldset': { borderColor: '#cbd5e1' },
       '&.Mui-focused fieldset': { borderColor: '#2ecc71' },
       '& .MuiInputAdornment-root': {
-        backgroundColor: 'inherit', // Fondo uniforme con el campo
+        backgroundColor: 'inherit',
         height: '100%',
       },
     },
@@ -50,12 +50,7 @@ const Login: React.FC = () => {
     <Box
       component="form"
       onSubmit={handleSubmit}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2.5,
-        width: '100%',
-      }}
+      sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, width: '100%' }}
     >
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -63,10 +58,10 @@ const Login: React.FC = () => {
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         <TextField
-          type="email"
-          label="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="number"
+          label="Número de documento"
+          value={numeroDeDocumento}
+          onChange={(e) => setNumeroDeDocumento(e.target.value)}
           variant="outlined"
           fullWidth
           required
@@ -105,11 +100,7 @@ const Login: React.FC = () => {
       {error && (
         <Typography
           variant="body2"
-          sx={{
-            color: '#f56565',
-            textAlign: 'center',
-            fontSize: '0.875rem',
-          }}
+          sx={{ color: '#f56565', textAlign: 'center', fontSize: '0.875rem' }}
         >
           {error}
         </Typography>

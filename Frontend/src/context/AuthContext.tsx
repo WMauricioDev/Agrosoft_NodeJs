@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = `${BASE_URL}`;
 
 interface Rol {
   id: number;
@@ -12,6 +14,7 @@ export interface User {
   nombre: string;
   apellido: string;
   email: string;
+  numero_de_documento: number;
   username?: string;
   rol: Rol; 
   esAdmin?: boolean; 
@@ -20,7 +23,7 @@ export interface User {
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (numero_de_documento: number, password: string) => Promise<void>;
   logout: () => void;
   updateUser: (updatedUser: User) => void;  
 }
@@ -28,19 +31,36 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setAuthenticated] = useState<boolean>(!!localStorage.getItem("access_token"));
-  const [user, setUser] = useState<User | null>(() => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
+  const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
-  const login = async (email: string, password: string) => {
+  // Este useEffect sincroniza el estado con localStorage al montar
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    const storedUser = localStorage.getItem("user");
+
+    if (token && storedUser) {
+      setAuthenticated(true);
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch {
+        setUser(null);
+        setAuthenticated(false);
+      }
+    } else {
+      setAuthenticated(false);
+      setUser(null);
+    }
+  }, []);
+
+  const login = async (numeroDocumento: number, password: string) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/login/", {
+      const response = await fetch(`${API_URL}/api/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ numero_documento: numeroDocumento, password }),
       });
 
       if (!response.ok) {
@@ -53,7 +73,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem("refresh_token", data.refresh);
       setAuthenticated(true);
 
-      const userResponse = await fetch("http://127.0.0.1:8000/usuarios/me/", {
+      const userResponse = await fetch(`${API_URL}/api/usuarios/me/`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${data.access}`,
@@ -62,7 +82,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
 
       const userResponseText = await userResponse.text();
-      console.log("Respuesta de /usuarios/me/:", userResponseText);
       const userData: User = JSON.parse(userResponseText);
 
       setUser(userData);

@@ -51,7 +51,7 @@ const ListaPlagasPage: React.FC = () => {
     id: plaga.id?.toString() || '',
     nombre: plaga.nombre,
     descripcion: plaga.descripcion,
-    tipo_plaga: plaga.fk_tipo_plaga || 'Sin tipo',
+    tipo_plaga: plaga.tipo_plaga || 'Sin tipo',
     imagen: plaga.img
       ? typeof plaga.img === 'string'
         ? plaga.img

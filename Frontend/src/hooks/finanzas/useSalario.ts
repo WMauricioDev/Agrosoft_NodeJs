@@ -1,105 +1,131 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { addToast } from "@heroui/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import api from "@/components/utils/axios"; 
 import { Salario } from "@/types/finanzas/Salario";
 
-const API_URL = "http://127.0.0.1:8000/finanzas/salario/";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const fetchSalarios = async (): Promise<Salario[]> => {
-  const token = localStorage.getItem("access_token");
-  if (!token) throw new Error("No se encontró el token de autenticación.");
-  const response = await axios.get(API_URL, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
+const API_URL = `${BASE_URL}/finanzas/salario/`;
+
+// Función para formatear números al estilo colombiano (1.000.000)
+export const formatColombianPeso = (value: number): string => {
+  return new Intl.NumberFormat('es-CO', {
+    style: 'decimal',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
 };
 
-const registrarSalario = async (salario: Salario): Promise<Salario> => {
-  const token = localStorage.getItem("access_token");
-  if (!token) throw new Error("No se encontró el token de autenticación.");
-  const response = await axios.post(API_URL, salario, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
+// Función para convertir string con formato a número
+const parseColombianNumber = (value: string): number => {
+  return parseFloat(value.replace(/\./g, '')) || 0;
 };
 
-const actualizarSalario = async (salario: Salario): Promise<Salario> => {
-  const token = localStorage.getItem("access_token");
-  if (!token || !salario.id) throw new Error("Falta token o ID del salario.");
-  const response = await axios.put(`${API_URL}${salario.id}/`, salario, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
-};
-
-const eliminarSalario = async (id: number): Promise<void> => {
-  const token = localStorage.getItem("access_token");
-  if (!token) throw new Error("No se encontró el token de autenticación.");
-  await axios.delete(`${API_URL}${id}/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-};
-
-export const useSalario = () => {
-  const queryClient = useQueryClient();
-  const salariosQuery = useQuery<Salario[], Error>({
+export const useSalarios = () => {
+  return useQuery({
     queryKey: ["salarios"],
-    queryFn: fetchSalarios,
-  });
+    queryFn: async () => {
+      const token = localStorage.getItem("access_token");
+      if (!token) throw new Error("No se encontró el token de autenticación.");
 
-  const registrarMutation = useMutation({
-    mutationFn: registrarSalario,
+      const response = await api.get(API_URL, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      return response.data as Salario[];
+    },
+    select: (data) => {
+      return data.map((item) => ({
+        ...item,
+        valorJornalFormatted: formatColombianPeso(item.valorJornal),
+        rol_nombre: item.rol_nombre || item.rol?.nombre || 'Sin rol'
+      }));
+    }
+  });
+};
+
+export const useRegistrarSalario = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (salario: Salario) => {
+      const token = localStorage.getItem("access_token");
+      if (!token) throw new Error("No se encontró el token de autenticación.");
+
+      const valorNumerico = typeof salario.valorJornal === 'string'
+        ? parseColombianNumber(salario.valorJornal)
+        : salario.valorJornal;
+
+      const payload = {
+        rol_id: salario.rol_id,
+        fecha_de_implementacion: salario.fecha_de_implementacion,
+        valorJornal: valorNumerico,
+        activo: salario.activo
+      };
+
+      const response = await api.post(API_URL, payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["salarios"] });
-      addToast({ title: "Éxito", description: "Salario registrado con éxito" });
-    },
-    onError: (error) => {
-      addToast({ title: "Error", description: `Error al registrar salario: ${error.message}` });
     },
   });
+};
 
-  const actualizarMutation = useMutation({
-    mutationFn: actualizarSalario,
+export const useActualizarSalario = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (salario: Salario) => {
+      const token = localStorage.getItem("access_token");
+      if (!token || !salario.id) throw new Error("Token o ID faltante");
+
+      const valorNumerico = typeof salario.valorJornal === 'string'
+        ? parseColombianNumber(salario.valorJornal)
+        : salario.valorJornal;
+
+      const payload = {
+        fecha_de_implementacion: salario.fecha_de_implementacion,
+        valorJornal: valorNumerico
+      };
+
+      console.log("📌 Actualizando salario:", payload);
+
+      const response = await api.put(`${API_URL}${salario.id}/`, payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["salarios"] });
-      addToast({ title: "Éxito", description: "Salario actualizado con éxito" });
     },
-    onError: (error) => {
-      addToast({ title: "Error", description: `Error al actualizar salario: ${error.message}` });
+    onError: (error: any) => {
+      console.error("Error al actualizar salario:", error.message);
     },
   });
+};
 
-  const eliminarMutation = useMutation({
-    mutationFn: eliminarSalario,
+export const useEliminarSalario = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const token = localStorage.getItem("access_token");
+      if (!token) throw new Error("No se encontró el token de autenticación.");
+
+      await api.delete(`${API_URL}${id}/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["salarios"] });
-      addToast({ title: "Éxito", description: "Salario eliminado con éxito" });
     },
-    onError: (error) => {
-      addToast({ title: "Error", description: `Error al eliminar salario: ${error.message}` });
+    onError: (error: any) => {
+      console.error("Error al eliminar salario:", error.message);
     },
   });
-
-  return {
-    salarios: salariosQuery.data ?? [],
-    isLoading: salariosQuery.isLoading,
-    isError: salariosQuery.isError,
-    error: salariosQuery.error,
-    registrarSalario: registrarMutation.mutate,
-    isRegistrando: registrarMutation.isPending,
-    actualizarSalario: actualizarMutation.mutate,
-    isActualizando: actualizarMutation.isPending,
-    eliminarSalario: eliminarMutation.mutate,
-    isEliminando: eliminarMutation.isPending,
-  };
 };

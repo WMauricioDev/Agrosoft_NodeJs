@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/components/utils/axios"; 
 
-const API_URL = "http://localhost:8000"; 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useReporte = (modulo: string, reporte: string, params: { fecha_inicio: string; fecha_fin: string }) => {
     return useQuery({
@@ -11,7 +11,7 @@ export const useReporte = (modulo: string, reporte: string, params: { fecha_inic
                 return null;
             }
 
-            const response = await axios.get(`${API_URL}/${modulo}/${reporte}/reporte_pdf/`, {
+            const response = await api.get(`${BASE_URL}/${modulo}/${reporte}/reporte_pdf/`, {
                 params,
                 responseType: "blob", 
                 headers: {

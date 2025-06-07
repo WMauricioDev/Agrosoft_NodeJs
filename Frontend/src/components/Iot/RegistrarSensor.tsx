@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Input, Button } from "@heroui/react";
-import { useRegistrarSensor } from "@/hooks/iot/useSensore";
+import { useRegistrarSensor } from "@/hooks/iot/useRegistrarSensor";
 
 interface Sensor {
   nombre: string;

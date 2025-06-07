@@ -12,6 +12,7 @@ const columns = [
 const Usuarios = () => {
   const { isLoading, error } = useUsuarios();
 
+
   if (isLoading) return <div className="text-center text-gray-500">Cargando usuarios...</div>;
   if (error instanceof Error) return <div className="text-center text-red-500">Error: {error.message}</div>;
 

@@ -9,11 +9,21 @@ import ReuModal from "@/components/globales/ReuModal";
 import { ReuInput } from "@/components/globales/ReuInput";
 import Tabla from "@/components/globales/Tabla";
 import { EditIcon, Trash2 } from 'lucide-react';
-import BodegaHerramientaNotifications from "@/components/inventario/BodegaHerramientaNotifications";
 import { useAuth } from "@/context/AuthContext";
 
+const formatCOPNumber = (value: number | string): string => {
+    const num = typeof value === 'string' ? parseInt(value.replace(/\./g, ''), 10) : value;
+    if (isNaN(num)) return '';
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
+
+const parseCOPNumber = (value: string): number => {
+    const cleanValue = value.replace(/[\.$]/g, '');
+    return parseInt(cleanValue, 10) || 0;
+};
+
 const ListaBodegaHerramientaPage: React.FC = () => {
-  const { user } = useAuth();
+  const {} = useAuth();
   const [selectedBodegaHerramienta, setSelectedBodegaHerramienta] = useState<BodegaHerramienta | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -29,6 +39,8 @@ const ListaBodegaHerramientaPage: React.FC = () => {
     { name: "Bodega", uid: "bodega" },
     { name: "Herramienta", uid: "herramienta" },
     { name: "Cantidad", uid: "cantidad" },
+    { name: "Costo Total", uid: "costo_total" },
+    { name: "Cantidad Prestada", uid: "cantidad_prestada" },
     { name: "Acciones", uid: "acciones" },
   ];
 
@@ -54,15 +66,20 @@ const ListaBodegaHerramientaPage: React.FC = () => {
     }
   };
 
-
   const transformedData = (bodegaHerramientas ?? []).map((item: BodegaHerramienta) => {
     const bodegaNombre = bodegas?.find((b: { id: number }) => b.id === item.bodega)?.nombre || "Desconocido";
     const herramientaNombre = herramientas?.find((h: { id: number }) => h.id === item.herramienta)?.nombre || "Desconocido";
+    
+    const costoTotal = item.costo_total != null ? Number(item.costo_total) : 0;
+    const costoTotalFormatted = isNaN(costoTotal) ? "0" : formatCOPNumber(costoTotal);
+
     return {
       id: item.id?.toString() || "",
       bodega: bodegaNombre,
       herramienta: herramientaNombre,
       cantidad: item.cantidad,
+      costo_total: `$${costoTotalFormatted}`,
+      cantidad_prestada: item.cantidad_prestada,
       nombre: `${bodegaNombre} ${herramientaNombre} ${item.cantidad}`,
       acciones: (
         <>
@@ -85,7 +102,9 @@ const ListaBodegaHerramientaPage: React.FC = () => {
 
   return (
     <DefaultLayout>
-      <h2 className="text-2xl text-center font-bold text-gray-800 mb-6">Lista de Bodega Herramientas</h2><br /><br />
+      <h2 className="text-2xl text-center font-bold text-gray-800 mb-6">Lista de Bodega Herramientas</h2>
+      <br />
+      <br />
       <div className="mb-2 flex justify-start">
         <button
           className="px-3 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg 
@@ -99,12 +118,9 @@ const ListaBodegaHerramientaPage: React.FC = () => {
 
       {isLoading ? (
         <p className="text-gray-600">Cargando...</p>
-      ) : !bodegaHerramientas || bodegaHerramientas.length === 0 ? (
-        <p className="text-gray-600">No hay datos disponibles.</p>
       ) : (
         <Tabla columns={columns} data={transformedData} />
       )}
-      <BodegaHerramientaNotifications userId3={user.id} />
 
       <ReuModal
         isOpen={isEditModalOpen}
@@ -161,6 +177,30 @@ const ListaBodegaHerramientaPage: React.FC = () => {
               type="number"
               value={selectedBodegaHerramienta.cantidad}
               onChange={(e) => setSelectedBodegaHerramienta({ ...selectedBodegaHerramienta, cantidad: Number(e.target.value) })}
+            />
+            <ReuInput
+              label="Cantidad Prestada"
+              placeholder="Ingrese la cantidad prestada"
+              type="number"
+              value={selectedBodegaHerramienta.cantidad_prestada}
+              onChange={(e) => setSelectedBodegaHerramienta({ ...selectedBodegaHerramienta, cantidad_prestada: Number(e.target.value) })}
+            />
+            <ReuInput
+              label="Costo Total"
+              placeholder="Ej. $1.000"
+              type="text"
+              value={
+                selectedBodegaHerramienta.costo_total != null
+                  ? `$${formatCOPNumber(selectedBodegaHerramienta.costo_total)}`
+                  : "$0"
+              }
+              onChange={(e) => {
+                const rawValue = e.target.value.replace(/^\$/, '');
+                setSelectedBodegaHerramienta({
+                  ...selectedBodegaHerramienta,
+                  costo_total: parseCOPNumber(rawValue),
+                });
+              }}
             />
           </>
         )}

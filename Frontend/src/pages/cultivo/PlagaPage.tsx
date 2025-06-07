@@ -1,11 +1,11 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import DefaultLayout from "@/layouts/default";
 import { ReuInput } from "@/components/globales/ReuInput";
 import { Plaga } from "@/types/cultivo/Plaga"; 
 import { useRegistrarPlaga } from "@/hooks/cultivo/useplaga";
 import { useTipoPlagas } from "@/hooks/cultivo/usetipoplaga";
-
+import Formulario from "@/components/globales/Formulario";
 const PlagaPage: React.FC = () => {
   const [plaga, setPlaga] = useState<Plaga>({
     fk_tipo_plaga: 0,
@@ -29,76 +29,76 @@ const PlagaPage: React.FC = () => {
     setPlaga((prev) => ({ ...prev, fk_tipo_plaga: tipoPlagaId }));
   };
 
+  const handleSubmit =(e: FormEvent<HTMLFormElement>)=>{
+    e.preventDefault();
+    mutation.mutate(plaga);
+  };
+
   return (
     <DefaultLayout>
-      <div className="w-full flex flex-col items-center min-h-screen p-6">
-        <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4 text-center">Registro de Plaga</h2>
+      <Formulario
+      title="Registro de Plaga"
+      onSubmit={handleSubmit}
+      isSubmitting={mutation.isPending}
+      buttonText="Guardar"
+      >
+      
+       
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Tipo de Plaga</label>
-            <select
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={plaga.fk_tipo_plaga || ""}
-              onChange={handleTipoPlagaChange}
-            >
-              <option value="">Seleccione un tipo de plaga</option>
-            
-               {tiposPlaga?.map((tipo) => (
-                <option key={tipo.id} value={tipo.id}>{tipo.nombre}</option>
-              ))} */
-            </select>
-          </div>
+        <ReuInput
+          label="Nombre"
+          placeholder="Ingrese el nombre"
+          type="text"
+          value={plaga.nombre}
+          onChange={(e) => setPlaga({ ...plaga, nombre: e.target.value })}
+        />
 
-          <ReuInput
-            label="Nombre"
-            placeholder="Ingrese el nombre"
-            type="text"
-            value={plaga.nombre}
-            onChange={(e) => setPlaga({ ...plaga, nombre: e.target.value })}
+        <ReuInput
+          label="Descripción"
+          placeholder="Ingrese la descripción"
+          type="text"
+          value={plaga.descripcion}
+          onChange={(e) => setPlaga({ ...plaga, descripcion: e.target.value })}
+        />
+
+        <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700">Imagen</label>
+          <input
+            type="file"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            id="imagen"
+            onChange={handleFileChange}
+            accept="image/*"
           />
-
-          <ReuInput
-            label="Descripción"
-            placeholder="Ingrese la descripción"
-            type="text"
-            value={plaga.descripcion}
-            onChange={(e) => setPlaga({ ...plaga, descripcion: e.target.value })}
-          />
-
-          <div className="mb-6">
-            <input
-              type="file"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              id="imagen"
-              onChange={handleFileChange}
-              accept="image/*"
-            />
-            <label htmlFor="imagen" className="block mt-2 text-sm font-medium text-gray-700">
-              Imagen
-            </label>
-          </div>
-
-          <button
-            className="w-full px-4 py-2 bg-green-600 text-white rounded-lg mt-4 hover:bg-green-700"
-            type="submit"
-            disabled={mutation.isPending}
-            onClick={(e) => {
-              e.preventDefault();
-              mutation.mutate(plaga);
-            }}
-          >
-            {mutation.isPending ? "Registrando..." : "Guardar"}
-          </button>
-
-          <button
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg mt-4 hover:bg-blue-700"
-            onClick={() => navigate("/cultivo/listarplaga")}
-          >
-            Listar Plagas
-          </button>
+          
         </div>
-      </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Tipo de Plaga</label>
+          <select
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={plaga.fk_tipo_plaga || ""}
+            onChange={handleTipoPlagaChange}
+          >
+            <option value="">Seleccione un tipo de plaga</option>
+          
+             {tiposPlaga?.map((tipo) => (
+              <option key={tipo.id} value={tipo.id}>{tipo.nombre}</option>
+            ))} */
+          </select>
+        </div>
+        
+        <div className="col-span-1 md:col-span-2 flex justify-center">
+        <button
+            className="w-full max-w-md px-4 py-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-all duration-200 shadow-md hover:shadow-lg font-medium text-sm uppercase tracking-wide"
+            type="button"
+          onClick={() => navigate("/cultivo/listarplaga")}
+        >
+          Listar Plagas
+        </button>
+        </div>
+      </Formulario>
+      
     </DefaultLayout>
   );
 };

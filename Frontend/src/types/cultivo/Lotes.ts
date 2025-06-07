@@ -5,7 +5,7 @@ export interface Lote {
     activo: boolean;
     tam_x: number;
     tam_y: number;
-    pos_x: number;
-    pos_y: number;
+    latitud: number;
+    longitud: number;
   }
   

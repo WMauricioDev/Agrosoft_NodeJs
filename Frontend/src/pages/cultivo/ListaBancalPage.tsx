@@ -23,8 +23,8 @@
       { name: "Nombre", uid: "nombre" },
       { name: "Tamaño X", uid: "TamX" },
       { name: "Tamaño Y", uid: "TamY" },
-      { name: "Posición X", uid: "posX" },
-      { name: "Posición Y", uid: "posY" },
+      { name: "Latitud", uid: "posX" },
+      { name: "Longitud", uid: "posY" },
       { name: "Lote", uid: "fk_lote" },
       { name: "Acciones", uid: "acciones" },
     ];
@@ -51,13 +51,14 @@
     };
 
     const transformedData = (bancales ?? []).map((bancal) => ({
+      
       id: bancal.id?.toString() || '',
       nombre: bancal.nombre,
-      TamX: bancal.TamX,
-      TamY: bancal.TamY,
-      posX: bancal.posX,
-      posY: bancal.posY,
-      fk_lote: lotes?.find((lote) => lote.id === bancal.fk_lote)?.nombre || 'Sin lote',
+      TamX: bancal.tam_x,
+      TamY: bancal.tam_y,
+      posX: bancal.latitud,
+      posY: bancal.longitud,
+      fk_lote: lotes?.find((lote) => lote.id === bancal.lote)?.nombre || 'Sin lote',
       acciones: (
         <>
           <button
@@ -152,7 +153,7 @@
             }
           />
           <ReuInput
-            label="Posición X"
+            label="Latitud"
             placeholder="Ingrese posición X"
             type="number"
             value={selectedBancal?.posX || 0}
@@ -164,7 +165,7 @@
             }
           />
           <ReuInput
-            label="Posición Y"
+            label="Longitud"
             placeholder="Ingrese posición Y"
             type="number"
             value={selectedBancal?.posY || 0}

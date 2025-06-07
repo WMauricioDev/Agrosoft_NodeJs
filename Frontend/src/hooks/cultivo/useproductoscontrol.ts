@@ -1,8 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/components/utils/axios"; 
 import { addToast } from "@heroui/react";
-import { ProductoControl } from "@/types/cultivo/ProductosControl"; 
-const API_URL = "http://127.0.0.1:8000/cultivo/productoscontrol/";
+import { ProductoControl } from "@/types/cultivo/ProductosControl";
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+const API_URL = `${BASE_URL}/cultivo/productoscontrol/`;
 
 const fetchProductoControl = async (): Promise<ProductoControl[]> => {
   const token = localStorage.getItem("access_token");
@@ -11,7 +14,7 @@ const fetchProductoControl = async (): Promise<ProductoControl[]> => {
     throw new Error("No se encontró el token de autenticación.");
   }
 
-  const response = await axios.get(API_URL, {
+  const response = await api.get(API_URL, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -35,7 +38,7 @@ const registrarProductoControl = async (productoControl: ProductoControl) => {
   formData.append("tipoContenido", productoControl.tipoContenido);
   formData.append("unidades", productoControl.unidades.toString());
 
-  return axios.post(API_URL, formData, {
+  return api.post(API_URL, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
@@ -48,7 +51,7 @@ const actualizarProductoControl = async (id: number, productoControl: ProductoCo
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
   try {
-    const response = await axios.put(`${API_URL}${id}/`, productoControl, {
+    const response = await api.put(`${API_URL}${id}/`, productoControl, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -62,7 +65,7 @@ const eliminarProductoControl = async (id: number) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
-  return axios.delete(`${API_URL}${id}/`, {
+  return api.delete(`${API_URL}${id}/`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
@@ -84,14 +87,25 @@ export const useRegistrarProductoControl = () => {
         title: "Éxito",
         description: "Producto de control registrado con éxito",
         timeout: 3000,
+        color:"success"
       });
     },
-    onError: () => {
-      addToast({
-        title: "Error",
-        description: "Error al registrar el producto de control",
-        timeout: 3000,
-      });
+    onError: (error: any) => {
+      if (error.response?.status === 403) {
+        addToast({
+          title: "Acceso denegado",
+          description: "No tienes permiso para realizar esta acción, contacta a un adminstrador.",
+          timeout: 3000,
+          color:"warning"
+        });
+      } else {
+        addToast({
+          title: "Error",
+          description: "Error al registrar el producto de control",
+          timeout: 3000,
+          color:"danger"
+        });
+      }
     },
   });
 };
@@ -107,14 +121,25 @@ export const useActualizarProductoControl = () => {
         title: "Éxito",
         description: "Producto de control actualizado con éxito",
         timeout: 3000,
+        color:"success"
       });
     },
     onError: (error: any) => {
-      addToast({
-        title: "Error",
-        description: error.response?.data?.message || "Error al actualizar el producto de control",
-        timeout: 3000,
-      });
+      if (error.response?.status === 403) {
+        addToast({
+          title: "Acceso denegado",
+          description: "No tienes permiso para realizar esta acción, contacta a un adminstrador.",
+          timeout: 3000,
+          color:"warning"
+        });
+      } else {
+        addToast({
+          title: "Error",
+          description: "Error al actualizar el producto de control",
+          timeout: 3000,
+          color:"danger"
+        });
+      }
     },
   });
 };
@@ -129,14 +154,25 @@ export const useEliminarProductoControl = () => {
         title: "Éxito",
         description: "Producto de control eliminado con éxito",
         timeout: 3000,
+        color:"success"
       });
     },
-    onError: () => {
-      addToast({
-        title: "Error",
-        description: "Error al eliminar el producto de control",
-        timeout: 3000,
+        onError: (error: any) => {
+          if (error.response?.status === 403) {
+            addToast({
+              title: "Acceso denegado",
+              description: "No tienes permiso para realizar esta acción, contacta a un adminstrador.",
+              timeout: 3000,
+              color:"warning"
+            });
+          } else {
+            addToast({
+              title: "Error",
+              description: "Error al eliminar el producto de control",
+              timeout: 3000,
+              color:"danger"
+            });
+          }
+        },
       });
-    },
-  });
-};
+    };

@@ -4,7 +4,11 @@ import { IconButton, Menu, MenuItem, Typography, Box } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Link } from "react-router-dom";
 
-const UserMenu: React.FC = () => {
+interface UserMenuProps {
+  hideText?: boolean;  
+}
+
+const UserMenu: React.FC<UserMenuProps> = ({ hideText }) => {
   const { logout, user } = useAuth();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -28,9 +32,11 @@ const UserMenu: React.FC = () => {
     <Box>
       <IconButton onClick={handleClick} sx={{ ml: 1, color: "#fff" }}>
         <AccountCircleIcon />
-        <Typography variant="body1" sx={{ ml: 1, color: "#fff" }}>
-          {user ? user.nombre : "Usuario"}
-        </Typography>
+        {!hideText && (
+          <Typography variant="body1" sx={{ ml: 1, color: "#fff" }}>
+            {user ? user.nombre : "Usuario"}
+          </Typography>
+        )}
       </IconButton>
       <Menu
         anchorEl={anchorEl}

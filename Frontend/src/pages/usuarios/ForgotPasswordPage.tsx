@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
+import { addToast } from "@heroui/react";
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { motion } from 'framer-motion';
 import AgrosisLogotic from '../../assets/def_AGROSIS_LOGOTIC.png';
 import LogoSena from '../../assets/logo2.png';
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = `${BASE_URL}`;
+
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -13,25 +17,40 @@ const ForgotPasswordPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8000/usuarios/password_reset/', {
+      const response = await fetch(`${API_URL}/usuarios/password_reset/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email }),
       });
-      const data = await response.json();
-      if (response.ok) {
-        toast.success('Correo de recuperación enviado. Revisa tu bandeja de entrada.');
-        navigate('/login');
-      } else {
-        toast.error(data.error || 'Error al enviar el correo.');
+        const data = await response.json();
+        if (response.ok) {
+          addToast({
+            title: "Éxito",
+            description: "Correo de recuperación enviado. Revisa tu bandeja de entrada.",
+            timeout: 3000,
+            color: "success"
+          });
+          navigate('/login');
+        } else {
+          addToast({
+            title: "Error",
+            description: data.error || "Error al enviar el correo.",
+            timeout: 3000,
+            color: "danger"
+          });
+        }
+      } catch (error) {
+        addToast({
+          title: "Error de conexión",
+          description: "Error al conectar con el servidor.",
+          timeout: 3000,
+          color: "danger"
+        });
       }
-    } catch (error) {
-      toast.error('Error al conectar con el servidor.');
     }
-  };
-
+      
   const textFieldStyles = {
     '& .MuiOutlinedInput-root': {
       borderRadius: '12px',

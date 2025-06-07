@@ -1,24 +1,26 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/components/utils/axios"; 
 import { addToast } from "@heroui/react";
 
-const API_URL = "http://127.0.0.1:8000/usuarios/";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = `${BASE_URL}/usuarios/`;
 
 export interface NuevoUsuario {
   nombre: string;
   apellido: string;
   email: string;
+  numero_documento: number;
   username?: string;
   password: string;
 }
-
+  
 export const useRegistrarUsuario = () => {
   const queryClient = useQueryClient();
 
   const registrarUsuario = async (usuario: NuevoUsuario) => {
-    const response = await axios.post(`${API_URL}registro/`, { 
-      ...usuario, 
-      rol_id: 1  // Se asigna automáticamente el rol "Aprendiz"
+    const response = await api.post(`${API_URL}registroSecundario/`, {
+      ...usuario,
+      rol_id: 1,
     });
     return response.data;
   };
@@ -27,16 +29,15 @@ export const useRegistrarUsuario = () => {
     mutationFn: registrarUsuario,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["usuarios"] });
-      addToast({ title: "Éxito", description: "Usuario registrado con éxito", timeout: 3000 });
     },
-    onError: (error) => {
-      addToast({ title: "Error", description: error.message || "Error al registrar el usuario", timeout: 3000 });
+    onError: () => {
+      // Sin notificaciones, solo se maneja desde el componente
     },
   });
 
   return {
     registrarUsuario: mutation.mutateAsync,
     isLoading: mutation.isPending,
-    error: mutation.error ? mutation.error.message : null,
+    error: mutation.error ?? null,
   };
 };

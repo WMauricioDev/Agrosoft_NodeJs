@@ -4,16 +4,8 @@ import DefaultLayout from "@/layouts/default";
 import { useRegistrarHerramienta } from "@/hooks/inventario/useHerramientas";
 import { ReuInput } from "@/components/globales/ReuInput";
 import Formulario from "@/components/globales/Formulario";
-
-interface Herramienta {
-  id: number;
-  nombre: string;
-  descripcion: string;
-  cantidad: number;
-  estado: string;
-  fecha_registro: string;
-  activo: boolean;
-}
+import { Herramienta } from "@/types/inventario/Herramientas";
+import { Switch } from "@heroui/react";
 
 const HerramientaPage: React.FC = () => {
   const [herramienta, setHerramienta] = useState<Herramienta>({
@@ -24,6 +16,7 @@ const HerramientaPage: React.FC = () => {
     estado: "Disponible",
     fecha_registro: new Date().toISOString(),
     activo: true,
+    precio: 0,
   });
 
   const mutation = useRegistrarHerramienta();
@@ -41,9 +34,15 @@ const HerramientaPage: React.FC = () => {
           estado: "Disponible",
           fecha_registro: new Date().toISOString(),
           activo: true,
+          precio: 0,
         });
       },
     });
+  };
+
+  const formatPrice = (value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, "");
+    return numericValue ? Number(numericValue) : 0;
   };
 
   return (
@@ -85,12 +84,15 @@ const HerramientaPage: React.FC = () => {
           }
         />
         <ReuInput
-          label="Estado"
-          placeholder="Ingrese el estado"
+          label="Precio Herramienta (COP)"
+          placeholder="Ingrese el precio"
           type="text"
-          value={herramienta.estado}
+          value={herramienta.precio.toLocaleString("es-CO")}
           onChange={(e) =>
-            setHerramienta({ ...herramienta, estado: e.target.value })
+            setHerramienta({
+              ...herramienta,
+              precio: formatPrice(e.target.value),
+            })
           }
         />
         <ReuInput
@@ -102,16 +104,14 @@ const HerramientaPage: React.FC = () => {
             setHerramienta({ ...herramienta, fecha_registro: e.target.value })
           }
         />
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            checked={herramienta.activo}
-            onChange={(e) =>
-              setHerramienta({ ...herramienta, activo: e.target.checked })
-            }
-            className="mr-2 h-5 w-5 text-green-500 border-gray-300 rounded"
-          />
-          <label className="text-gray-700 text-sm font-medium">Activo</label>
+          <div className="flex items-center">
+            <Switch
+                color="success"
+                size="sm"
+                isSelected={herramienta.activo}
+                onChange={(e) => setHerramienta({ ...herramienta, activo: e.target.checked })}
+                />
+                <label className="ml-2 text-sm font-medium text-gray-700">Activo</label>
         </div>
         <div className="col-span-1 md:col-span-2 flex justify-center">
           <button

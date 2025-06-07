@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/components/utils/axios"; 
 import { addToast } from "@heroui/react";
 import { Programacion } from "@/types/cultivo/Programacion";
 
@@ -12,7 +12,7 @@ const fetchProgramaciones = async (): Promise<Programacion[]> => {
     throw new Error("No se encontró el token de autenticación.");
   }
 
-  const response = await axios.get(API_URL, {
+  const response = await api.get(API_URL, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -27,7 +27,7 @@ const registrarProgramacion = async (programacion: Programacion) => {
     throw new Error("No se encontró el token de autenticación.");
   }
 
-  return axios.post(API_URL, programacion, {
+  return api.post(API_URL, programacion, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -37,7 +37,7 @@ const eliminarProgramacion = async (id: number) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
-  return axios.delete(`${API_URL}${id}/`, {
+  return api.delete(`${API_URL}${id}/`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
@@ -45,7 +45,7 @@ const actualizarProgramacion = async (id: number, programacion: Programacion) =>
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
-  return axios.put(`${API_URL}${id}/`, programacion, {
+  return api.put(`${API_URL}${id}/`, programacion, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
@@ -65,6 +65,7 @@ export const useRegistrarProgramacion = () => {
         title: "Éxito",
         description: "Programación registrada con éxito",
         timeout: 3000,
+        color:"success"
       });
     },
     onError: () => {
@@ -72,6 +73,7 @@ export const useRegistrarProgramacion = () => {
         title: "Error",
         description: "Error al registrar la programación",
         timeout: 3000,
+        color:"danger"
       });
     },
   });
@@ -82,10 +84,10 @@ export const useActualizarProgramacion = () => {
     mutationFn: ({ id, programacion }: { id: number; programacion: Programacion }) => actualizarProgramacion(id, programacion),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["programaciones"] });
-      addToast({ title: "Éxito", description: "Programacion actualizado con éxito", timeout: 3000 });
+      addToast({ title: "Éxito", description: "Programacion actualizado con éxito", timeout: 3000, color:"success" });
     },
     onError: () => {
-      addToast({ title: "Error", description: "Error al actualizar la programacion", timeout: 3000 });
+      addToast({ title: "Error", description: "Error al actualizar la programacion", timeout: 3000, color:"danger" });
     },
   });
 };
@@ -96,10 +98,10 @@ export const useEliminarProgramacion = () => {
     mutationFn: (id: number) => eliminarProgramacion(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["programaciones"] });
-      addToast({ title: "Éxito", description: "Programacion eliminada con éxito", timeout: 3000 });
+      addToast({ title: "Éxito", description: "Programacion eliminada con éxito", timeout: 3000, color:"success" });
     },
     onError: () => {
-      addToast({ title: "Error", description: "Error al eliminar la programacion", timeout: 3000 });
+      addToast({ title: "Error", description: "Error al eliminar la programacion", timeout: 3000, color:"danger" });
     },
   });
 };

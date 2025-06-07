@@ -4,27 +4,82 @@ import DefaultLayout from "@/layouts/default";
 import { useRegistrarUsuario } from "@/hooks/usuarios/useRegistrarUsuario";
 import Formulario from "@/components/globales/Formulario";
 import { ReuInput } from "@/components/globales/ReuInput";
-import { Eye, EyeOff } from "lucide-react";
+import { addToast } from "@heroui/react";
 
 const UsuariosSecondPage: React.FC = () => {
   const [usuario, setUsuario] = useState({
     nombre: "",
     apellido: "",
-    email: "",
-    username: "",
-    password: "",  // Se cambió de "password" a "password" para coincidir con el hook
+    numero_documento: 0,
   });
 
-  const [mostrarPassword, setMostrarPassword] = useState(false);
-  const { registrarUsuario, isLoading, error } = useRegistrarUsuario();
+  const { registrarUsuario, isLoading } = useRegistrarUsuario();
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
+    const numeroStr = usuario.numero_documento.toString();
+
+    // Verificar campos vacíos
+    if (
+      !usuario.nombre.trim() ||
+      !usuario.apellido.trim() ||
+      usuario.numero_documento === 0
+    ) {
+      addToast({
+        title: "Error",
+        description: "Hay campos vacíos. Por favor, complétalos todos.",
+        timeout: 3000,
+        color: "danger",
+      });
+      return;
+    }
+
+    // Validar que nombre y apellido no contengan números
+    const contieneNumeros = /\d/;
+    if (contieneNumeros.test(usuario.nombre) || contieneNumeros.test(usuario.apellido)) {
+      addToast({
+        title: "Error",
+        description: "El nombre y el apellido no deben contener números.",
+        timeout: 3000,
+        color: "danger",
+      });
+      return;
+    }
+
+    // Validar número de documento entre 7 y 19 dígitos
+    if (
+      usuario.numero_documento <= 0 ||
+      numeroStr.length < 7 ||
+      numeroStr.length > 19
+    ) {
+      addToast({
+        title: "Error",
+        description: "El número de documento debe tener entre 7 y 19 dígitos.",
+        timeout: 3000,
+        color: "danger",
+      });
+      return;
+    }
+
     try {
       await registrarUsuario(usuario);
-      setUsuario({ nombre: "", apellido: "", email: "", username: "", password: "" });
+      setUsuario({ nombre: "", apellido: "", numero_documento: 0 });
+
+      addToast({
+        title: "Éxito",
+        description: "Usuario registrado con éxito.",
+        timeout: 3000,
+        color: "success",
+      });
     } catch (error) {
       console.error("Error al registrar usuario:", error);
+
+      addToast({
+        title: "Error",
+        description: "Hubo un problema al registrar el usuario.",
+        timeout: 3000,
+        color: "danger",
+      });
     }
   };
 
@@ -51,36 +106,15 @@ const UsuariosSecondPage: React.FC = () => {
           onChange={(e) => setUsuario({ ...usuario, apellido: e.target.value })}
         />
         <ReuInput
-          label="Correo Electrónico"
-          placeholder="Ingrese el correo"
-          type="email"
-          value={usuario.email}
-          onChange={(e) => setUsuario({ ...usuario, email: e.target.value })}
+          label="Número de documento"
+          placeholder="Ingrese el número de documento"
+          type="number"
+          value={usuario.numero_documento}
+          onChange={(e) =>
+            setUsuario({ ...usuario, numero_documento: Number(e.target.value) })
+          }
         />
-        <ReuInput
-          label="Nombre de Usuario"
-          placeholder="Ingrese el nombre de usuario"
-          type="text"
-          value={usuario.username}
-          onChange={(e) => setUsuario({ ...usuario, username: e.target.value })}
-        />
-        <div className="relative">
-          <ReuInput
-            label="Contraseña"
-            placeholder="Ingrese la contraseña"
-            type={mostrarPassword ? "text" : "password"}
-            value={usuario.password}
-            onChange={(e) => setUsuario({ ...usuario, password: e.target.value })}
-          />
-          <button
-            type="button"
-            onClick={() => setMostrarPassword(!mostrarPassword)}
-            className="absolute right-3 top-9 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-          >
-            {mostrarPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
-        </div>
-        {error && <p className="text-red-500">{error}</p>}
+
         <div className="col-span-1 md:col-span-2 flex justify-center">
           <button
             type="button"

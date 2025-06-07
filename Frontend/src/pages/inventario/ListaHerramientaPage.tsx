@@ -6,16 +6,7 @@ import ReuModal from "@/components/globales/ReuModal";
 import { ReuInput } from "@/components/globales/ReuInput";
 import Tabla from "@/components/globales/Tabla";
 import { EditIcon, Trash2 } from "lucide-react";
-
-export interface Herramienta {
-    id: number;
-    nombre: string;
-    descripcion: string;
-    cantidad: number;
-    estado: string;
-    activo: boolean;
-    fecha_registro: string;
-}
+import { Herramienta } from "@/types/inventario/Herramientas";
 
 const ListaHerramientaPage: React.FC = () => {
     const [selectedHerramienta, setSelectedHerramienta] = useState<Herramienta | null>(null);
@@ -33,7 +24,8 @@ const ListaHerramientaPage: React.FC = () => {
         { name: "Cantidad", uid: "cantidad" },
         { name: "Estado", uid: "estado" },
         { name: "Activo", uid: "activo" },
-        { name: "Fecha Registro", uid: "fecha_registro" }, 
+        { name: "Fecha Registro", uid: "fecha_registro" },
+        { name: "Precio", uid: "precio" },
         { name: "Acciones", uid: "acciones" },
     ];
 
@@ -59,25 +51,48 @@ const ListaHerramientaPage: React.FC = () => {
         }
     };
 
-    const transformedData = (herramientas ?? []).map((herramienta) => ({
-        id: herramienta.id?.toString() || "",
-        nombre: herramienta.nombre,
-        descripcion: herramienta.descripcion,
-        cantidad: herramienta.cantidad,
-        estado: herramienta.estado,
-        activo: herramienta.activo ? "Sí" : "No",
-        fecha_registro: herramienta.fecha_registro, 
-        acciones: (
-            <>
-                <button className="text-green-500 hover:underline mr-2" onClick={() => handleEdit(herramienta)}>
-                    <EditIcon size={22} color="black" />
-                </button>
-                <button className="text-red-500 hover:underline" onClick={() => handleDelete(herramienta)}>
-                    <Trash2 size={22} color="red" />
-                </button>
-            </>
-        ),
-    }));
+    const formatPrice = (value: string) => {
+        const numericValue = value.replace(/[^0-9]/g, "");
+        return numericValue ? Number(numericValue) : 0;
+    };
+
+    const totalValor = (herramientas ?? []).reduce((sum, herramienta) => {
+        return sum + herramienta.cantidad * herramienta.precio;
+    }, 0);
+
+    const transformedData = [
+        ...(herramientas ?? []).map((herramienta) => ({
+            id: herramienta.id?.toString() || "",
+            nombre: herramienta.nombre,
+            descripcion: herramienta.descripcion,
+            cantidad: herramienta.cantidad,
+            estado: herramienta.estado,
+            activo: herramienta.activo ? "Sí" : "No",
+            fecha_registro: new Date(herramienta.fecha_registro).toISOString().split("T")[0],
+            precio: `$${Number(herramienta.precio).toLocaleString("es-CO")}`,
+            acciones: (
+                <>
+                    <button className="text-green-500 hover:underline mr-2" onClick={() => handleEdit(herramienta)}>
+                        <EditIcon size={22} color="black" />
+                    </button>
+                    <button className="text-red-500 hover:underline" onClick={() => handleDelete(herramienta)}>
+                        <Trash2 size={22} color="red" />
+                    </button>
+                </>
+            ),
+        })),
+        {
+            id: "total",
+            nombre: "Total",
+            descripcion: "",
+            cantidad: "",
+            estado: "",
+            activo: "",
+            fecha_registro: "",
+            precio: `$${totalValor.toLocaleString("es-CO")}`,
+            acciones: "",
+        },
+    ];
 
     return (
         <DefaultLayout>
@@ -106,7 +121,7 @@ const ListaHerramientaPage: React.FC = () => {
                 title="Editar Herramienta"
                 onConfirm={() => {
                     if (selectedHerramienta && selectedHerramienta.id !== undefined) {
-                        actualizarMutation.mutate(selectedHerramienta, {
+                        actualizarMutation.mutate({ id: selectedHerramienta.id, herramienta: selectedHerramienta }, {
                             onSuccess: () => {
                                 setIsEditModalOpen(false);
                                 refetch();
@@ -144,6 +159,13 @@ const ListaHerramientaPage: React.FC = () => {
                             type="text"
                             value={selectedHerramienta.estado}
                             onChange={(e) => setSelectedHerramienta({ ...selectedHerramienta, estado: e.target.value })}
+                        />
+                        <ReuInput
+                            label="Precio (COP)"
+                            placeholder="Ingrese el precio"
+                            type="text"
+                            value={selectedHerramienta.precio.toLocaleString("es-CO")}
+                            onChange={(e) => setSelectedHerramienta({ ...selectedHerramienta, precio: formatPrice(e.target.value) })}
                         />
                         <div className="mb-4 flex items-center">
                             <input

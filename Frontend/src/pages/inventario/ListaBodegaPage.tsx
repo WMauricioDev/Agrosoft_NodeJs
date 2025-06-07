@@ -12,7 +12,6 @@ interface Bodega {
   nombre: string;
   ubicacion: string;
   capacidad: number;
-  direccion: string;
   telefono: string;
   activo: boolean;
 }
@@ -31,7 +30,6 @@ const ListaBodegaPage: React.FC = () => {
     { name: "Nombre", uid: "nombre" },
     { name: "Ubicación", uid: "ubicacion" },
     { name: "Capacidad", uid: "capacidad" },
-    { name: "Dirección", uid: "direccion" },
     { name: "Teléfono", uid: "telefono" },
     { name: "Activo", uid: "activo" },
     { name: "Acciones", uid: "acciones" },
@@ -64,7 +62,6 @@ const ListaBodegaPage: React.FC = () => {
     nombre: bodega.nombre,
     ubicacion: bodega.ubicacion,
     capacidad: bodega.capacidad,
-    direccion: bodega.direccion,
     telefono: bodega.telefono,
     activo: bodega.activo ? "Sí" : "No",
     acciones: (
@@ -111,7 +108,8 @@ const ListaBodegaPage: React.FC = () => {
         title="Editar Bodega"
         onConfirm={() => {
           if (selectedBodega && selectedBodega.id !== undefined) {
-            actualizarMutation.mutate(selectedBodega, {
+            const { id, ...bodegaWithoutId } = selectedBodega;
+            actualizarMutation.mutate({ id, bodega: bodegaWithoutId }, {
               onSuccess: () => {
                 setIsEditModalOpen(false);
                 refetch();
@@ -150,15 +148,6 @@ const ListaBodegaPage: React.FC = () => {
                   ...selectedBodega,
                   capacidad: Number(e.target.value),
                 })
-              }
-            />
-            <ReuInput
-              label="Dirección"
-              placeholder="Ingrese la dirección"
-              type="text"
-              value={selectedBodega.direccion}
-              onChange={(e) =>
-                setSelectedBodega({ ...selectedBodega, direccion: e.target.value })
               }
             />
             <ReuInput

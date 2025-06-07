@@ -6,4 +6,6 @@ export interface Herramienta {
     estado: string;
     activo: boolean;
     fecha_registro: string;
+    precio: number;
+    cantidad_disponible: number
 }

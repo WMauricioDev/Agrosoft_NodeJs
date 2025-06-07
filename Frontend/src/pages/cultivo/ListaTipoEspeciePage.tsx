@@ -45,14 +45,29 @@ const ListaTipoEspeciePage: React.FC = () => {
     }
   };
 
-  const transformedData = (especies ?? []).map((especie) => ({
+const transformedData = (especies ?? []).map((especie) => ({
     id: especie.id?.toString() || '',
     nombre: especie.nombre,
     descripcion: especie.descripcion,
     imagen: especie.img
-      ? typeof especie.img === 'string'
-        ? especie.img
-        : URL.createObjectURL(especie.img)
+      ? (
+        <div className="flex justify-center items-center h-full">
+          <div className="relative group">
+            <img 
+              src={typeof especie.img === 'string' 
+                ? especie.img 
+                : URL.createObjectURL(especie.img)} 
+              alt={especie.nombre}
+              className="h-16 w-16 object-cover rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = 'https://via.placeholder.com/64?text=Imagen+no+disponible';
+              }}
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition-all duration-200"></div>
+          </div>
+        </div>
+      )
       : 'Sin imagen',
     acciones: (
       <>
@@ -66,11 +81,12 @@ const ListaTipoEspeciePage: React.FC = () => {
           className="text-red-500 hover:underline"
           onClick={() => handleDelete(especie)}
         >
-        <Trash2   size={22} color='red'/>
-      </button>
+          <Trash2 size={22} color='red'/>
+        </button>
       </>
     ),
   }));
+
 
   return (
     <DefaultLayout>

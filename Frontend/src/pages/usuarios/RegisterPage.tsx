@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import Register from '../../components/usuarios/Register';
 
 import AgrosisLogotic from '../../assets/def_AGROSIS_LOGOTIC.png';
-import LogoSena from '../../assets/logo2.png';
+import LogoSena from '../../assets/logob.png';
 
 const RegisterPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -82,15 +82,15 @@ const RegisterPage: React.FC = () => {
         sx={{
           position: 'absolute',
           bottom: 16,
-          left: 16,
+          left: 22,
           zIndex: 1,
         }}
       >
         <img
           src={LogoSena}
-          alt="Logo SENA"
+          alt="Logo SENA" 
           style={{
-            width: '100px',
+            width:'130px',
             height: 'auto',
           }}
         />

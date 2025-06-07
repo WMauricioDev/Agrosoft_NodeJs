@@ -1,9 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/components/utils/axios"; 
 import { addToast } from "@heroui/react";
 import { Lote } from "@/types/cultivo/Lotes";
 
-const API_URL = "http://127.0.0.1:8000/cultivo/lote/";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = `${BASE_URL}/cultivo/lote/`;
 
 const fetchLotes = async (): Promise<Lote[]> => {
   const token = localStorage.getItem("access_token");
@@ -12,7 +13,7 @@ const fetchLotes = async (): Promise<Lote[]> => {
     throw new Error("No se encontró el token de autenticación.");
   }
 
-  const response = await axios.get(API_URL, {
+  const response = await api.get(API_URL, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -27,22 +28,14 @@ const registrarLote = async (lote: Lote) => {
     throw new Error("No se encontró el token de autenticación.");
   }
 
-  const formData = new FormData();
-  formData.append("nombre", lote.nombre);
-  formData.append("descripcion", lote.descripcion);
-  formData.append("activo", JSON.stringify(lote.activo));
-  formData.append("tam_x", lote.tam_x.toString());
-  formData.append("tam_y", lote.tam_y.toString());
-  formData.append("pos_x", lote.pos_x.toString());
-  formData.append("pos_y", lote.pos_y.toString());
-
-  return axios.post(API_URL, formData, {
+  return api.post(API_URL, lote, {
     headers: {
-      "Content-Type":"application/json",
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
 };
+
 
 export const useLotes = () => {
   return useQuery<Lote[], Error>({
@@ -52,29 +45,43 @@ export const useLotes = () => {
 };
 
 export const useRegistrarLote = () => {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (lote: Lote) => registrarLote(lote),
     onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['lotes'] })
       addToast({
         title: "Éxito",
         description: "Lote registrado con éxito",
+        color:"success"
       });
     },
-    onError: () => {
-      addToast({
-        title: "Error",
-        description: "Error al registrar el lote",
-    
-      });
+    onError: (error: any) => {
+      if (error.response?.status === 403) {
+        addToast({
+          title: "Acceso denegado",
+          description: "No tienes permiso para realizar esta acción, contacta a un adminstrador.",
+          timeout: 3000,
+          color:"warning"
+        });
+      } else {
+        addToast({
+          title: "Error",
+          description: "Error al registrar el lote",
+          timeout: 3000,
+          color:"danger"
+        });
+      }
     },
   });
 };
+
 const actualizarLote = async (id: number, lote: Lote) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
   try {
-    const response = await axios.put(`${API_URL}${id}/`, lote, {
+    const response = await api.put(`${API_URL}${id}/`, lote, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -90,14 +97,24 @@ export const useActualizarLote = () => {
     mutationFn: ({ id, lote }: { id: number; lote: Lote }) => actualizarLote(id, lote),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lotes"] });
-      addToast({ title: "Éxito", description: "Lote actualizado con éxito", timeout: 3000 });
+      addToast({ title: "Éxito", description: "Lote actualizado con éxito", timeout: 3000, color:"success"});
     },
     onError: (error: any) => {
-      addToast({ 
-        title: "Error", 
-        description: error.response?.data?.message || "Error al actualizar el lote", 
-        timeout: 3000 
-      });
+      if (error.response?.status === 403) {
+        addToast({
+          title: "Acceso denegado",
+          description: "No tienes permiso para realizar esta acción, contacta a un adminstrador.",
+          timeout: 3000,
+          color:"warning"
+        });
+      } else {
+        addToast({
+          title: "Error",
+          description: "Error al actualizar el lote",
+          timeout: 3000,
+          color:"danger"
+        });
+      }
     },
   });
 };
@@ -106,7 +123,7 @@ const eliminarLote = async (id: number) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
-  return axios.delete(`${API_URL}${id}/`, {
+  return api.delete(`${API_URL}${id}/`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
@@ -117,10 +134,24 @@ export const useEliminarLote = () => {
     mutationFn: (id: number) => eliminarLote(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lotes"] });
-      addToast({ title: "Éxito", description: "Lote eliminado con éxito", timeout: 3000 });
+      addToast({ title: "Éxito", description: "Lote eliminado con éxito", timeout: 3000, color:"success"});
     },
-    onError: () => {
-      addToast({ title: "Error", description: "Error al eliminar el lote", timeout: 3000 });
+    onError: (error: any) => {
+      if (error.response?.status === 403) {
+        addToast({
+          title: "Acceso denegado",
+          description: "No tienes permiso para realizar esta acción, contacta a un adminstrador.",
+          timeout: 3000,
+          color:"warning"
+        });
+      } else {
+        addToast({
+          title: "Error",
+          description: "Error al eliminar el lote",
+          timeout: 3000,
+          color:"success"
+        });
+      }
     },
   });
 };
