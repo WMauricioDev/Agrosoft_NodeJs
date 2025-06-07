@@ -17,7 +17,6 @@ export interface User {
   numero_de_documento: number;
   username?: string;
   rol: Rol; 
-  esAdmin?: boolean; 
 }
 
 interface AuthContextType {
@@ -69,20 +68,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       const data = await response.json();
-      localStorage.setItem("access_token", data.access);
+      localStorage.setItem("access_token", data.token);
       localStorage.setItem("refresh_token", data.refresh);
       setAuthenticated(true);
 
       const userResponse = await fetch(`${API_URL}/api/usuarios/me/`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${data.access}`,
+          Authorization: `Bearer ${data.token}`,
           "Content-Type": "application/json",
         },
       });
 
-      const userResponseText = await userResponse.text();
-      const userData: User = JSON.parse(userResponseText);
+   const userData: User = await userResponse.json();
+
 
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));

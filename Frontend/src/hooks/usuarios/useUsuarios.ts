@@ -4,7 +4,7 @@ import { addToast } from "@heroui/react";
 
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/usuarios/`;
+const API_URL = `${BASE_URL}`;
 
 
 export interface Rol {
@@ -38,7 +38,7 @@ export const useUsuarios = () => {
   const fetchUsuarios = async (): Promise<Usuario[]> => {
     const token = localStorage.getItem("access_token");
     if (!token) throw new Error("No se encontró el token de autenticación.");
-    const response = await api.get(`${API_URL}usuarios/`, {
+    const response = await api.get(`${API_URL}/api/usuarios/`, {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
     if (!Array.isArray(response.data)) throw new Error("La API no devolvió un array de usuarios.");
@@ -59,7 +59,7 @@ export const useUsuarios = () => {
   const updateUsuario = async (usuario: UsuarioUpdate): Promise<Usuario> => {
     const token = localStorage.getItem("access_token");
     if (!token) throw new Error("No se encontró el token de autenticación.");
-    const response = await api.put(`${API_URL}usuarios/${usuario.id}/`, usuario, {
+    const response = await api.put(`${API_URL}/api/usuarios/${usuario.id}/`, usuario, {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
     return response.data; 

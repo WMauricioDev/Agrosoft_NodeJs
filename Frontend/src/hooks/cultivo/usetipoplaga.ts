@@ -5,7 +5,7 @@ import { TipoPlaga } from "@/types/cultivo/TipoPlaga";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}/cultivo/tipo_plaga/`;
+const API_URL = `${BASE_URL}/api/cultivo/tipo_plaga/`;
 
 const fetchTipoPlagas = async (): Promise<TipoPlaga[]> => {
   const token = localStorage.getItem("access_token");
