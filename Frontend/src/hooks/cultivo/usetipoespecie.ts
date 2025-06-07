@@ -70,23 +70,30 @@ export const useRegistrarTipoEspecie = () => {
         title: "Éxito",
         description: "Tipo de especie registrado con éxito",
         timeout: 3000,
-        color: "success"
+        color: "success",
       });
     },
     onError: (error: any) => {
       if (error.response?.status === 403) {
         addToast({
           title: "Acceso denegado",
-          description: "No tienes permiso para realizar esta acción, contacta a un adminstrador.",
+          description: "No tienes permiso para realizar esta acción, contacta a un administrador.",
           timeout: 3000,
-          color:"warning"
+          color: "warning",
+        });
+      } else if (error.response?.status === 400) {
+        addToast({
+          title: "Error",
+          description: error.response.data.message || "El nombre es un campo requerido",
+          timeout: 3000,
+          color: "danger",
         });
       } else {
         addToast({
           title: "Error",
           description: "Error al registrar el tipo de especie",
           timeout: 3000,
-          color: "danger"
+          color: "danger",
         });
       }
     },
