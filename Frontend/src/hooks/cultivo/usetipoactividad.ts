@@ -5,7 +5,7 @@ import { TipoActividad } from "@/types/cultivo/TipoActividad";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}/cultivo/tipo_actividad/`;
+const API_URL = `${BASE_URL}/api/cultivo/tipo_actividad/`;
 
 const fetchTipoActividad = async (): Promise<TipoActividad[]> => {
   const token = localStorage.getItem("access_token");
@@ -29,11 +29,8 @@ const registrarTipoActividad = async (tipoActividad: TipoActividad) => {
     throw new Error("No se encontró el token de autenticación.");
   }
 
-  const formData = new FormData();
-  formData.append("nombre", tipoActividad.nombre);
-  formData.append("descripcion", tipoActividad.descripcion);
 
-  return api.post(API_URL, formData, {
+  return api.post(API_URL, tipoActividad, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,

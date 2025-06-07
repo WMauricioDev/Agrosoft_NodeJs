@@ -8,6 +8,7 @@ import Formulario from "@/components/globales/Formulario";
 import { ModalLote } from "@/components/cultivo/ModalLote";
 import { Plus } from "lucide-react";
 import { Bancal } from "@/types/cultivo/Bancal";
+import { LoteResponse } from "@/types/cultivo/Lotes";
 const BancalPage: React.FC = () => {
   const [bancal, setBancal] = useState({
     nombre: "",
@@ -15,12 +16,12 @@ const BancalPage: React.FC = () => {
     tam_y: 0,
     latitud: 0,
     longitud: 0,
-    lote: 0,
+    lote_id: 0,
   });
 
   const mutation = useRegistrarBancal();
   const navigate = useNavigate()
-  const {data : lotes} = useLotes()
+  const { data: lotes } = useLotes() as { data: LoteResponse | undefined; isLoading: boolean };
 
   const [latitudStr, setLatitudStr] = useState("0");
   const [longitudStr, setLongitudStr] = useState("0");
@@ -35,7 +36,7 @@ const BancalPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) =>{
     e.preventDefault()
-     if (bancal.lote === 0) {
+     if (bancal.lote_id === 0) {
     alert("Debe seleccionar un lote.");
     return;
   }
@@ -119,12 +120,12 @@ const BancalPage: React.FC = () => {
           </div>
             <select
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              name="lote"
-              value={bancal.lote}
+              name="lote_id"
+              value={bancal.lote_id}
               onChange={handleChange}
             >
               <option value="">Seleccione un lote</option>
-              {lotes?.map((lote) => (
+               {lotes?.lotes?.map((lote) => (
                 <option key={lote.id} value={lote.id}>{lote.nombre}</option>
               ))}
             </select>

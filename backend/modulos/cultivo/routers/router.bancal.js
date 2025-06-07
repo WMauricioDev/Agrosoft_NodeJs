@@ -1,6 +1,6 @@
 import { Router } from "express";
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
-import { postBancal, getBancal, IdBancal, actualizarBancal } from "../controller/controller.bancal.js";
+import { postBancal, getBancal, IdBancal, actualizarBancal, deleteBancal } from "../controller/controller.bancal.js";
 
 const RouterBancal = Router();
 
@@ -146,5 +146,6 @@ RouterBancal.get("/bancal/:id", verificarToken, IdBancal);
  *         description: Bancal actualizado correctamente
  */
 RouterBancal.put("/bancal/:id", verificarToken, actualizarBancal);
+RouterBancal.delete("/bancal/:id", verificarToken, deleteBancal);
 
 export default RouterBancal;
