@@ -1,6 +1,6 @@
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
 import { Router } from "express";
-import { postLote, getLote, IdLote, actualizarLote } from "../controller/controller.lotes.js";
+import { postLote, getLote, IdLote, actualizarLote, deleteLote } from "../controller/controller.lotes.js";
 const RouterLote = Router();
 
 /**
@@ -135,5 +135,7 @@ RouterLote.get("/lotes/:id", verificarToken, IdLote);
  *         description: Lote actualizado correctamente
  */
 RouterLote.put("/lotes/:id", verificarToken, actualizarLote);
+
+RouterLote.delete("/lotes/:id", verificarToken, deleteLote);
 
 export default RouterLote;

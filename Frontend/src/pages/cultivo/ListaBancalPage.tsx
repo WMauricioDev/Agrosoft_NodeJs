@@ -7,14 +7,14 @@
   import Tabla from "@/components/globales/Tabla";
   import { useNavigate } from "react-router-dom";
   import { EditIcon, Trash2 } from 'lucide-react';
-
+  import { LoteResponse } from "@/types/cultivo/Lotes";
   const ListaBancalPage: React.FC = () => {
     const [selectedBancal, setSelectedBancal] = useState<any>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     const { data: bancales, isLoading, refetch } = useBancales();
-    const { data: lotes } = useLotes();
+    const { data: lotes } = useLotes() as { data: LoteResponse | undefined; isLoading: boolean };
     const actualizarMutation = useActualizarBancal();
     const eliminarMutation = useEliminarBancal();
     const navigate = useNavigate();
@@ -58,8 +58,7 @@
       TamY: bancal.tam_y,
       posX: bancal.latitud,
       posY: bancal.longitud,
-      fk_lote: lotes?.find((lote) => lote.id === bancal.lote)?.nombre || 'Sin lote',
-      acciones: (
+      fk_lote: lotes?.lotes?.find((lote) => lote.id === bancal.lote_id)?.nombre || 'Sin lote',      acciones: (
         <>
           <button
             className="text-green-500 hover:underline mr-2"
@@ -189,7 +188,7 @@
               }
             >
               <option value="">Seleccione un lote</option>
-              {lotes?.map((lote) => (
+              {lotes?.lotes?.map((lote) => (
                 <option key={lote.id} value={lote.id}>{lote.nombre}</option>
               ))}
             </select>

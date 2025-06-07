@@ -4,7 +4,7 @@ import { addToast } from "@heroui/react";
 import { Lote } from "@/types/cultivo/Lotes";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/cultivo/lote/`;
+const API_URL = `${BASE_URL}/api/cultivo/lotes/`;
 
 const fetchLotes = async (): Promise<Lote[]> => {
   const token = localStorage.getItem("access_token");

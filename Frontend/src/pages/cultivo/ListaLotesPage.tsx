@@ -3,7 +3,7 @@ import DefaultLayout from "@/layouts/default";
 import { ReuInput } from "../../components/globales/ReuInput";
 import { useNavigate } from "react-router-dom";
 import { useLotes, useActualizarLote, useEliminarLote } from "../../hooks/cultivo/uselotes";
-import { Lote } from "../../types/cultivo/Lotes";
+import { Lote, LoteResponse } from "../../types/cultivo/Lotes";
 import Tabla from "@/components/globales/Tabla";
 import ReuModal from "../../components/globales/ReuModal";
 import { EditIcon, Trash2 } from 'lucide-react';
@@ -25,8 +25,7 @@ const ListarLotesPage: React.FC = () => {
 
   const actualizarMutation = useActualizarLote();
   const eliminarMutation = useEliminarLote();
-  const { data: lotes, isLoading } = useLotes();
-
+  const { data: lotes, isLoading } = useLotes() as { data: LoteResponse | undefined; isLoading: boolean };
   const columns = [
     { name: "Nombre", uid: "nombre" },
     { name: "Descripción", uid: "descripcion" },
@@ -57,32 +56,32 @@ const ListarLotesPage: React.FC = () => {
   };
   const navigate = useNavigate()
 
-  const transformedData = (lotes ?? []).map((lote) => ({
-    id: lote.id?.toString() || '',
-    nombre: lote.nombre,
-    descripcion: lote.descripcion,
-    activo: lote.activo ? "Sí" : "No",
-    tam_x: lote.tam_x,
-    tam_y: lote.tam_y,
-    pos_x: lote.latitud,
-    pos_y: lote.longitud,
-    acciones: (
-      <>
-        <button
-          className="text-green-500 hover:underline mr-2"
-          onClick={() => handleEdit(lote)}
-        >
-           <EditIcon size={22} color='black'/>
-        </button>
-        <button
-          className="text-red-500 hover:underline"
-          onClick={() => handleDelete(lote)}
-        >
-        <Trash2   size={22} color='red'/>
-        </button>
-      </>
-    ),
-  }));
+  const transformedData = (lotes?.lotes ?? []).map((lote) => ({
+  id: lote.id?.toString() || '',
+  nombre: lote.nombre,
+  descripcion: lote.descripcion,
+  activo: lote.activo ? "Sí" : "No",
+  tam_x: lote.tam_x,
+  tam_y: lote.tam_y,
+  pos_x: lote.latitud,
+  pos_y: lote.longitud,
+  acciones: (
+    <>
+      <button
+        className="text-green-500 hover:underline mr-2"
+        onClick={() => handleEdit(lote)}
+      >
+        <EditIcon size={22} color='black'/>
+      </button>
+      <button
+        className="text-red-500 hover:underline"
+        onClick={() => handleDelete(lote)}
+      >
+        <Trash2 size={22} color='red'/>
+      </button>
+    </>
+  ),
+}));
 
   return (
     <DefaultLayout>

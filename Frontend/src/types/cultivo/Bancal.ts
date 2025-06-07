@@ -5,5 +5,5 @@ export interface Bancal {
     tam_y: number;
     latitud: number;
     longitud: number;
-    lote: number;
+    lote_id: number;
   }

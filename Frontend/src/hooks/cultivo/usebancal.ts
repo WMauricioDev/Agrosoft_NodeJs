@@ -4,7 +4,7 @@ import { addToast } from "@heroui/react";
 import { Bancal } from "@/types/cultivo/Bancal"; 
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/cultivo/Bancal/`;
+const API_URL = `${BASE_URL}/api/cultivo/bancal/`;
 
 const fetchBancales = async (): Promise<Bancal[]> => {
   const token = localStorage.getItem("access_token");
