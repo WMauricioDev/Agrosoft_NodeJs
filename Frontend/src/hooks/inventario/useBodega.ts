@@ -4,7 +4,7 @@ import { addToast } from "@heroui/react";
 import { Bodega } from "@/types/inventario/Bodega";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/inventario/bodega/`;
+const API_URL = `${BASE_URL}/api/inv/bodega/`;
 
 const fetchBodegas = async (): Promise<Bodega[]> => {
     const token = localStorage.getItem("access_token");

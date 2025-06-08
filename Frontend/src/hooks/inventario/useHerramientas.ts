@@ -4,7 +4,7 @@ import { addToast } from "@heroui/react";
 import { Herramienta } from "@/types/inventario/Herramientas";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/inventario/herramientas/`;
+const API_URL = `${BASE_URL}/api/inv/herramientas/`;
 
 const fetchHerramientas = async (): Promise<Herramienta[]> => {
     const token = localStorage.getItem("access_token");
