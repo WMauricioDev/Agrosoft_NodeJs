@@ -6,6 +6,7 @@ import { Bancal } from "@/types/cultivo/Bancal";
 import { useState } from "react";
 import { ModalLote } from "./ModalLote";
 import { Plus } from "lucide-react";
+import { LoteResponse } from "@/types/cultivo/Lotes";
 interface ModalBancalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -19,10 +20,10 @@ export const ModalBancal = ({ isOpen, onOpenChange, onSuccess }: ModalBancalProp
     tam_y: 0,
     latitud: 0,
     longitud: 0,
-    lote: 0,
+    lote_id: 0,
   });
 
-  const { data: lotes } = useLotes();
+  const { data: lotes } = useLotes() as { data: LoteResponse | undefined; isLoading: boolean };
   const mutation = useRegistrarBancal();
   const [openLote, setOpenLote] = useState(false);
   const [latitudStr, setLatitudStr] = useState("0");
@@ -53,7 +54,7 @@ export const ModalBancal = ({ isOpen, onOpenChange, onSuccess }: ModalBancalProp
           tam_y: 0,
           latitud: 0,
           longitud: 0,
-          lote: 0,
+          lote_id: 0,
         });
         onSuccess?.();
       }
@@ -130,15 +131,15 @@ export const ModalBancal = ({ isOpen, onOpenChange, onSuccess }: ModalBancalProp
             </button>
           </div>
           <select
-            name="lote"
-            value={nuevoBancal.lote || ""}
+            name="lote_id"
+            value={nuevoBancal.lote_id || ""}
             onChange={handleChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border"
           >
             <option value="0">Seleccione un lote</option>
-            {lotes?.map((lote) => (
-              <option key={lote.id} value={lote.id}>{lote.nombre}</option>
-            ))}
+            {lotes?.lotes?.map((lote) => (
+                <option key={lote.id} value={lote.id}>{lote.nombre}</option>
+              ))}
           </select>
         </div>
       </div>

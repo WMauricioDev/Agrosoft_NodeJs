@@ -17,11 +17,11 @@ import { Switch } from "@heroui/react";
 const CultivoPage: React.FC = () => {
   const [cultivo, setCultivo] = useState({
     nombre: "",
-    unidad_de_medida: 0,
+    unidad_de_medida_id: 0,
     activo: false,
     fechaSiembra: "",
-    Especie: 0,
-    Bancal: 0,
+    Especie_id: 0,
+    Bancal_id: 0,
   });
 
   const mutation = useRegistrarCultivo();
@@ -43,7 +43,7 @@ const CultivoPage: React.FC = () => {
       ...prev,
       [name]:
         name === "nombre" ||
-        name === "unidad_de_medida" ||
+        name === "unidad_de_medida_id" ||
         name === "fechaSiembra"
           ? value
           : Number(value),
@@ -52,7 +52,7 @@ const CultivoPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (cultivo.nombre && cultivo.unidad_de_medida && cultivo.fechaSiembra && cultivo.Especie && cultivo.Bancal) {
+    if (cultivo.nombre && cultivo.unidad_de_medida_id && cultivo.fechaSiembra && cultivo.Especie_id && cultivo.Bancal_id) {
       mutation.mutate(cultivo);
     }
   };
@@ -111,8 +111,8 @@ const CultivoPage: React.FC = () => {
                         </button>
                     </div>
                     <select
-                        value={cultivo.unidad_de_medida}
-                        onChange={(e) => setCultivo({ ...cultivo, unidad_de_medida: Number(e.target.value)})}
+                        value={cultivo.unidad_de_medida_id}
+                        onChange={(e) => setCultivo({ ...cultivo, unidad_de_medida_id: Number(e.target.value)})}
                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
                         disabled={loadingUnidadesMedida}
                     >
@@ -148,8 +148,8 @@ const CultivoPage: React.FC = () => {
           </div>
 
           <select
-            name="Especie"
-            value={cultivo.Especie || ""}
+            name="Especie_id"
+            value={cultivo.Especie_id || ""}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
           >
@@ -176,8 +176,8 @@ const CultivoPage: React.FC = () => {
           </div>
 
           <select
-            name="Bancal"
-            value={cultivo.Bancal || ""}
+            name="Bancal_id"
+            value={cultivo.Bancal_id || ""}
             onChange={handleChange}
             className="block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
           >

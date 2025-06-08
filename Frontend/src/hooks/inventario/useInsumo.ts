@@ -28,7 +28,7 @@ const fetchUnidadesMedida = async (): Promise<UnidadMedida[]> => {
     const token = localStorage.getItem("access_token");
     if (!token) throw new Error("No se encontró el token de autenticación.");
 
-    const response = await api.get(`${API_URL}unidades_medida/`, {
+    const response = await api.get(`${BASE_URL}/api/cultivo/unidades_medida/`, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -202,7 +202,7 @@ const crearUnidadMedida = async (unidad: Omit<UnidadMedida, "id" | "fecha_creaci
     if (!token) throw new Error("No se encontró el token de autenticación.");
 
     try {
-        const response = await api.post(`${API_URL}crear_unidad_medida/`, unidad, {
+        const response = await api.post(`${BASE_URL}/api/cultivo/unidades_medida/`, unidad, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return response.data;

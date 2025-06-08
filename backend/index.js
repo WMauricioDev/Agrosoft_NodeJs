@@ -26,7 +26,7 @@ import especies from "./modulos/cultivo/routers/router.especies.js";
 import cultivos from "./modulos/cultivo/routers/router.cultivos.js";
 import lotes from "./modulos/cultivo/routers/router.lotes.js";
 import bancal from "./modulos/cultivo/routers/router.bancal.js";
-
+import unidadmedida from "./modulos/cultivo/routers/router.unidadmedida.js";
 // Rutas del módulo Usuarios
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
 import Roles from './modulos/usuarios/routers/Roles.routes.js';
@@ -92,6 +92,7 @@ app.use('/api/cultivo', especies);
 app.use('/api/cultivo', cultivos);
 app.use('/api/cultivo', lotes);
 app.use('/api/cultivo', bancal);
+app.use('/api/cultivo', unidadmedida);
 
 // Rutas del módulo Usuarios
 app.use('/api', Usuarios);
