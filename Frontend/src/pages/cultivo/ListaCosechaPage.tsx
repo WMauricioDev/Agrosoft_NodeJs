@@ -52,9 +52,9 @@ const ListarCosechaPage: React.FC = () => {
 
   const transformedData = (cosechas ?? []).map((cosecha) => ({
     id: cosecha.id?.toString() || '',
-    cultivo: cultivos?.find((cultivo) => cultivo.id === cosecha.id_cultivo)?.nombre || 'Sin cultivo',
+    cultivo: cultivos?.find((cultivo) => cultivo.id === cosecha.id_cultivo_id)?.nombre || 'Sin cultivo',
     cantidad: cosecha.cantidad,
-    unidades_de_medida: unidadesMedida?.find((um) => um.id === cosecha.unidades_de_medida)?.nombre || 'Sin unidad',
+    unidades_de_medida: unidadesMedida?.find((um) => um.id === cosecha.unidades_de_medida_id)?.nombre || 'Sin unidad',
     fecha: new Date(cosecha.fecha).toLocaleDateString(),
     acciones: (
       <>
