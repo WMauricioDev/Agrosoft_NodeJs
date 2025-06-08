@@ -1,5 +1,4 @@
 import pool from "../../usuarios/database/Conexion.js";
-import upload from "../../usuarios/middlewares/Multer.js";
 
 export const postTipo_especie = async (req, res) => {
   try {
