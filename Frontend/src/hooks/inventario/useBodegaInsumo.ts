@@ -4,7 +4,7 @@ import { addToast } from "@heroui/react";
 import { BodegaInsumo } from "@/types/inventario/BodegaInsumo";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/inventario/bodega_insumo/`;
+const API_URL = `${BASE_URL}/api/inv/bodega_insumo/`;
 
 const fetchBodegaInsumos = async (): Promise<BodegaInsumo[]> => {
     const token = localStorage.getItem("access_token");
@@ -35,8 +35,8 @@ const registrarBodegaInsumo = async (bodegaInsumo: Omit<BodegaInsumo, "id">) => 
     if (!token) throw new Error("No se encontró el token de autenticación.");
 
     const payload = {
-        bodega: Number(bodegaInsumo.bodega),
-        insumo: Number(bodegaInsumo.insumo),
+        bodega_id: Number(bodegaInsumo.bodega_id),
+        insumo_id: Number(bodegaInsumo.insumo_id),
         cantidad: Number(bodegaInsumo.cantidad),
     };
 
@@ -94,8 +94,8 @@ const actualizarBodegaInsumo = async (id: number, bodegaInsumo: Omit<BodegaInsum
     if (!token) throw new Error("No se encontró el token de autenticación.");
 
     const payload = {
-        bodega: Number(bodegaInsumo.bodega),
-        insumo: Number(bodegaInsumo.insumo),
+        bodega: Number(bodegaInsumo.bodega_id),
+        insumo: Number(bodegaInsumo.insumo_id),
         cantidad: Number(bodegaInsumo.cantidad),
     };
 
