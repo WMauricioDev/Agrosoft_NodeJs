@@ -13,7 +13,7 @@ const EspeciePage: React.FC = () => {
     nombre: "",
     descripcion: "",
     largoCrecimiento: 0,
-    fk_tipo_especie: 0,
+    fk_tipo_especie_id: 0,
     img: "",
   });
 
@@ -37,7 +37,7 @@ const EspeciePage: React.FC = () => {
     formData.append("nombre", especie.nombre);
     formData.append("descripcion", especie.descripcion);
     formData.append("largoCrecimiento", especie.largoCrecimiento.toString());
-    formData.append("fk_tipo_especie", especie.fk_tipo_especie.toString());
+    formData.append("fk_tipo_especie_id", especie.fk_tipo_especie_id.toString());
     formData.append("img", especie.img);
 
     mutation.mutate(formData);
@@ -93,8 +93,8 @@ const EspeciePage: React.FC = () => {
 
           <select
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            name="fk_tipo_especie"
-            value={especie.fk_tipo_especie}
+            name="fk_tipo_especie_id"
+            value={especie.fk_tipo_especie_id}
             onChange={handleChange}
           >
             <option value="">Seleccione un tipo</option>
