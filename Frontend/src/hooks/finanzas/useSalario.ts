@@ -4,7 +4,7 @@ import { Salario } from "@/types/finanzas/Salario";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}/finanzas/salario/`;
+const API_URL = `${BASE_URL}/api/fin/salarios/`;
 
 // Función para formatear números al estilo colombiano (1.000.000)
 export const formatColombianPeso = (value: number): string => {

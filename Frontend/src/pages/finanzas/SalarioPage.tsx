@@ -16,7 +16,9 @@ const SalarioPage: React.FC = () => {
   });
 
   const [displayValue, setDisplayValue] = useState(""); 
-  const { roles } = useUsuarios(); 
+ const {
+    roles,
+  } = useUsuarios();  
   const mutation = useRegistrarSalario();
   const navigate = useNavigate();
 
@@ -86,7 +88,7 @@ return (
         >
           {roles?.map((rol) => (
             <option key={rol.id} value={rol.id}>
-              {rol.rol}
+              {rol.nombre}
             </option>
           ))}
         </select>
