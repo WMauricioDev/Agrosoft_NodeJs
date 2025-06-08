@@ -115,7 +115,7 @@ rutaBodega.post("/bodega", verificarToken, registrarBodega);
  *       200:
  *         description: Bodega actualizada correctamente
  */
-rutaBodega.put("/bodega/:id_bodega", verificarToken, actualizarBodega);
+rutaBodega.put("/bodega/:id", verificarToken, actualizarBodega);
 
 /**
  * @swagger
@@ -136,6 +136,6 @@ rutaBodega.put("/bodega/:id_bodega", verificarToken, actualizarBodega);
  *       200:
  *         description: Bodega eliminada correctamente
  */
-rutaBodega.delete("/bodega/:id_bodega", verificarToken, eliminarBodega);
+rutaBodega.delete("/bodega/:id", verificarToken, eliminarBodega);
 
 export default rutaBodega;
