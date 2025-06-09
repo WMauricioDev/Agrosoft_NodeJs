@@ -68,11 +68,11 @@ const ListarCultivoPage: React.FC = () => {
   const transformedData = (cultivos ?? []).map((cultivo) => ({
     id: cultivo.id?.toString() || '',
     nombre: cultivo.nombre,
-    unidad_de_medida: unidadesMedida?.find((um) => um.id === cultivo.unidad_de_medida)?.nombre || "sin unidad",
+    unidad_de_medida: unidadesMedida?.find((um) => um.id === cultivo.unidad_de_medida_id)?.nombre || "sin unidad",
     activo: cultivo.activo ? "Sí" : "No",
     fechaSiembra: cultivo.fechaSiembra,
-    fk_especie: especies?.find((especie) => especie.id === cultivo.Especie)?.nombre || 'Sin especie',
-    fk_bancal: bancales?.find((bancal) => bancal.id === cultivo.Bancal)?.nombre || 'Sin bancal',
+    fk_especie: especies?.find((especie) => especie.id === cultivo.Especie_id)?.nombre || 'Sin especie',
+    fk_bancal: bancales?.find((bancal) => bancal.id === cultivo.Bancal_id)?.nombre || 'Sin bancal',
     acciones: (
       <>
         <button

@@ -4,7 +4,7 @@ import { Especie } from "@/types/cultivo/Especie";
 import { addToast } from "@heroui/react";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/cultivo/especies/`;
+const API_URL = `${BASE_URL}/api/cultivo/especies/`;
 
 const fetchEspecies = async (): Promise<Especie[]> => {
   const token = localStorage.getItem("access_token");
@@ -27,7 +27,7 @@ const registrarEspecie = async (especie: FormData) => {
   if (!token) {
     throw new Error("No se encontró el token de autenticación.");
   }
-
+  
   return api.post(API_URL, especie, {
     headers: {
       "Content-Type": "multipart/form-data",

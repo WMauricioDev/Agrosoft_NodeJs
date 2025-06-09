@@ -1,6 +1,7 @@
 import { Router } from "express";
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
 import { postEspecies, getEspecies, getIdEspecies, updateEspecies, deleteEspecies } from "../controller/controller.especies.js";
+import upload from "../../usuarios/middlewares/Multer.js";
 
 const RouterEspecies = Router();
 
@@ -32,9 +33,10 @@ const RouterEspecies = Router();
  *           description: Descripción de la especie
  *         img:
  *           type: string
- *           description: URL de la imagen de la especie
- *         tiempo_crecimiento:
- *           type: string
+ *           format: binary
+ *           description: Imagen de la especie
+ *         largoCrecimiento:
+ *           type: integer
  *           description: Tiempo de crecimiento de la especie
  *         fk_tipo_especie:
  *           type: integer
@@ -52,16 +54,33 @@ const RouterEspecies = Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/Especie'
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *                 description: Nombre de la especie
+ *               descripcion:
+ *                 type: string
+ *                 description: Descripción de la especie
+ *               img:
+ *                 type: string
+ *                 format: binary
+ *                 description: Imagen de la especie
+ *               largoCrecimiento:
+ *                 type: integer
+ *                 description: Tiempo de crecimiento de la especie
+ *               fk_tipo_especie:
+ *                 type: integer
+ *                 description: ID del tipo de especie asociado
  *     responses:
  *       201:
  *         description: Especie registrada correctamente
  *       400:
  *         description: Error en la solicitud
  */
-RouterEspecies.post("/especies", verificarToken, postEspecies);
+RouterEspecies.post("/especies", verificarToken, upload.single("img"), postEspecies);
 
 /**
  * @swagger
@@ -128,16 +147,35 @@ RouterEspecies.get("/especies/:id", verificarToken, getIdEspecies);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/Especie'
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *                 description: Nombre de la especie
+ *               descripcion:
+ *                 type: string
+ *                 description: Descripción de la especie
+ *               img:
+ *                 type: string
+ *                 format: binary
+ *                 description: Imagen de la especie
+ *               largoCrecimiento:
+ *                 type: integer
+ *                 description: Tiempo de crecimiento de la especie
+ *               fk_tipo_especie:
+ *                 type: integer
+ *                 description: ID del tipo de especie asociado
  *     responses:
  *       200:
  *         description: Especie actualizada correctamente
  *       400:
  *         description: Error en la solicitud
+ *       404:
+ *         description: Especie no encontrada
  */
-RouterEspecies.put("/especies/:id", verificarToken, updateEspecies);
+RouterEspecies.put("/especies/:id", verificarToken, upload.single("img"), updateEspecies);
 
 /**
  * @swagger

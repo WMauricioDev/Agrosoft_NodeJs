@@ -4,7 +4,7 @@ import { addToast } from "@heroui/react";
 import { Cultivo } from "@/types/cultivo/Cultivo";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/cultivo/cultivos/`;
+const API_URL = `${BASE_URL}/api/cultivo/cultivos/`;
 
 const fetchCultivos = async (mostrarInactivos = false): Promise<Cultivo[]> => {
   const token = localStorage.getItem("access_token");

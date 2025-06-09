@@ -5,6 +5,7 @@ import { ReuInput } from "../../components/globales/ReuInput";
 import { TipoEspecie } from "../../types/cultivo/TipoEspecie";
 import { useRegistrarTipoEspecie } from "../../hooks/cultivo/usetipoespecie";
 import Formulario from "../../components/globales/Formulario";
+import { addToast } from "@heroui/react";
 
 const TipoEspeciePage: React.FC = () => {
   const [tipoEspecie, setTipoEspecie] = useState<TipoEspecie>({
@@ -24,6 +25,15 @@ const TipoEspeciePage: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!tipoEspecie.nombre.trim()) {
+      addToast({
+        title: "Error",
+        description: "El nombre es un campo requerido",
+        timeout: 3000,
+        color: "danger",
+      });
+      return;
+    }
     mutation.mutate(tipoEspecie);
   };
 
@@ -41,6 +51,7 @@ const TipoEspeciePage: React.FC = () => {
           type="text"
           value={tipoEspecie.nombre}
           onChange={(e) => setTipoEspecie({ ...tipoEspecie, nombre: e.target.value })}
+          required // Agrega el atributo required para validación básica del formulario
         />
 
         <ReuInput

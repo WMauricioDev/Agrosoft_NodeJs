@@ -13,9 +13,9 @@ import { ModalCultivo } from "@/components/cultivo/ModalCultivo";
 const CosechaPage: React.FC = () => {
 
     const [cosecha, setCosecha] = useState({
-        id_cultivo: 0,
+        id_cultivo_id: 0,
         cantidad: 0,
-        unidades_de_medida: 0,
+        unidades_de_medida_id: 0,
         fecha: "",
     });
 
@@ -30,7 +30,7 @@ const CosechaPage: React.FC = () => {
         const { name, value } = e.target;
         setCosecha((prev) => ({
             ...prev,
-            [name]: name === "unidades_de_medida" || name === "fecha" ? value : Number(value),
+            [name]: name === "unidades_de_medida_id" || name === "fecha" ? value : Number(value),
         }));
     };
 
@@ -62,8 +62,8 @@ const CosechaPage: React.FC = () => {
                               </button>
                      </div>
                     <select
-                        name="id_cultivo"
-                        value={cosecha.id_cultivo || ""}
+                        name="id_cultivo_id"
+                        value={cosecha.id_cultivo_id || ""}
                         onChange={handleChange}
                         className="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
                     >
@@ -99,8 +99,8 @@ const CosechaPage: React.FC = () => {
                                             </button>
                                         </div>
                                         <select
-                                            value={cosecha.unidades_de_medida}
-                                            onChange={(e) => setCosecha({ ...cosecha, unidades_de_medida: Number(e.target.value)})}
+                                            value={cosecha.unidades_de_medida_id}
+                                            onChange={(e) => setCosecha({ ...cosecha, unidades_de_medida_id: Number(e.target.value)})}
                                             className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
                                             disabled={loadingUnidadesMedida}
                                         >

@@ -4,7 +4,7 @@ import { addToast } from "@heroui/react";
 import { Cosecha } from "@/types/cultivo/Cosecha"; 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}/cultivo/cosechas/`;
+const API_URL = `${BASE_URL}/api/cultivo/cosechas/`;
 
 const fetchCosechas = async (): Promise<Cosecha[]> => {
   const token = localStorage.getItem("access_token");
@@ -20,9 +20,9 @@ const registrarCosecha = async (cosecha: Cosecha) => {
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
   const formData = new FormData();
-  formData.append("id_cultivo", cosecha.id_cultivo.toString());
+  formData.append("id_cultivo_id", cosecha.id_cultivo_id.toString());
   formData.append("cantidad", cosecha.cantidad.toString());
-  formData.append("unidades_de_medida", cosecha.unidades_de_medida.toString());
+  formData.append("unidades_de_medida_id", cosecha.unidades_de_medida_id.toString());
   formData.append("fecha", cosecha.fecha);
 
   return api.post(API_URL, formData, {
@@ -38,9 +38,9 @@ const actualizarCosecha = async (id: number, cosecha: Cosecha) => {
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
   const formData = new FormData();
-  formData.append("id_cultivo", cosecha.id_cultivo.toString());
+  formData.append("id_cultivo_id", cosecha.id_cultivo_id.toString());
   formData.append("cantidad", cosecha.cantidad.toString());
-  formData.append("unidades_de_medida", cosecha.unidades_de_medida.toString());
+  formData.append("unidades_de_medida_id", cosecha.unidades_de_medida_id.toString());
   formData.append("fecha", cosecha.fecha);
 
   return api.put(`${API_URL}${id}/`, formData, {

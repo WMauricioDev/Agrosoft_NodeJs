@@ -171,7 +171,7 @@ const transformedData = salarios?.map((salario) => {
               >
                 {roles?.map((rol) => (
                   <option key={rol.id} value={rol.id}>
-                    {rol.rol}
+                    {rol.nombre}
                   </option>
                 ))}
               </select>

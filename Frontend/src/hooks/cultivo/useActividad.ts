@@ -6,7 +6,7 @@ import { Insumo } from "@/types/inventario/Insumo";
 import { User } from "@/context/AuthContext";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/cultivo/actividades/`;
+const API_URL = `${BASE_URL}/api/cultivo/actividades/`;
 
 const fetchActividades = async (): Promise<Actividad[]> => {
     const token = localStorage.getItem("access_token");
