@@ -4,7 +4,7 @@ import { Control, ControlDetalle } from "@/types/cultivo/Control";
 import axios from "axios";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}/cultivo/control/`;
+const API_URL = `${BASE_URL}api/cultivo/control/`;
 
 const fetchControles = async (): Promise<ControlDetalle[]> => {
   const token = localStorage.getItem("access_token");

@@ -3,7 +3,7 @@ import pool from "../../usuarios/database/Conexion.js";
 export const postControles = async (req, res) => {
     try {
         const { descripcion, fecha_control, cantidad_producto, fk_afecciones, fk_tipo_control, fk_productos_control } = req.body;
-        const sql = "INSERT INTO controles (descripcion, fecha_control, cantidad_producto, fk_afecciones, fk_tipo_control, fk_productos_control) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
+        const sql = "INSERT INTO controles_control (descripcion, fecha_control, cantidad_producto, fk_afecciones, fk_tipo_control, fk_productos_control) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
         const result = await pool.query(sql, [descripcion, fecha_control, cantidad_producto, fk_afecciones, fk_tipo_control, fk_productos_control]);
         
         if (result.rows.length > 0) {
@@ -21,7 +21,7 @@ export const postControles = async (req, res) => {
 
 export const getControles = async (req, res) => {
     try {
-        const sql = "SELECT * FROM controles";
+        const sql = "SELECT * FROM controles_control";
         const result = await pool.query(sql);
         
         if (result.rows.length > 0) {
@@ -38,7 +38,7 @@ export const getControles = async (req, res) => {
 export const getIdControles = async (req, res) => {
     try {
         const { id } = req.params;
-        const sql = "SELECT * FROM controles WHERE id = $1";
+        const sql = "SELECT * FROM controles_control WHERE id = $1";
         const result = await pool.query(sql, [id]);
         
         if (result.rows.length > 0) {
@@ -56,7 +56,7 @@ export const updateControles = async (req, res) => {
     try {
         const { id } = req.params;
         const { descripcion, fecha_control, cantidad_producto, fk_afecciones, fk_tipo_control, fk_productos_control } = req.body;
-        const sql = "UPDATE controles SET descripcion = $1, fecha_control = $2, cantidad_producto = $3, fk_afecciones = $4, fk_tipo_control = $5, fk_productos_control = $6 WHERE id = $7";
+        const sql = "UPDATE controles_control SET descripcion = $1, fecha_control = $2, cantidad_producto = $3, fk_afecciones = $4, fk_tipo_control = $5, fk_productos_control = $6 WHERE id = $7";
         const result = await pool.query(sql, [descripcion, fecha_control, cantidad_producto, fk_afecciones, fk_tipo_control, fk_productos_control, id]);
         
         if (result.rowCount > 0) {
@@ -72,7 +72,7 @@ export const updateControles = async (req, res) => {
 export const deleteControles = async (req, res) => {
     try {
         const { id } = req.params;
-        const sql = "DELETE FROM controles WHERE id = $1";
+        const sql = "DELETE FROM controles_control WHERE id = $1";
         const result = await pool.query(sql, [id]);
         
         if (result.rowCount > 0) {
