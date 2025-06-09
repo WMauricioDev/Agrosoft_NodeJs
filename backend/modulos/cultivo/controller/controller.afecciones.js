@@ -3,7 +3,7 @@ import pool from "../../usuarios/database/Conexion.js";
 export const postAfecciones = async (req, res) => {
     try {
         const { prioridad, fecha_encuentro, fk_plantacion, fk_plaga } = req.body;
-        const sql = "INSERT INTO afecciones (prioridad, fecha_encuentro, fk_plantacion, fk_plaga) VALUES ($1, $2, $3, $4) RETURNING id";
+        const sql = "INSERT INTO afecciones_afeccion (prioridad, fecha_encuentro, fk_plantacion, fk_plaga) VALUES ($1, $2, $3, $4) RETURNING id";
         const result = await pool.query(sql, [prioridad, fecha_encuentro, fk_plantacion, fk_plaga]);
         
         if (result.rows.length > 0) {
@@ -21,7 +21,7 @@ export const postAfecciones = async (req, res) => {
 
 export const getAfecciones = async (req, res) => {
     try {
-        const sql = "SELECT * FROM afecciones";
+        const sql = "SELECT * FROM afecciones_afeccion";
         const result = await pool.query(sql);
         
         if (result.rows.length > 0) {
@@ -38,7 +38,7 @@ export const getAfecciones = async (req, res) => {
 export const getIdAfecciones = async (req, res) => {
     try {
         const { id } = req.params;
-        const sql = "SELECT * FROM afecciones WHERE id = $1";
+        const sql = "SELECT * FROM afecciones_afeccion WHERE id = $1";
         const result = await pool.query(sql, [id]);
         
         if (result.rows.length > 0) {
@@ -72,7 +72,7 @@ export const updateAfecciones = async (req, res) => {
 export const deleteAfecciones = async (req, res) => {
     try {
         const { id } = req.params;
-        const sql = "DELETE FROM afecciones WHERE id = $1";
+        const sql = "DELETE FROM afecciones_afeccion WHERE id = $1";
         const result = await pool.query(sql, [id]);
         
         if (result.rowCount > 0) {

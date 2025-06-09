@@ -6,7 +6,7 @@ export const postTipos_control = async (req, res) => {
         if (!nombre) {
             return res.status(400).json({ "message": "El nombre es un campo requerido" });
         }
-        const sql = "INSERT INTO tipos_control (nombre, descripcion) VALUES ($1, $2) RETURNING id";
+        const sql = "INSERT INTO tipo_control_tipocontrol (nombre, descripcion) VALUES ($1, $2) RETURNING id";
         const result = await pool.query(sql, [nombre, descripcion]);
         if (result.rows.length > 0) {
             return res.status(201).json({ 
@@ -23,7 +23,7 @@ export const postTipos_control = async (req, res) => {
 
 export const getTipos_control = async (req, res) => {
     try {
-        const sql = "SELECT * FROM tipos_control ORDER BY nombre";
+        const sql = "SELECT * FROM tipo_control_tipocontrol ORDER BY nombre";
         const result = await pool.query(sql);
         return res.status(200).json(result.rows);
     } catch (error) {
@@ -35,7 +35,7 @@ export const getTipos_control = async (req, res) => {
 export const getIdTipos_control = async (req, res) => {
     try {
         const { id } = req.params;
-        const sql = "SELECT * FROM tipos_control WHERE id = $1";
+        const sql = "SELECT * FROM tipo_control_tipocontrol WHERE id = $1";
         const result = await pool.query(sql, [id]);
         if (result.rows.length > 0) {
             return res.status(200).json(result.rows[0]);
@@ -55,7 +55,7 @@ export const updateTipos_control = async (req, res) => {
         if (!nombre) {
             return res.status(400).json({ "message": "El nombre es un campo requerido" });
         }
-        const sql = "UPDATE tipos_control SET nombre = $1, descripcion = $2 WHERE id = $3";
+        const sql = "UPDATE tipo_control_tipocontrol SET nombre = $1, descripcion = $2 WHERE id = $3";
         const result = await pool.query(sql, [nombre, descripcion, id]);
         if (result.rowCount > 0) {
             return res.status(200).json({ "message": "Tipo de control actualizado correctamente" });
@@ -70,7 +70,7 @@ export const updateTipos_control = async (req, res) => {
 export const deleteTipos_control = async (req, res) => {
     try {
         const { id } = req.params;
-        const sql = "DELETE FROM tipos_control WHERE id = $1";
+        const sql = "DELETE FROM tipo_control_tipocontrol WHERE id = $1";
         const result = await pool.query(sql, [id]);
         if (result.rowCount > 0) {
             return res.status(200).json({ "message": "Tipo de control eliminado correctamente" });

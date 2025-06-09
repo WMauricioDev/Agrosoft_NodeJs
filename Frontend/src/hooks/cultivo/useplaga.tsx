@@ -5,7 +5,7 @@ import { Plaga } from "@/types/cultivo/Plaga";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}/cultivo/plaga/`;
+const API_URL = `${BASE_URL}/api/cultivo/plagas/`;
 
 const fetchPlagas = async (): Promise<Plaga[]> => {
   const token = localStorage.getItem("access_token");
@@ -23,11 +23,27 @@ const registrarPlaga = async (plaga: Plaga) => {
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
   const formData = new FormData();
-  formData.append("fk_tipo_plaga", plaga.fk_tipo_plaga?.toString() || "");
+
+  // Validación explícita para evitar enviar string vacío
+if (
+  plaga.fk_tipo_plaga_id !== undefined &&
+  plaga.fk_tipo_plaga_id !== null
+) {
+  formData.append("fk_tipo_plaga_id", plaga.fk_tipo_plaga_id.toString());
+} else {
+  throw new Error("El tipo de plaga es requerido");
+}
+
   formData.append("nombre", plaga.nombre);
   formData.append("descripcion", plaga.descripcion);
   if (plaga.img) {
     formData.append("img", plaga.img);
+  }
+
+  // Console log para depurar datos enviados
+  console.log("Datos enviados en registrarPlaga:");
+  for (const [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
   }
 
   return api.post(API_URL, formData, {
@@ -38,12 +54,14 @@ const registrarPlaga = async (plaga: Plaga) => {
   });
 };
 
+
+
 const actualizarPlaga = async (id: number, plaga: Plaga) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
   const formData = new FormData();
-  formData.append("fk_tipo_plaga", plaga.fk_tipo_plaga?.toString() || "");
+  formData.append("fk_tipo_plaga_id", plaga.fk_tipo_plaga_id?.toString() || "");
   formData.append("nombre", plaga.nombre);
   formData.append("descripcion", plaga.descripcion);
   if (plaga.img) {
@@ -83,6 +101,9 @@ export const useRegistrarPlaga = () => {
       addToast({ title: "Éxito", description: "Plaga registrada con éxito", timeout: 3000, color:"success" });
     },
     onError: (error: any) => {
+  console.error("Error completo:", error);
+  console.error("Respuesta del servidor:", error.response?.data);
+
       if (error.response?.status === 403) {
         addToast({
           title: "Acceso denegado",
