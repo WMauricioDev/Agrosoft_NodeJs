@@ -2,10 +2,10 @@ import pool from "../../usuarios/database/Conexion.js";
 
 export const registrarVenta = async (req, res) => {
   try {
-    const { fk_cosecha, precio_unitario, producto_vendido, cantidad, fecha_venta } = req.body;
-    const sql = `INSERT INTO Venta (fk_cosecha, precio_unitario, producto_vendido, cantidad, fecha_venta) 
-                 VALUES ($1, $2, $3, $4, $5)`;
-    const { rowCount } = await pool.query(sql, [fk_cosecha, precio_unitario, producto_vendido, cantidad, fecha_venta]);
+    const { fecha, cambio, monto_entregado } = req.body;
+    const sql = `INSERT INTO venta_venta (fecha, cambio, monto_entregado) 
+                 VALUES ($1, $2, $3)`;
+    const { rowCount } = await pool.query(sql, [fecha, cambio, monto_entregado]);
 
     if (rowCount > 0) {
       res.status(201).json({ message: 'Venta registrada' });
@@ -17,10 +17,42 @@ export const registrarVenta = async (req, res) => {
     res.status(500).json({ message: 'Error en el sistema' });
   }
 };
+export const registrarDetalleVenta = async (req, res) => {
+  try {
+    const { cantidad, total, producto_id, unidades_de_medida_id, venta_id } = req.body;
+    const sql = `INSERT INTO venta_detalleventa (cantidad, total, producto_id, unidades_de_medida_id, venta_id ) 
+                 VALUES ($1, $2, $3, $4, $5)`;
+    const { rowCount } = await pool.query(sql, [cantidad, total, producto_id, unidades_de_medida_id, venta_id ]);
+
+    if (rowCount > 0) {
+      res.status(201).json({ message: 'Venta registrada' });
+    } else {
+      res.status(400).json({ message: 'Venta no registrada' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error en el sistema' });
+  }
+};
+export const listarDetalleVentas = async (req, res) => {
+  try {
+    const sql = 'SELECT * FROM venta_detalleventa';
+    const { rows } = await pool.query(sql);
+
+    if (rows.length > 0) {
+      res.status(200).json(rows);
+    } else {
+      res.status(404).json({ message: 'No hay registros de detalle de venta' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error en el sistema' });
+  }
+};
 
 export const listarVentas = async (req, res) => {
   try {
-    const sql = 'SELECT * FROM Venta';
+    const sql = 'SELECT * FROM venta_venta';
     const { rows } = await pool.query(sql);
 
     if (rows.length > 0) {
@@ -37,7 +69,7 @@ export const listarVentas = async (req, res) => {
 export const eliminarVenta = async (req, res) => {
   try {
     const id = req.params.id;
-    const sql = 'DELETE FROM Venta WHERE id = $1';
+    const sql = 'DELETE FROM venta_venta WHERE id = $1';
     const { rowCount } = await pool.query(sql, [id]);
 
     if (rowCount > 0) {
@@ -53,12 +85,12 @@ export const eliminarVenta = async (req, res) => {
 
 export const actualizarVenta = async (req, res) => {
   try {
-    const { fk_cosecha, precio_unitario, producto_vendido, cantidad, fecha_venta } = req.body;
+    const { fecha, cambio, monto_entregado } = req.body;
     const id = req.params.id;
-    const sql = `UPDATE Venta 
-                 SET fk_cosecha = $1, precio_unitario = $2, producto_vendido = $3, cantidad = $4, fecha_venta = $5 
+    const sql = `UPDATE venta_venta 
+                 SET fecha = $1, cambio = $2, monto_entregado = $3
                  WHERE id = $6`;
-    const { rowCount } = await pool.query(sql, [fk_cosecha, precio_unitario, producto_vendido, cantidad, fecha_venta, id]);
+    const { rowCount } = await pool.query(sql, [fecha, cambio, monto_entregado, id]);
 
     if (rowCount > 0) {
       res.status(200).json({ message: 'Venta actualizada' });

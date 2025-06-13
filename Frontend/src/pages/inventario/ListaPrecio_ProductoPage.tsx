@@ -52,13 +52,13 @@ const ListaPrecioProductoPage: React.FC = () => {
     ];
 
     const transformedData = (preciosProductos ?? []).map((precioProducto) => {
-        const nombreProducto = precioProducto.nombre_cultivo || "Sin nombre";
+        const nombreProducto = precioProducto.cosecha_id || "Sin nombre";
         return {
             id: precioProducto.id.toString(),
             cosecha: nombreProducto, 
-            unidad_medida: precioProducto.unidad_medida
+            unidad_medida: precioProducto.unidad_medida_id
 
-                ? precioProducto.unidad_medida.nombre
+                ? precioProducto.unidad_medida_id.id
                 : "Sin asignar",
             precio: formatCOPNumber(precioProducto.precio),
             fecha_registro: precioProducto.fecha_registro,
@@ -174,7 +174,7 @@ const ListaPrecioProductoPage: React.FC = () => {
                                             key={cosecha.id}
                                             value={cosecha.id}
                                         >
-                                            {`Cosecha ${cosecha.id_cultivo} - ${cosecha.fecha}`}
+                                            {`Cosecha ${cosecha.cultivo_nombre} - ${cosecha.fecha}`}
                                         </option>
                                     ))}
                                 </select>

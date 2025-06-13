@@ -81,7 +81,6 @@ export const PagoModal: React.FC<PagoModalProps> = ({
           label="Cambio"
           type="number"
           value={cambio.toFixed(2)}
-          readOnly
         />
 
         <div className="space-y-2">

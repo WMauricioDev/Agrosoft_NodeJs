@@ -3,9 +3,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/components/utils/axios";
 import { addToast } from "@heroui/react";
 import { Venta, DetalleVenta } from "@/types/finanzas/Venta";
+import { PrecioProducto } from "@/types/inventario/Precio_producto";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}/finanzas/venta/`;
+const API_URL = `${BASE_URL}api/fin/venta/`;
 
 interface CreateVentaData {
   fecha?: string;
@@ -35,14 +36,14 @@ const registrarVenta = async (ventaData: CreateVentaData): Promise<Venta> => {
     monto_entregado: ventaData.monto_entregado,
     cambio,
     detalles: ventaData.detalles.map(detalle => ({
-      producto: detalle.producto,
+      producto: detalle.producto_id,
       cantidad: detalle.cantidad,
-      unidades_de_medida: detalle.unidades_de_medida,
+      unidades_de_medida: detalle.unidades_de_medida_id,
       total: detalle.total
     }))
   };
 
-  console.log("Enviando venta:", payload); // DEBUG
+  console.log("Enviando venta:", payload);
 
   const response = await api.post(API_URL, payload, {
     headers: {
@@ -172,11 +173,11 @@ export const useVenta = () => {
   resetDetalle: () => void
 ) => {
   const cantidadYaAgregada = detallesActuales
-    .filter(d => d.producto === detalle.producto)
+    .filter(d => d.producto_id === detalle.producto_id)
     .reduce((sum, d) => sum + d.cantidad, 0);
 
   const cantidadEditando =
-    editIndex !== null && detallesActuales[editIndex]?.producto === detalle.producto
+    editIndex !== null && detallesActuales[editIndex]?.producto_id === detalle.producto_id
       ? detallesActuales[editIndex].cantidad
       : 0;
 
@@ -194,7 +195,7 @@ export const useVenta = () => {
   const nuevoDetalle: DetalleVenta = {
     ...detalle,
     total: detalle.cantidad * (productoSeleccionado.precio || 0),
-    unidades_de_medida: detalle.unidades_de_medida || productoSeleccionado.unidad_medida?.id || 0,
+    unidades_de_medida_id: detalle.unidades_de_medida_id || productoSeleccionado.unidad_medida_id?.id || 0,
   };
 
   if (editIndex !== null) {
