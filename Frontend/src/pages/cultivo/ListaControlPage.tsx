@@ -61,19 +61,20 @@ const ListaControlPage: React.FC = () => {
     .map(value => ({ value, label: `${value}%` }));
 
   const transformedData = controles?.map((control) => ({
-    id: control.id.toString(),
-    afeccion: control.afeccion.nombre,
-    tipo_control: control.tipo_control.nombre,
-    producto: control.producto.nombre,
-    fecha: new Date(control.fecha_control).toLocaleDateString(),
-    efectividad: (
-      <span className={`px-2 py-1 rounded-full text-xs ${
-        control.efectividad >= 70 ? 'bg-green-100 text-green-800' :
-        control.efectividad >= 40 ? 'bg-yellow-100 text-yellow-800' :
-        'bg-red-100 text-red-800'
-      }`}>
-        {control.efectividad}%
-      </span>
+  id: control.id.toString(),
+  afeccion: control.afeccion && control.afeccion.nombre ? control.afeccion.nombre : 'Desconocido',
+  tipo_control: control.tipo_control && control.tipo_control.nombre ? control.tipo_control.nombre : 'Desconocido',
+  producto: control.producto && control.producto.nombre ? control.producto.nombre : 'Desconocido',
+  responsable: control.responsable && control.responsable.nombre ? control.responsable.nombre : 'Desconocido',
+  fecha: new Date(control.fecha_control).toLocaleDateString(),
+  efectividad: (
+    <span className={`px-2 py-1 rounded-full text-xs ${
+      control.efectividad >= 70 ? 'bg-green-100 text-green-800' :
+      control.efectividad >= 40 ? 'bg-yellow-100 text-yellow-800' :
+      'bg-red-100 text-red-800'
+    }`}>
+      {control.efectividad}%
+    </span>
     ),
     acciones: (
       <div className="flex gap-2">
@@ -92,6 +93,7 @@ const ListaControlPage: React.FC = () => {
       </div>
     ),
   })) || [];
+console.log("Controles traidos",controles);  
 
   return (
     <DefaultLayout>
@@ -146,7 +148,9 @@ const ListaControlPage: React.FC = () => {
             >
               <option value="0">Seleccione una afección</option>
               {afecciones?.map(a => (
-                <option key={a.id} value={a.id}>{`${a.nombre} (${a.plaga.nombre})`}</option>
+                <option key={a.id} value={a.id}>
+    {`${a.nombre} (${a.plaga?.nombre || 'Desconocida'})`}
+  </option>
               ))}
             </select>
           </div>
@@ -265,6 +269,8 @@ const ListaControlPage: React.FC = () => {
         <p>Esta acción es irreversible.</p>
       </ReuModal>
     </DefaultLayout>
+
+    
   );
 };
 

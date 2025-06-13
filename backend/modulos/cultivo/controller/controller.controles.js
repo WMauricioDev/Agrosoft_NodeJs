@@ -2,9 +2,9 @@ import pool from "../../usuarios/database/Conexion.js";
 
 export const postControles = async (req, res) => {
     try {
-        const { descripcion, fecha_control, cantidad_producto, fk_afecciones, fk_tipo_control, fk_productos_control } = req.body;
-        const sql = "INSERT INTO controles_control (descripcion, fecha_control, cantidad_producto, fk_afecciones, fk_tipo_control, fk_productos_control) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
-        const result = await pool.query(sql, [descripcion, fecha_control, cantidad_producto, fk_afecciones, fk_tipo_control, fk_productos_control]);
+        const { descripcion, fecha_control, afeccion_id, producto_id, tipo_control_id, efectividad, observaciones, responsable_id } = req.body;
+        const sql = "INSERT INTO controles_control (descripcion, fecha_control, afeccion_id, producto_id, tipo_control_id, efectividad, observaciones, responsable_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id";
+        const result = await pool.query(sql, [descripcion, fecha_control, afeccion_id, producto_id, tipo_control_id, efectividad, observaciones, responsable_id]);
         
         if (result.rows.length > 0) {
             return res.status(201).json({ 
@@ -21,17 +21,70 @@ export const postControles = async (req, res) => {
 
 export const getControles = async (req, res) => {
     try {
-        const sql = "SELECT * FROM controles_control";
+        const sql = `
+            SELECT 
+                c.id,
+                c.descripcion,
+                c.fecha_control,
+                c.efectividad,
+                c.observaciones,
+
+                -- Afección
+                a.id AS afeccion_id,
+                a.nombre AS afeccion_nombre,
+
+                -- Tipo de control
+                tc.id AS tipo_control_id,
+                tc.nombre AS tipo_control_nombre,
+
+                -- Producto
+                p.id AS producto_id,
+                p.nombre AS producto_nombre,
+
+                -- Responsable
+                u.id AS responsable_id,
+                u.nombre AS responsable_nombre,
+                u.email AS responsable_email
+            FROM controles_control c
+            JOIN afecciones_afeccion a ON c.afeccion_id = a.id
+            JOIN tipo_control_tipocontrol tc ON c.tipo_control_id = tc.id
+            JOIN insumos_insumo p ON c.producto_id = p.id
+            JOIN usuarios_usuarios u ON c.responsable_id = u.id
+        `;
+
         const result = await pool.query(sql);
-        
+
         if (result.rows.length > 0) {
-            return res.status(200).json(result.rows);
+            const transformedData = result.rows.map((control) => ({
+                id: control.id.toString(),
+                afeccion: {
+                    id: control.afeccion_id,
+                    nombre: control.afeccion_nombre
+                },
+                tipo_control: {
+                    id: control.tipo_control_id,
+                    nombre: control.tipo_control_nombre
+                },
+                producto: {
+                    id: control.producto_id,
+                    nombre: control.producto_nombre
+                },
+                responsable: {
+                    id: control.responsable_id,
+                    nombre: control.responsable_nombre,
+                    email: control.responsable_email
+                },
+                fecha: new Date(control.fecha_control).toLocaleDateString(),
+                efectividad: control.efectividad,
+            }));
+
+            return res.status(200).json(transformedData);
         } else {
-            return res.status(404).json({ "message": "No hay registros de controles" });
+            return res.status(404).json({ message: "No hay registros de controles" });
         }
     } catch (error) {
         console.error('Error in getControles:', error.message);
-        return res.status(500).json({ "message": "Error en el servidor" });
+        return res.status(500).json({ message: "Error en el servidor" });
     }
 };
 
@@ -55,9 +108,9 @@ export const getIdControles = async (req, res) => {
 export const updateControles = async (req, res) => {
     try {
         const { id } = req.params;
-        const { descripcion, fecha_control, cantidad_producto, fk_afecciones, fk_tipo_control, fk_productos_control } = req.body;
-        const sql = "UPDATE controles_control SET descripcion = $1, fecha_control = $2, cantidad_producto = $3, fk_afecciones = $4, fk_tipo_control = $5, fk_productos_control = $6 WHERE id = $7";
-        const result = await pool.query(sql, [descripcion, fecha_control, cantidad_producto, fk_afecciones, fk_tipo_control, fk_productos_control, id]);
+        const { descripcion, fecha_control, afeccion_id, producto_id, tipo_control_id, efectividad, observaciones, responsable_id } = req.body;
+        const sql = "UPDATE controles_control SET descripcion = $1, fecha_control = $2, afeccion_id = $3, producto_id = $4, tipo_control_id = $5, efectividad = $6, observaciones= $7, responsable_id= $8 WHERE id = $9";
+        const result = await pool.query(sql, [descripcion, fecha_control, afeccion_id, producto_id, tipo_control_id, efectividad, observaciones, responsable_id]);
         
         if (result.rowCount > 0) {
             return res.status(200).json({ "message": "Control actualizado correctamente" });
