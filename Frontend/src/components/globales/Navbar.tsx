@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@heroui/button";
 import { Menu, ChevronDown, ChevronRight } from "lucide-react";
+
 import {
   FaHome,
   FaUser,
@@ -21,8 +22,10 @@ import { GiProcessor } from "react-icons/gi";
 import { useNavbar } from "../../context/NavbarContext";  
 import LogoSena from "../../assets/def_AGROSIS_LOGOTIC.png";
 import Sena from "../../assets/logo sena.png";
+import { useAuth } from "@/context/AuthContext"; // o el path correcto
 
-const menuItems = [
+
+const menuItemsBase = [
   { id: 1, label: "Inicio", path: "/", icon: <FaHome /> },
   { id: 46, label: "mapa", path: "/mapa", icon: <FaMap/> },
   { id: 3, label: "Usuarios", path: "/usuarios", icon: <FaUser /> },
@@ -110,12 +113,23 @@ const menuItems = [
     ],
   },
 ];
-
 export default function Navbar({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   const { expandedItems, setExpandedItems, navScrollPosition, setNavScrollPosition } = useNavbar();
   const navRef = useRef<HTMLElement>(null);
   const [isMobile, setIsMobile] = useState(false);
 
+  const { user } = useAuth(); 
+  const rol = user?.rol?.nombre ?? ""; 
+
+  const menuItemsFiltrados = menuItemsBase.filter(item => {
+    if (rol === "Pasante") {
+      return !["Usuarios", "Finanzas", "IoT", "Inventario", "Graficas"].includes(item.label);
+    }
+    if (rol === "Invitado") {
+      return ["Inicio",].includes(item.label);
+    }
+    return true;
+  });
   // Detectar si es móvil
   useEffect(() => {
     const checkIfMobile = () => {
@@ -200,7 +214,7 @@ export default function Navbar({ isOpen, toggleSidebar }: { isOpen: boolean; tog
         {/* Menú */}
         <nav ref={navRef} className="flex-1 mt-6 overflow-y-auto scrollbar-hide">
           <div className="flex flex-col gap-6">
-            {menuItems.map((item) => (
+            {menuItemsFiltrados.map((item) => (
               <SidebarItem
                 key={item.id}
                 item={item}
