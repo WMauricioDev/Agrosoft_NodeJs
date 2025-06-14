@@ -1,3 +1,4 @@
+// index.js
 import express from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
@@ -5,7 +6,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerSpec from './modulos/usuarios/views/Swagger.js';
 import cors from 'cors';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'url'; 
 
 // Rutas del módulo Cultivo
 import fase_lunar from "./modulos/cultivo/routers/router.fase_lunar.js";
@@ -124,10 +125,10 @@ app.use('/api/fin', Inventario_producto);
 app.use('/api/fin', Venta);
 
 // Rutas de mapa
-app.use('/api', Mapa)
+app.use('/api', Mapa);
 
 // Swagger Docs
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Configuración del motor de plantilla EJS
 app.set('views', './src/views');
@@ -138,6 +139,6 @@ app.get('/documents', (req, resp) => {
 });
 
 // Iniciar el servidor
-app.listen(3000, () => {
+app.listen(3000, async () => {
   console.log('✅ Servidor iniciado en el puerto 3000');
 });

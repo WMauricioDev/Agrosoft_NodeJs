@@ -3,7 +3,7 @@ import api from "@/components/utils/axios";
 import { addToast } from "@heroui/toast";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/iot/sensores/`;
+const API_URL = `${BASE_URL}/api/iot/sensores`;
 
 const toggleSensor = async ({ sensorId, activo }: { sensorId: number; activo: boolean }) => {
   const token = localStorage.getItem("access_token");
@@ -13,7 +13,7 @@ const toggleSensor = async ({ sensorId, activo }: { sensorId: number; activo: bo
 
   try {
     const response = await api.patch(
-      `${API_URL}${sensorId}/`,
+      `${API_URL}/${sensorId}`,
       { estado: activo ? "activo" : "inactivo" },
       {
         headers: { Authorization: `Bearer ${token}` },

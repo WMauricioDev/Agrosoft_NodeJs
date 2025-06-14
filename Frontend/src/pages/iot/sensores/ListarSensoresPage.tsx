@@ -1,4 +1,3 @@
-// src/pages/sensores/ListarSensoresPage.tsx
 import { useState, useMemo, useEffect } from "react";
 import DefaultLayout from "@/layouts/default";
 import { useSensores } from "@/hooks/iot/sensores/useSensores";
@@ -31,7 +30,9 @@ export default function ListarSensoresPage() {
 
   // Sincronizar sensoresLocal con sensores de la API
   useEffect(() => {
-    setSensoresLocal(sensores);
+    if (sensores) {
+      setSensoresLocal(sensores);
+    }
   }, [sensores]);
 
   console.log("[ListarSensoresPage] Estado inicial: ", {
@@ -113,13 +114,11 @@ export default function ListarSensoresPage() {
                   { sensorId: sensor.id, activo },
                   {
                     onSuccess: () => {
-                      // Actualizar el estado local para reflejar el cambio en la UI
                       setSensoresLocal((prev) =>
                         prev.map((s) =>
                           s.id === sensor.id ? { ...s, estado: activo ? "activo" : "inactivo" } : s
                         )
                       );
-                      // El toast ya está manejado en useToggleSensor
                     },
                     onError: () => {
                       // El toast de error ya está manejado en useToggleSensor
@@ -215,25 +214,31 @@ export default function ListarSensoresPage() {
           )}
         </div>
       </div>
-      <ModalSensor
-        isOpen={isEditModalOpen}
-        onOpenChange={(open) => {
-          console.log("[ListarSensoresPage] Cambiando estado del modal de edición: ", open);
-          setIsEditModalOpen(open);
-        }}
-        sensor={selectedSensor!}
-        onConfirm={handleConfirmEdit}
-      />
-      <ModalSensor
-        isOpen={isDeleteModalOpen}
-        onOpenChange={(open) => {
-          console.log("[ListarSensoresPage] Cambiando estado del modal de eliminación: ", open);
-          setIsDeleteModalOpen(open);
-        }}
-        sensor={selectedSensor!}
-        onConfirm={handleConfirmDelete}
-        isDelete
-      />
+      {selectedSensor && (
+        <>
+          <ModalSensor
+            isOpen={isEditModalOpen}
+            onOpenChange={(open) => {
+              console.log("[ListarSensoresPage] Cambiando estado del modal de edición: ", open);
+              setIsEditModalOpen(open);
+              if (!open) setSelectedSensor(null);
+            }}
+            sensor={selectedSensor}
+            onConfirm={handleConfirmEdit}
+          />
+          <ModalSensor
+            isOpen={isDeleteModalOpen}
+            onOpenChange={(open) => {
+              console.log("[ListarSensoresPage] Cambiando estado del modal de eliminación: ", open);
+              setIsDeleteModalOpen(open);
+              if (!open) setSelectedSensor(null);
+            }}
+            sensor={selectedSensor}
+            onConfirm={handleConfirmDelete}
+            isDelete
+          />
+        </>
+      )}
       <GuideModal
         isOpen={isGuideModalOpen}
         onClose={() => {

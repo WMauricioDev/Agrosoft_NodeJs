@@ -5,7 +5,7 @@ import { SensorData } from "@/types/iot/type";
 import { obtenerNuevoToken } from "@/components/utils/refresh";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}/iot/datosmeteorologicos/`;
+const API_URL = `${BASE_URL}/api/iot/datosmeteorologicos`;
 
 const fetchDatosHistoricos = async (): Promise<SensorData[]> => {
   const token = localStorage.getItem("access_token");
@@ -20,13 +20,13 @@ const fetchDatosHistoricos = async (): Promise<SensorData[]> => {
     throw new Error("No se encontró el token de autenticación.");
   }
 
-  console.log("[useDatosMeteorologicosHistoricos] Enviando GET a /iot/datosmeteorologicos/");
+  console.log("[useDatosMeteorologicosHistoricos] Enviando GET a /api/iot/datosmeteorologicos");
   try {
     const response = await api.get(API_URL, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    console.log("[useDatosMeteorologicosHistoricos] Respuesta de GET /iot/datosmeteorologicos/: ", response.data);
+    console.log("[useDatosMeteorologicosHistoricos] Respuesta de GET /api/iot/datosmeteorologicos: ", response.data);
 
     return response.data.map((item: any) => ({
       id: item.id || 0,
@@ -43,7 +43,7 @@ const fetchDatosHistoricos = async (): Promise<SensorData[]> => {
       fecha_medicion: item.fecha_medicion || "",
     }));
   } catch (error: any) {
-    console.error("[useDatosMeteorologicosHistoricos] Error en GET /iot/datosmeteorologicos/: ", error);
+    console.error("[useDatosMeteorologicosHistoricos] Error en GET /api/iot/datosmeteorologicos: ", error);
 
     if (error.response?.status === 401) {
       const refreshToken = localStorage.getItem("refresh_token");
