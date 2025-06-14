@@ -53,6 +53,9 @@ import Registro_venta from "./modulos/finanzas/routers/registroVentaRoutes.js";
 import Inventario_producto from "./modulos/finanzas/routers/inventarioProductoRoutes.js";
 import Venta from "./modulos/finanzas/routers/ventaRoutes.js";
 
+// Rutas de mapa
+import Mapa from "./modulos/cultivo/routers/router.mapa.js"
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -119,6 +122,9 @@ app.use('/api/fin', salario_minimo);
 app.use('/api/fin', Registro_venta);
 app.use('/api/fin', Inventario_producto);
 app.use('/api/fin', Venta);
+
+// Rutas de mapa
+app.use('/api', Mapa)
 
 // Swagger Docs
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
