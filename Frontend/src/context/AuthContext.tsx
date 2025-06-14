@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+  
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_URL = `${BASE_URL}`;
 
