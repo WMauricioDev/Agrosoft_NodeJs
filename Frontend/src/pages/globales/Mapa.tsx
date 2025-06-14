@@ -24,6 +24,8 @@ export interface PuntoMapa {
   descripcion: string;
   latitud: number;
   longitud: number;
+  cultivo_nombre?: string;
+  usuario_nombre?: string;
 }
 
 // icono personalizado para los marcadores
@@ -97,6 +99,8 @@ const MapaPage: React.FC = () => {
   const columns = [
     { name: "Nombre", uid: "nombre", sortable: true },
     { name: "Descripcion", uid: "descripcion", sortable: true },
+    { name: "Cultivo", uid: "cultivo_nombre", sortable: true },
+    { name: "Usuario", uid: "usuario_nombre", sortable: true },
     { name: "Latitud", uid: "latitud", sortable: true },
     { name: "Longitud", uid: "longitud", sortable: true },
     { name: "Acciones", uid: "acciones" },
@@ -106,6 +110,8 @@ const MapaPage: React.FC = () => {
     id: punto.id?.toString() || "",
     nombre: punto.nombre || "",
     descripcion: punto.descripcion || "Sin descripcion",
+    cultivo_nombre: punto.cultivo_nombre || "Sin cultivo asignado",
+    usuario_nombre: punto.usuario_nombre || "Sin usuario asignado",
     latitud: `${(punto.latitud || 0).toFixed(6)}`, 
     longitud: `${(punto.longitud || 0).toFixed(6)}`,  
     acciones: (
@@ -165,8 +171,13 @@ const MapaPage: React.FC = () => {
   useEffect(() => {
     if (!isRegisterModalOpen) {
       setClickPosition(null);
+      
     }
   }, [isRegisterModalOpen]);
+  useEffect(() => {
+  console.log("Puntos desde backend:", puntos);
+}, [puntos]);
+
 
   if (error) return (
     <DefaultLayout>
@@ -307,6 +318,9 @@ const MapaPage: React.FC = () => {
               <p><strong>Descripcion:</strong> {infoPunto.descripcion || "Sin descripcion"}</p>
               <p><strong>Latitud:</strong> {`${(infoPunto.latitud || 0).toFixed(6)}`}</p>
               <p><strong>Longitud:</strong> {`${(infoPunto.longitud || 0).toFixed(6)}`}</p>
+              <p><strong>Cultivo:</strong> {infoPunto.cultivo_nombre || "Sin cultivo asignado"}</p>
+              <p><strong>Usuario asignado:</strong> {infoPunto.usuario_nombre || "Sin usuario asignado"}</p>
+
             </div>
           )}
         </ReuModal>
