@@ -26,7 +26,7 @@ export default function ListarSensoresPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
-  const [sensoresLocal, setSensoresLocal] = useState<Sensor[]>([]); // Estado local para actualizar UI
+  const [sensoresLocal, setSensoresLocal] = useState<Sensor[]>([]);  
   const navigate = useNavigate();
 
   // Sincronizar sensoresLocal con sensores de la API
