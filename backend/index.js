@@ -41,11 +41,11 @@ import Insumos from './modulos/inventario/routers/Insumos.Router.js';
 import Semilleros from './modulos/inventario/routers/Semillero.Router.js';
 import Semillero_Insumo from './modulos/inventario/routers/SemilleroInsumo.Router.js';
 import precio from './modulos/inventario/routers/precio_producto.router.js';
+
 // Rutas del módulo IoT
-import configuracion from "./modulos/IoT/routers/router.configuracion.js";
-import datosMeteorologicos from "./modulos/IoT/routers/router.datos_meteorologicos.js";
-import sensores from "./modulos/IoT/routers/router.sensores.js";
-import sensor_bancal from "./modulos/IoT/routers/router.sensor_bancal.js";
+import sensores from './modulos/IoT/routers/sensorRoutes.js';
+import tipoSensor from './modulos/IoT/routers/tipoSensorRoutes.js';
+import datosMeteorologicos from './modulos/IoT/routers/datosMeteorologicosRoutes.js';
 
 // Rutas del módulo Finanzas
 import salario_minimo from "./modulos/finanzas/routers/salarioMinimoRoutes.js";
@@ -67,7 +67,7 @@ app.use(cors({
 // Configuración de middleware
 app.use(express.static('./public'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); // Cambiado a true para soportar multipart/form-data
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 // Servir imágenes desde modulos/uploads/
@@ -110,10 +110,9 @@ app.use('/api/inv', Semillero_Insumo);
 app.use('/api/inv', precio);
 
 // Rutas del módulo IoT
-app.use('/api/iot', configuracion);
-app.use('/api/iot', datosMeteorologicos);
 app.use('/api/iot', sensores);
-app.use('/api/iot', sensor_bancal);
+app.use('/api/iot', tipoSensor);
+app.use('/api/iot', datosMeteorologicos);
 
 // Rutas del módulo Finanzas
 app.use('/api/fin', salario_minimo);
