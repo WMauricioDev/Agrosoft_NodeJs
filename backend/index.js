@@ -55,7 +55,13 @@ import Venta from "./modulos/finanzas/routers/ventaRoutes.js";
 
 // Rutas de mapa
 import Mapa from "./modulos/cultivo/routers/router.mapa.js"
- 
+
+// Rutas de Reportes PDF
+import UsuariosPDF from "./modulos/reportes/usuarios/routers/routerReporteUsuarios.js"
+import BancalesPDF from './modulos/reportes/cultivo/routers/routerReporteBancal.js';
+import LotesPDF from './modulos/reportes/cultivo/routers/routerReporteLote.js';
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -124,6 +130,11 @@ app.use('/api/fin', Venta);
 
 // Rutas de mapa
 app.use('/api', Mapa);
+
+//Rutas de reporte UsuariosPDF
+app.use("/usuarios",UsuariosPDF)
+app.use("/cultivo" ,BancalesPDF)
+app.use("/cultivo",LotesPDF)
 
 // Swagger Docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
