@@ -52,7 +52,7 @@ import salario_minimo from "./modulos/finanzas/routers/salarioMinimoRoutes.js";
 import Registro_venta from "./modulos/finanzas/routers/registroVentaRoutes.js";
 import Inventario_producto from "./modulos/finanzas/routers/inventarioProductoRoutes.js";
 import Venta from "./modulos/finanzas/routers/ventaRoutes.js";
-
+import pago from "./modulos/finanzas/routers/PagoRouter.js"
 // Rutas de mapa
 import Mapa from "./modulos/cultivo/routers/router.mapa.js"
 
@@ -127,6 +127,7 @@ app.use('/api/fin', salario_minimo);
 app.use('/api/fin', Registro_venta);
 app.use('/api/fin', Inventario_producto);
 app.use('/api/fin', Venta);
+app.use('/api/fin', pago);
 
 // Rutas de mapa
 app.use('/api', Mapa);
