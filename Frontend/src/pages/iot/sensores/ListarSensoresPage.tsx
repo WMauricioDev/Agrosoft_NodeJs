@@ -3,7 +3,6 @@ import DefaultLayout from "@/layouts/default";
 import { useSensores } from "@/hooks/iot/sensores/useSensores";
 import { useUpdateSensor } from "@/hooks/iot/sensores/usePutSensor";
 import { useDeleteSensor } from "@/hooks/iot/sensores/useDeleteSensor";
-import { useToggleSensor } from "@/hooks/iot/sensores/useToggleSensor";
 import { useBancales } from "@/hooks/cultivo/usebancal";
 import { useNavigate } from "react-router-dom";
 import Tabla from "@/components/globales/Tabla";
@@ -12,20 +11,19 @@ import GuideModal from "@/components/Iot/GuideModal";
 import { Sensor } from "@/types/iot/type";
 import { EditIcon, Trash2, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import Switcher from "@/components/switch"; 
-import { addToast } from "@heroui/toast";
+import Switcher from "@/components/switch";
+import { addToast } from "@heroui/react";
 
 export default function ListarSensoresPage() {
   const { sensores, isLoading, error } = useSensores();
   const updateSensor = useUpdateSensor();
   const deleteSensor = useDeleteSensor();
-  const toggleSensor = useToggleSensor();
   const { data: bancales } = useBancales();
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
-  const [sensoresLocal, setSensoresLocal] = useState<Sensor[]>([]);  
+  const [sensoresLocal, setSensoresLocal] = useState<Sensor[]>([]);
   const navigate = useNavigate();
 
   // Sincronizar sensoresLocal con sensores de la API
@@ -54,7 +52,7 @@ export default function ListarSensoresPage() {
   ];
 
   const formattedData = useMemo(() => {
-    console.log("[ListarSensoresPage] Formateando datos para la tabla: ", { sensores, bancales });
+    console.log("[ListarSensoresPage] Formateando datos para la tabla: ", { sensoresLocal, bancales });
     return sensoresLocal.map((sensor: Sensor) => ({
       id: sensor.id ? sensor.id.toString() : "N/A",
       nombre: sensor.nombre || "Sin nombre",
@@ -110,8 +108,11 @@ export default function ListarSensoresPage() {
                   sensorId: sensor.id,
                   activo,
                 });
-                toggleSensor.mutate(
-                  { sensorId: sensor.id, activo },
+                updateSensor.mutate(
+                  {
+                    ...sensor,
+                    estado: activo ? "activo" : "inactivo",
+                  },
                   {
                     onSuccess: () => {
                       setSensoresLocal((prev) =>
@@ -120,8 +121,14 @@ export default function ListarSensoresPage() {
                         )
                       );
                     },
-                    onError: () => {
-                      // El toast de error ya está manejado en useToggleSensor
+                    onError: (error: any) => {
+                      console.error("[ListarSensoresPage] Error al cambiar estado del sensor: ", error);
+                      addToast({
+                        title: "Error",
+                        description: error.message || "Error al cambiar el estado del sensor",
+                        timeout: 3000,
+                        color: "danger",
+                      });
                     },
                   }
                 );
@@ -131,7 +138,7 @@ export default function ListarSensoresPage() {
         </div>
       ),
     }));
-  }, [sensoresLocal, bancales, toggleSensor]);
+  }, [sensoresLocal, bancales, updateSensor]);
 
   const handleConfirmEdit = (editedSensor: Sensor | null) => {
     if (editedSensor?.id) {
@@ -144,10 +151,22 @@ export default function ListarSensoresPage() {
         },
         onError: (error: any) => {
           console.error("[ListarSensoresPage] Error al editar sensor: ", error);
+          addToast({
+            title: "Error",
+            description: error.message || "Error al editar el sensor",
+            timeout: 3000,
+            color: "danger",
+          });
         },
       });
     } else {
       console.error("[ListarSensoresPage] No se puede editar: editedSensor.id es inválido", editedSensor);
+      addToast({
+        title: "Error",
+        description: "El sensor no tiene un ID válido.",
+        timeout: 3000,
+        color: "danger",
+      });
     }
   };
 
@@ -162,10 +181,22 @@ export default function ListarSensoresPage() {
         },
         onError: (error: any) => {
           console.error("[ListarSensoresPage] Error al eliminar sensor: ", error);
+          addToast({
+            title: "Error",
+            description: error.message || "Error al eliminar el sensor",
+            timeout: 3000,
+            color: "danger",
+          });
         },
       });
     } else {
       console.error("[ListarSensoresPage] No se puede eliminar: selectedSensor.id es inválido", selectedSensor);
+      addToast({
+        title: "Error",
+        description: "El sensor no tiene un ID válido.",
+        timeout: 3000,
+        color: "danger",
+      });
     }
   };
 

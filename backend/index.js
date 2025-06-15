@@ -46,8 +46,9 @@ import precio from './modulos/inventario/routers/precio_producto.router.js';
 // Rutas del módulo IoT
 import sensores from './modulos/IoT/routers/sensorRoutes.js';
 import tipoSensor from './modulos/IoT/routers/tipoSensorRoutes.js';
-import datosMeteorologicos from './modulos/IoT/routers/datosMeteorologicosRoutes.js';
-
+import datosMeteorologicos from './modulos/IoT/routers/datosMeteorologicosRoutes.js'; 
+import reportePDF from './modulos/IoT/routers/reportePDFRoutes.js';
+import rutaDatosHistoricos from './modulos/IoT/routers/datosHistoricosRoutes.js';
 // Rutas del módulo Finanzas
 import salario_minimo from "./modulos/finanzas/routers/salarioMinimoRoutes.js";
 import Registro_venta from "./modulos/finanzas/routers/registroVentaRoutes.js";
@@ -56,7 +57,7 @@ import Venta from "./modulos/finanzas/routers/ventaRoutes.js";
 
 // Rutas de mapa
 import Mapa from "./modulos/cultivo/routers/router.mapa.js"
-
+ 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -117,7 +118,8 @@ app.use('/api/inv', precio);
 app.use('/api/iot', sensores);
 app.use('/api/iot', tipoSensor);
 app.use('/api/iot', datosMeteorologicos);
-
+app.use('/api/iot', reportePDF);
+app.use('/api/iot', rutaDatosHistoricos);
 // Rutas del módulo Finanzas
 app.use('/api/fin', salario_minimo);
 app.use('/api/fin', Registro_venta);
