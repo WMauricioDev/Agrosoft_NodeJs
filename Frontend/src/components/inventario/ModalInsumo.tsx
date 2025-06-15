@@ -6,6 +6,7 @@ import { Insumo } from "@/types/inventario/Insumo";
 import { ModalUnidadMedida } from "@/components/cultivo/ModalUnidadMedida";
 import { ModalTipoInsumo } from "./ModalTipoInsumo";
 import { Plus } from "lucide-react";
+import { Switch } from "@heroui/react";
 
 interface ModalInsumoProps {
   isOpen: boolean;
@@ -199,16 +200,15 @@ export const ModalInsumo = ({ isOpen, onOpenChange, onSuccess }: ModalInsumoProp
           value={insumo.precio_insumo.toLocaleString("es-CO")}
           onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => setInsumo({ ...insumo, precio_insumo: formatPrice(e.target.value) })}
         />
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            name="activo"
-            checked={insumo.activo}
-            onChange={handleChange}
-            className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-          />
-          <span className="text-sm text-gray-700">Activo</span>
-        </label>
+          <div className="flex items-center">
+              <Switch
+                  color="success"
+                  size="sm"
+                  isSelected={insumo.activo}
+                  onChange={(e) => setInsumo({ ...insumo, activo: e.target.checked })}
+              />
+              <label className="ml-2 text-sm font-medium text-gray-700">Activo</label>
+          </div>
       </div>
     </ReuModal>
   );

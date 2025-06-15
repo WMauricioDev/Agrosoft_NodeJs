@@ -1,6 +1,13 @@
 import { Router } from "express";
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
-import { listarInsumos, registrarInsumo, actualizarInsumo, eliminarInsumo, registrarTipoInsumo,obtenerTiposInsumo } from "../controllers/Insumos.Controller.js";
+import {
+  registrarTipoInsumo,
+  obtenerTiposInsumo,
+  registrarInsumo,
+  listarInsumos,
+  actualizarInsumo,
+  eliminarInsumo,
+} from "../controllers/Insumos.Controller.js";
 
 const rutaInsumos = Router();
 
@@ -12,7 +19,6 @@ const rutaInsumos = Router();
  *   - name: TiposInsumos
  *     description: API para la gestión de tipos de insumos
  */
-
 
 /**
  * @swagger
@@ -28,41 +34,83 @@ const rutaInsumos = Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                   nombre:
- *                     type: string
- *                   descripcion:
- *                     type: string
- *                   cantidad:
- *                     type: integer
- *                   unidad_medida_id:
- *                     type: integer
- *                     nullable: true
- *                   tipo_insumo_id:
- *                     type: integer
- *                     nullable: true
- *                   activo:
- *                     type: boolean
- *                   tipo_empacado:
- *                     type: string
- *                     nullable: true
- *                   fecha_registro:
- *                     type: string
- *                     format: date-time
- *                   fecha_caducidad:
- *                     type: string
- *                     format: date
- *                     nullable: true
- *                   precio_insumo:
- *                     type: number
- *                     format: decimal
- *       500:
- *         description: Error en el servidor
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Insumos obtenidos correctamente
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 1
+ *                       nombre:
+ *                         type: string
+ *                         example: Fertilizante
+ *                       descripcion:
+ *                         type: string
+ *                         example: Fertilizante nitrogenado
+ *                       cantidad:
+ *                         type: integer
+ *                         example: 100
+ *                       activo:
+ *                         type: boolean
+ *                         example: true
+ *                       tipo_empacado:
+ *                         type: string
+ *                         example: Saco
+ *                         nullable: true
+ *                       fecha_registro:
+ *                         type: string
+ *                         format: date-time
+ *                         example: 2025-06-14T14:43:00Z
+ *                       fecha_caducidad:
+ *                         type: string
+ *                         format: date
+ *                         example: 2026-06-14
+ *                         nullable: true
+ *                       precio_insumo:
+ *                         type: number
+ *                         format: decimal
+ *                         example: 50000.00
+ *                       unidad_medida:
+ *                         type: object
+ *                         nullable: true
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           nombre:
+ *                             type: string
+ *                           descripcion:
+ *                             type: string
+ *                             nullable: true
+ *                           creada_por_usuario:
+ *                             type: boolean
+ *                           fecha_creacion:
+ *                             type: string
+ *                             format: date-time
+ *                       tipo_insumo:
+ *                         type: object
+ *                         nullable: true
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           nombre:
+ *                             type: string
+ *                           descripcion:
+ *                             type: string
+ *                             nullable: true
+ *                           creada_por_usuario:
+ *                             type: boolean
+ *                           fecha_creacion:
+ *                             type: string
+ *                             format: date-time
  */
 rutaInsumos.get("/insumos", verificarToken, listarInsumos);
 
@@ -83,57 +131,61 @@ rutaInsumos.get("/insumos", verificarToken, listarInsumos);
  *             required:
  *               - nombre
  *               - descripcion
+ *               - cantidad
  *             properties:
  *               nombre:
  *                 type: string
- *                 description: Nombre del insumo (máximo 255 caracteres)
+ *                 example: Fertilizante
  *               descripcion:
  *                 type: string
- *                 description: Descripción del insumo
+ *                 example: Fertilizante nitrogenado
  *               cantidad:
  *                 type: integer
- *                 description: Cantidad del insumo (por defecto 1)
- *                 default: 1
+ *                 example: 100
  *               unidad_medida_id:
  *                 type: integer
- *                 description: ID de la unidad de medida (opcional)
+ *                 example: 1
  *                 nullable: true
  *               tipo_insumo_id:
  *                 type: integer
- *                 description: ID del tipo de insumo (opcional)
+ *                 example: 1
  *                 nullable: true
  *               activo:
  *                 type: boolean
- *                 description: Estado del insumo (por defecto true)
- *                 default: true
+ *                 example: true
  *               tipo_empacado:
  *                 type: string
- *                 description: Tipo de empaque del insumo (opcional, máximo 100 caracteres)
+ *                 example: Saco
  *                 nullable: true
  *               fecha_caducidad:
  *                 type: string
  *                 format: date
- *                 description: Fecha de caducidad del insumo (opcional)
+ *                 example: 2026-06-14
  *                 nullable: true
  *               precio_insumo:
  *                 type: number
  *                 format: decimal
- *                 description: Precio del insumo (por defecto 0.00)
- *                 default: 0.00
+ *                 example: 50000.00
  *     responses:
- *       200:
+ *       201:
  *         description: Insumo registrado correctamente
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
  *                 message:
  *                   type: string
- *                 id:
- *                   type: integer
- *       500:
- *         description: Error en el servidor
+ *                   example: Insumo registrado correctamente
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
  */
 rutaInsumos.post("/insumos", verificarToken, registrarInsumo);
 
@@ -161,43 +213,41 @@ rutaInsumos.post("/insumos", verificarToken, registrarInsumo);
  *             required:
  *               - nombre
  *               - descripcion
+ *               - cantidad
  *             properties:
  *               nombre:
  *                 type: string
- *                 description: Nombre del insumo (máximo 255 caracteres)
+ *                 example: Fertilizante
  *               descripcion:
  *                 type: string
- *                 description: Descripción del insumo
+ *                 example: Fertilizante nitrogenado
  *               cantidad:
  *                 type: integer
- *                 description: Cantidad del insumo (por defecto 1)
- *                 default: 1
+ *                 example: 100
  *               unidad_medida_id:
  *                 type: integer
- *                 description: ID de la unidad de medida (opcional)
+ *                 example: 1
  *                 nullable: true
  *               tipo_insumo_id:
  *                 type: integer
- *                 description: ID del tipo de insumo (opcional)
+ *                 example: 1
  *                 nullable: true
  *               activo:
  *                 type: boolean
- *                 description: Estado del insumo (por defecto true)
- *                 default: true
+ *                 example: true
  *               tipo_empacado:
  *                 type: string
- *                 description: Tipo de empaque del insumo (opcional, máximo 100 caracteres)
+ *                 example: Saco
  *                 nullable: true
  *               fecha_caducidad:
  *                 type: string
  *                 format: date
- *                 description: Fecha de caducidad del insumo (opcional)
+ *                 example: 2026-06-14
  *                 nullable: true
  *               precio_insumo:
  *                 type: number
  *                 format: decimal
- *                 description: Precio del insumo (por defecto 0.00)
- *                 default: 0.00
+ *                 example: 50000.00
  *     responses:
  *       200:
  *         description: Insumo actualizado correctamente
@@ -206,12 +256,12 @@ rutaInsumos.post("/insumos", verificarToken, registrarInsumo);
  *             schema:
  *               type: object
  *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
  *                 message:
  *                   type: string
- *       404:
- *         description: Insumo no encontrado
- *       500:
- *         description: Error en el servidor
+ *                   example: Insumo actualizado correctamente
  */
 rutaInsumos.put("/insumos/:id", verificarToken, actualizarInsumo);
 
@@ -238,18 +288,18 @@ rutaInsumos.put("/insumos/:id", verificarToken, actualizarInsumo);
  *             schema:
  *               type: object
  *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
  *                 message:
  *                   type: string
- *       404:
- *         description: Insumo no encontrado
- *       500:
- *         description: Error en el servidor
+ *                   example: Insumo eliminado correctamente
  */
 rutaInsumos.delete("/insumos/:id", verificarToken, eliminarInsumo);
 
 /**
  * @swagger
- * /tipos-insumos:
+ * /tipos-insumo:
  *   post:
  *     summary: Registrar un nuevo tipo de insumo
  *     tags: [TiposInsumos]
@@ -266,33 +316,82 @@ rutaInsumos.delete("/insumos/:id", verificarToken, eliminarInsumo);
  *             properties:
  *               nombre:
  *                 type: string
- *                 description: Nombre del tipo de insumo (máximo 50 caracteres, único)
+ *                 example: Fertilizante
  *               descripcion:
  *                 type: string
- *                 description: Descripción del tipo de insumo (opcional)
+ *                 example: Tipo de insumo para fertilizantes
  *                 nullable: true
  *               creada_por_usuario:
  *                 type: boolean
- *                 description: Indica si fue creado por un usuario (por defecto false)
- *                 default: false
+ *                 example: true
  *     responses:
- *       200:
+ *       201:
  *         description: Tipo de insumo registrado correctamente
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
  *                 message:
  *                   type: string
- *                 id:
- *                   type: integer
- *       400:
- *         description: Error de validación (nombre inválido o duplicado)
- *       500:
- *         description: Error en el servidor
+ *                   example: Tipo de insumo registrado correctamente
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
  */
-rutaInsumos.post("/tipos_insumo", verificarToken, registrarTipoInsumo);
-rutaInsumos.get("/tipos_insumo", verificarToken, obtenerTiposInsumo);
+rutaInsumos.post("/tipos-insumo", verificarToken, registrarTipoInsumo);
+
+/**
+ * @swagger
+ * /tipos-insumo:
+ *   get:
+ *     summary: Obtener todos los tipos de insumo
+ *     tags: [TiposInsumos]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de tipos de insumo obtenida correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Tipos de insumo obtenidos correctamente
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 1
+ *                       nombre:
+ *                         type: string
+ *                         example: Fertilizante
+ *                       descripcion:
+ *                         type: string
+ *                         example: Tipo de insumo para fertilizantes
+ *                         nullable: true
+ *                       creada_por_usuario:
+ *                         type: boolean
+ *                         example: true
+ *                       fecha_creacion:
+ *                         type: string
+ *                         format: date-time
+ *                         example: 2025-06-14T14:43:00Z
+ */
+rutaInsumos.get("/tipos-insumo", verificarToken, obtenerTiposInsumo);
 
 export default rutaInsumos;
