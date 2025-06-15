@@ -4,4 +4,6 @@ export interface PuntoMapa {
   descripcion: string;
   latitud: number;
   longitud: number;
+  usuario_id?: number | null; 
+  cultivo_id?: number | null; 
 }

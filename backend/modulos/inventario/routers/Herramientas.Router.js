@@ -1,10 +1,11 @@
 import { Router } from "express";
 import {
-  registrarHerramienta,
-  listarHerramientas,
-  actualizarHerramienta,
-  eliminarHerramienta,
+    registrarHerramienta,
+    listarHerramientas,
+    actualizarHerramienta,
+    eliminarHerramienta,
 } from "../controllers/Herramientas.Controller.js";
+
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
 
 const rutaHerramienta = Router();
@@ -30,46 +31,25 @@ const rutaHerramienta = Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 message:
- *                   type: string
- *                   example: Herramientas obtenidas correctamente
- *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: integer
- *                         example: 1
- *                       nombre:
- *                         type: string
- *                         example: Martillo
- *                       descripcion:
- *                         type: string
- *                         example: Herramienta de golpe
- *                       cantidad:
- *                         type: integer
- *                         example: 10
- *                       estado:
- *                         type: string
- *                         example: Disponible
- *                       activo:
- *                         type: boolean
- *                         example: true
- *                       fecha_registro:
- *                         type: string
- *                         example: 2025-06-14T14:43:00Z
- *                       precio:
- *                         type: number
- *                         example: 50000
- *                       cantidad_disponible:
- *                         type: number
- *                         example: 8
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 1
+ *                   nombre:
+ *                     type: string
+ *                     example: "Martillo"
+ *                   descripcion:
+ *                     type: string
+ *                     example: "Herramienta de golpe"
+ *                   unidades:
+ *                     type: integer
+ *                     example: 10
+ *                   fk_lote:
+ *                     type: integer
+ *                     example: 2
  */
 rutaHerramienta.get("/herramientas", verificarToken, listarHerramientas);
 
@@ -88,47 +68,21 @@ rutaHerramienta.get("/herramientas", verificarToken, listarHerramientas);
  *           schema:
  *             type: object
  *             properties:
+ *               fk_lote:
+ *                 type: integer
+ *                 example: 2
  *               nombre:
  *                 type: string
- *                 example: Martillo
+ *                 example: "Martillo"
  *               descripcion:
  *                 type: string
- *                 example: Herramienta de golpe
- *               cantidad:
+ *                 example: "Herramienta de golpe"
+ *               unidades:
  *                 type: integer
  *                 example: 10
- *               estado:
- *                 type: string
- *                 example: Disponible
- *               activo:
- *                 type: boolean
- *                 example: true
- *               fecha_registro:
- *                 type: string
- *                 example: 2025-06-14T14:43:00Z
- *               precio:
- *                 type: number
- *                 example: 50000
  *     responses:
  *       201:
  *         description: Herramienta registrada correctamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 message:
- *                   type: string
- *                   example: Herramienta registrada correctamente
- *                 data:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
- *                       example: 1
  */
 rutaHerramienta.post("/herramientas", verificarToken, registrarHerramienta);
 
@@ -154,41 +108,21 @@ rutaHerramienta.post("/herramientas", verificarToken, registrarHerramienta);
  *           schema:
  *             type: object
  *             properties:
+ *               fk_lote:
+ *                 type: integer
+ *                 example: 3
  *               nombre:
  *                 type: string
- *                 example: Destornillador
+ *                 example: "Destornillador"
  *               descripcion:
  *                 type: string
- *                 example: Herramienta para tornillos
- *               cantidad:
+ *                 example: "Herramienta para tornillos"
+ *               unidades:
  *                 type: integer
  *                 example: 15
- *               estado:
- *                 type: string
- *                 example: Disponible
- *               activo:
- *                 type: boolean
- *                 example: true
- *               fecha_registro:
- *                 type: string
- *                 example: 2025-06-14T14:43:00Z
- *               precio:
- *                 type: number
- *                 example: 30000
  *     responses:
  *       200:
  *         description: Herramienta actualizada correctamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 message:
- *                   type: string
- *                   example: Herramienta actualizada correctamente
  */
 rutaHerramienta.put("/herramientas/:id", verificarToken, actualizarHerramienta);
 
@@ -210,17 +144,6 @@ rutaHerramienta.put("/herramientas/:id", verificarToken, actualizarHerramienta);
  *     responses:
  *       200:
  *         description: Herramienta eliminada correctamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 message:
- *                   type: string
- *                   example: Herramienta eliminada correctamente
  */
 rutaHerramienta.delete("/herramientas/:id", verificarToken, eliminarHerramienta);
 

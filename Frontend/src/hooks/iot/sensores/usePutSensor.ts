@@ -2,8 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/components/utils/axios";
 import { addToast } from "@heroui/react";
 import { Sensor } from "@/types/iot/type";
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/iot/sensores/`;
+const API_URL = `${BASE_URL}/api/iot/sensores`;
 
 const updateSensor = async (sensor: Sensor) => {
   const token = localStorage.getItem("access_token");
@@ -28,12 +29,12 @@ const updateSensor = async (sensor: Sensor) => {
     bancal_id: sensor.bancal_id || null,
   };
 
-  console.log("[useUpdateSensor] Enviando PUT a /iot/sensores/" + sensor.id + "/ con datos:", JSON.stringify(sensorData, null, 2));
+  console.log("[useUpdateSensor] Enviando PUT a /api/iot/sensores/" + sensor.id + " con datos:", JSON.stringify(sensorData, null, 2));
   try {
-    const response = await api.put(`${API_URL}${sensor.id}/`, sensorData, {
+    const response = await api.put(`${API_URL}/${sensor.id}`, sensorData, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log("[useUpdateSensor] Respuesta de PUT /iot/sensores/" + sensor.id + "/: ", response.data);
+    console.log("[useUpdateSensor] Respuesta de PUT /api/iot/sensores/" + sensor.id + ": ", response.data);
     return response.data;
   } catch (error: any) {
     const errorMessage =
@@ -42,7 +43,7 @@ const updateSensor = async (sensor: Sensor) => {
         .map(([key, value]) => `${key}: ${value}`)
         .join(", ") ||
       "Error al actualizar el sensor";
-    console.error("[useUpdateSensor] Error en PUT /iot/sensores/" + sensor.id + "/: ", {
+    console.error("[useUpdateSensor] Error en PUT /api/iot/sensores/" + sensor.id + ": ", {
       message: error.message,
       response: error.response?.data,
       status: error.response?.status,

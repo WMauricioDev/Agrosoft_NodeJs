@@ -3,7 +3,7 @@ import api from "@/components/utils/axios";
 import { addToast } from "@heroui/react";
 import { obtenerNuevoToken } from "@/components/utils/refresh";
 
-const API_URL = "http://192.168.1.12:8000/iot/datosmeteorologicos/";
+const API_URL = "http://192.168.1.12:8000/api/iot/datosmeteorologicos";
 
 const registrarSensor = async (sensor: { fk_sensor: number; temperatura: number }) => {
   const token = localStorage.getItem("access_token");
