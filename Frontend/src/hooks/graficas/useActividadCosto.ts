@@ -5,7 +5,7 @@ import {ActividadCostosData } from "@/types/cultivo/ActividadCosto";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}/cultivo/actividades/grafico_costos/`;
+const API_URL = `${BASE_URL}/api/cultivo/grafico_costos/`;
 
 const fetchActividadCostos = async (
   fechaInicio: string,
