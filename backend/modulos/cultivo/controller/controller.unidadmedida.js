@@ -9,7 +9,7 @@ export const postUnidadMedida = async (req, res) => {
         if (typeof creada_por_usuario !== 'boolean') {
             return res.status(400).json({ "message": "El campo creada_por_usuario debe ser un booleano" });
         }
-        const fecha_creacion = new Date().toISOString(); // Generate current timestamp
+        const fecha_creacion = new Date().toISOString(); 
         const sql = "INSERT INTO unidad_medida_unidadmedida (nombre, descripcion, creada_por_usuario, fecha_creacion) VALUES ($1, $2, $3, $4) RETURNING id";
         const result = await pool.query(sql, [nombre, descripcion, creada_por_usuario, fecha_creacion]);
         if (result.rows.length > 0) {

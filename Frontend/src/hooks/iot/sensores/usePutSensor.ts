@@ -13,17 +13,32 @@ const updateSensor = async (sensor: Sensor) => {
     throw new Error("No se encontró el token de autenticación.");
   }
 
+  if (!sensor.id) {
+    console.error("[useUpdateSensor] Validación fallida: id es obligatorio", sensor);
+    throw new Error("El ID del sensor es obligatorio.");
+  }
+
   if (!sensor.tipo_sensor_id || sensor.tipo_sensor_id <= 0) {
     console.error("[useUpdateSensor] Validación fallida: tipo_sensor_id inválido", sensor);
     throw new Error("El tipo de sensor es inválido.");
   }
 
+  if (!sensor.nombre) {
+    console.error("[useUpdateSensor] Validación fallida: nombre es obligatorio", sensor);
+    throw new Error("El nombre del sensor es obligatorio.");
+  }
+
+  if (!["activo", "inactivo"].includes(sensor.estado)) {
+    console.error("[useUpdateSensor] Validación fallida: estado inválido", sensor);
+    throw new Error("El estado debe ser 'activo' o 'inactivo'.");
+  }
+
   const sensorData = {
     nombre: sensor.nombre,
     tipo_sensor_id: sensor.tipo_sensor_id,
-    descripcion: sensor.descripcion || "",
-    medida_minima: parseFloat(Number(sensor.medida_minima).toFixed(2)),
-    medida_maxima: parseFloat(Number(sensor.medida_maxima).toFixed(2)),
+    descripcion: sensor.descripcion || null,
+    medida_minima: sensor.medida_minima != null ? parseFloat(Number(sensor.medida_minima).toFixed(2)) : null,
+    medida_maxima: sensor.medida_maxima != null ? parseFloat(Number(sensor.medida_maxima).toFixed(2)) : null,
     device_code: sensor.device_code || null,
     estado: sensor.estado,
     bancal_id: sensor.bancal_id || null,
@@ -38,7 +53,7 @@ const updateSensor = async (sensor: Sensor) => {
     return response.data;
   } catch (error: any) {
     const errorMessage =
-      error.response?.data?.detail ||
+      error.response?.data?.message ||
       Object.entries(error.response?.data || {})
         .map(([key, value]) => `${key}: ${value}`)
         .join(", ") ||
