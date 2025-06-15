@@ -3,7 +3,7 @@ import api from "@/components/utils/axios";
 import { addToast } from "@heroui/react";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/iot/sensores/`;
+const API_URL = `${BASE_URL}/api/iot/sensores`;
 
 const deleteSensor = async (id: number) => {
   const token = localStorage.getItem("access_token");
@@ -12,15 +12,15 @@ const deleteSensor = async (id: number) => {
     throw new Error("No se encontró el token de autenticación.");
   }
 
-  console.log("[useDeleteSensor] Enviando DELETE a /iot/sensores/" + id + "/");
+  console.log("[useDeleteSensor] Enviando DELETE a /api/iot/sensores/" + id);
   try {
-    const response = await api.delete(`${API_URL}${id}/`, {
+    const response = await api.delete(`${API_URL}/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log("[useDeleteSensor] Respuesta de DELETE /iot/sensores/" + id + "/: ", response.data);
+    console.log("[useDeleteSensor] Respuesta de DELETE /api/iot/sensores/" + id + ": ", response.data);
     return response;
   } catch (error: any) {
-    console.error("[useDeleteSensor] Error en DELETE /iot/sensores/" + id + "/: ", {
+    console.error("[useDeleteSensor] Error en DELETE /api/iot/sensores/" + id + ": ", {
       message: error.message,
       response: error.response?.data,
       status: error.response?.status,

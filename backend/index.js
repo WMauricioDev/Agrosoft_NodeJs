@@ -1,3 +1,4 @@
+// index.js
 import express from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
@@ -5,7 +6,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerSpec from './modulos/usuarios/views/Swagger.js';
 import cors from 'cors';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'url'; 
 
 // Rutas del módulo Cultivo
 import fase_lunar from "./modulos/cultivo/routers/router.fase_lunar.js";
@@ -38,15 +39,14 @@ import Bodega_Herramienta from './modulos/inventario/routers/BodegaHerramienta.R
 import Bodega_Insumo from './modulos/inventario/routers/BodegaInsumo.Router.js';
 import Herramientas from './modulos/inventario/routers/Herramientas.Router.js';
 import Insumos from './modulos/inventario/routers/Insumos.Router.js';
-import Semilleros from './modulos/inventario/routers/Semillero.Router.js';
-import Semillero_Insumo from './modulos/inventario/routers/SemilleroInsumo.Router.js';
 import precio from './modulos/inventario/routers/precio_producto.router.js';
-// Rutas del módulo IoT
-import configuracion from "./modulos/IoT/routers/router.configuracion.js";
-import datosMeteorologicos from "./modulos/IoT/routers/router.datos_meteorologicos.js";
-import sensores from "./modulos/IoT/routers/router.sensores.js";
-import sensor_bancal from "./modulos/IoT/routers/router.sensor_bancal.js";
 
+// Rutas del módulo IoT
+import sensores from './modulos/IoT/routers/sensorRoutes.js';
+import tipoSensor from './modulos/IoT/routers/tipoSensorRoutes.js';
+import datosMeteorologicos from './modulos/IoT/routers/datosMeteorologicosRoutes.js'; 
+import reportePDF from './modulos/IoT/routers/reportePDFRoutes.js';
+import rutaDatosHistoricos from './modulos/IoT/routers/datosHistoricosRoutes.js';
 // Rutas del módulo Finanzas
 import salario_minimo from "./modulos/finanzas/routers/salarioMinimoRoutes.js";
 import Registro_venta from "./modulos/finanzas/routers/registroVentaRoutes.js";
@@ -60,6 +60,7 @@ import Mapa from "./modulos/cultivo/routers/router.mapa.js"
 import UsuariosPDF from "./modulos/reportes/usuarios/routers/routerReporteUsuarios.js"
 import BancalesPDF from './modulos/reportes/cultivo/routers/routerReporteBancal.js';
 import LotesPDF from './modulos/reportes/cultivo/routers/routerReporteLote.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,7 +76,7 @@ app.use(cors({
 // Configuración de middleware
 app.use(express.static('./public'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); // Cambiado a true para soportar multipart/form-data
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 // Servir imágenes desde modulos/uploads/
@@ -113,16 +114,14 @@ app.use('/api/inv', Bodega_Herramienta);
 app.use('/api/inv', Bodega_Insumo);
 app.use('/api/inv', Herramientas);
 app.use('/api/inv', Insumos);
-app.use('/api/inv', Semilleros);
-app.use('/api/inv', Semillero_Insumo);
 app.use('/api/inv', precio);
 
 // Rutas del módulo IoT
-app.use('/api/iot', configuracion);
-app.use('/api/iot', datosMeteorologicos);
 app.use('/api/iot', sensores);
-app.use('/api/iot', sensor_bancal);
-
+app.use('/api/iot', tipoSensor);
+app.use('/api/iot', datosMeteorologicos);
+app.use('/api/iot', reportePDF);
+app.use('/api/iot', rutaDatosHistoricos);
 // Rutas del módulo Finanzas
 app.use('/api/fin', salario_minimo);
 app.use('/api/fin', Registro_venta);
@@ -130,7 +129,7 @@ app.use('/api/fin', Inventario_producto);
 app.use('/api/fin', Venta);
 
 // Rutas de mapa
-app.use('/api', Mapa)
+app.use('/api', Mapa);
 
 //Rutas de reporte UsuariosPDF
 app.use("/usuarios",UsuariosPDF)
@@ -138,7 +137,7 @@ app.use("/cultivo" ,BancalesPDF)
 app.use("/cultivo",LotesPDF)
 
 // Swagger Docs
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Configuración del motor de plantilla EJS
 app.set('views', './src/views');
@@ -149,6 +148,6 @@ app.get('/documents', (req, resp) => {
 });
 
 // Iniciar el servidor
-app.listen(3000, () => {
+app.listen(3000, async () => {
   console.log('✅ Servidor iniciado en el puerto 3000');
 });

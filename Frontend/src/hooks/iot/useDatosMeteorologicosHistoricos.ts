@@ -4,7 +4,7 @@ import { addToast } from "@heroui/react";
 import { SensorData } from "@/types/iot/type";
 import { obtenerNuevoToken } from "@/components/utils/refresh";
 
-const API_URL = "http://192.168.1.12:8000/iot/datosmeteorologicos/";
+const API_URL = "http://192.168.1.12:8000/api/iot/datosmeteorologicos";
 
 const fetchDatosHistoricos = async (): Promise<SensorData[]> => {
   const token = localStorage.getItem("access_token");

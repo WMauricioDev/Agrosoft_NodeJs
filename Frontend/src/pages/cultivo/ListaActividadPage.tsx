@@ -175,9 +175,9 @@ const ListaActividadPage: React.FC = () => {
                   {actividad.prioridad}
               </span>
           ),
-          tipo_actividad: tiposActividad?.find((tipo) => tipo.id === actividad.tipo_actividad)?.nombre || 'Sin tipo',
+          tipo_actividad: tiposActividad?.find((tipo) => tipo.id === actividad.tipo_actividad_id)?.nombre || 'Sin tipo',
           usuarios: usuariosInfo,
-          cultivo: cultivos?.find((cult) => cult.id === actividad.cultivo)?.nombre || 'Sin cultivo',
+          cultivo: cultivos?.find((cult) => cult.id === actividad.cultivo_id)?.nombre || 'Sin cultivo',
           insumos: insumosInfo,
           herramientas: herramientasInfo,
           acciones: (
@@ -194,7 +194,6 @@ const ListaActividadPage: React.FC = () => {
                       className="text-green-500 hover:underline mr-2"
                       onClick={() => handleEdit(actividad)}
                   >
-                      <EditIcon size={22} color='black'/>
                   </button>
                   <button
                       className="text-red-500 hover:underline"
