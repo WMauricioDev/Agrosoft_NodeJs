@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import DefaultLayout from "@/layouts/default";
-import {ReuInput} from "@/components/globales/ReuInput";
+import { ReuInput } from "@/components/globales/ReuInput";
+import Formulario from "@/components/globales/Formulario";
 import { useNavigate } from "react-router-dom";
 import { Sensor } from "@/types/iot/type";
 import { useCreateSensor } from "@/hooks/iot/sensores/usePostSensor";
+import { useBancales } from "@/hooks/cultivo/usebancal";
 import { addToast } from "@heroui/react";
+import Switcher from "@/components/switch";
 
 const sensorTypes = [
   { value: "temperatura", label: "Temperatura (°C)", id: 1 },
@@ -17,7 +20,7 @@ const sensorTypes = [
   { value: "ph_suelo", label: "pH Suelo (pH)", id: 8 },
 ];
 
-const sensorConfigurations: { [key: string]: { unidad_medida: string; medida_minima: number; medida_maxima: number } } = {
+const sensorConfigurations = {
   temperatura: { unidad_medida: "°C", medida_minima: -40, medida_maxima: 85 },
   ambient_humidity: { unidad_medida: "%", medida_minima: 0, medida_maxima: 100 },
   soil_humidity: { unidad_medida: "%", medida_minima: 0, medida_maxima: 100 },
@@ -42,38 +45,41 @@ const RegistrarSensorPage: React.FC = () => {
     bancal_id: null,
     bancal_nombre: null,
   });
+  const { data: bancales, isLoading: isLoadingBancales } = useBancales();
   const createSensor = useCreateSensor();
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    console.log(`[RegistrarSensorPage] Cambio en el campo ${name}: `, value);
-
     if (name === "tipo_sensor") {
       const tipoSensor = sensorTypes.find((type) => type.value === value);
       const config = sensorConfigurations[value] || { unidad_medida: "", medida_minima: 0, medida_maxima: 0 };
-      setSensor((prev) => ({
-        ...prev,
+      setSensor({
+        ...sensor,
         tipo_sensor: value,
         tipo_sensor_id: tipoSensor?.id || 0,
         unidad_medida: config.unidad_medida,
         medida_minima: config.medida_minima,
         medida_maxima: config.medida_maxima,
-      }));
+      });
+    } else if (name === "bancal_id") {
+      const bancal = bancales?.find((b) => b.id === Number(value));
+      setSensor({
+        ...sensor,
+        bancal_id: value ? Number(value) : null,
+        bancal_nombre: bancal?.nombre || null,
+      });
     } else {
-      setSensor((prev) => ({
-        ...prev,
+      setSensor({
+        ...sensor,
         [name]: name === "medida_minima" || name === "medida_maxima" ? Number(value) : value,
-      }));
+      });
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("[RegistrarSensorPage] Enviando formulario con datos: ", sensor);
-
-    if (!sensor.nombre || !sensor.tipo_sensor || !sensor.tipo_sensor_id) {
-      console.error("[RegistrarSensorPage] Validación fallida: nombre o tipo_sensor_id faltante", sensor);
+    if (!sensor.nombre || !sensor.tipo_sensor) {
       addToast({
         title: "Error",
         description: "El nombre y el tipo de sensor son obligatorios.",
@@ -84,129 +90,151 @@ const RegistrarSensorPage: React.FC = () => {
     }
 
     createSensor.mutate(sensor as Sensor, {
-      onSuccess: () => {
-        console.log("[RegistrarSensorPage] Sensor creado con éxito");
-        navigate("/iot/listar-sensores");
-      },
-      onError: (error: any) => {
-        console.error("[RegistrarSensorPage] Error al crear sensor: ", error);
+      onSuccess: () => navigate("/iot/listar-sensores"),
+      onError: () => {
+        addToast({
+          title: "Error",
+          description: "No se pudo crear el sensor.",
+          timeout: 3000,
+          color: "danger",
+        });
       },
     });
   };
 
+  if (isLoadingBancales) {
+    return (
+      <DefaultLayout>
+        <p className="text-gray-600 text-center">Cargando bancales...</p>
+      </DefaultLayout>
+    );
+  }
+
   return (
     <DefaultLayout>
-      <div className="w-full flex flex-col items-center min-h-screen p-3 sm:p-4">
-        <div className="w-full max-w-md bg-white p-3 sm:p-4 rounded-lg shadow-md mb-4">
-          <h2 className="text-base sm:text-lg font-semibold text-gray-700 mb-3 text-center">Registro de Sensor</h2>
+      <Formulario
+        title="Registro de Sensor"
+        onSubmit={handleSubmit}
+        isSubmitting={createSensor.isPending}
+        buttonText="Guardar"
+      >
+        <ReuInput
+          label="Nombre"
+          placeholder="Ingrese el nombre del sensor"
+          type="text"
+          name="nombre"
+          value={sensor.nombre || ""}
+          onChange={handleChange}
+          required
+        />
 
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="text-sm">
-              <ReuInput
-                label="Nombre"
-                placeholder="Ingrese el nombre del sensor"
-                type="text"
-                name="nombre"
-                value={sensor.nombre || ""}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="block text-xs sm:text-sm font-medium text-gray-700">Tipo de Sensor</label>
-              <select
-                className="w-full px-3 py-1.5 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                name="tipo_sensor"
-                value={sensor.tipo_sensor || ""}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione un tipo de sensor</option>
-                {sensorTypes.map((type) => (
-                  <option key={type.id} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="text-sm">
-              <ReuInput
-                label="Unidad de Medida"
-                placeholder="Ej: °C, %, lux"
-                type="text"
-                name="unidad_medida"
-                value={sensor.unidad_medida || ""}
-                disabled
-              />
-            </div>
-
-            <div className="text-sm">
-              <ReuInput
-                label="Descripción"
-                placeholder="Descripción del sensor"
-                type="text"
-                name="descripcion"
-                value={sensor.descripcion || ""}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="text-sm">
-              <ReuInput
-                label="Código del Dispositivo"
-                placeholder="Código del dispositivo"
-                type="text"
-                name="device_code"
-                value={sensor.device_code || ""}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="text-sm">
-                <ReuInput
-                  label="Medida Mínima"
-                  placeholder="Valor mínimo"
-                  type="number"
-                  name="medida_minima"
-                  value={sensor.medida_minima?.toString() || "0"}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="text-sm">
-                <ReuInput
-                  label="Medida Máxima"
-                  placeholder="Valor máximo"
-                  type="number"
-                  name="medida_maxima"
-                  value={sensor.medida_maxima?.toString() || "0"}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <button
-              className="w-full px-3 py-1.5 sm:px-4 sm:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg text-sm"
-              type="submit"
-            >
-              Guardar
-            </button>
-            <button
-              className="w-full px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg text-sm"
-              type="button"
-              onClick={() => {
-                console.log("[RegistrarSensorPage] Navegando a /iot/listar-sensores");
-                navigate("/iot/listar-sensores");
-              }}
-            >
-              Ir a Lista de Sensores
-            </button>
-          </form>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Sensor</label>
+          <select
+            name="tipo_sensor"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={sensor.tipo_sensor || ""}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Seleccione un tipo de sensor</option>
+            {sensorTypes.map((type) => (
+              <option key={type.id} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </select>
         </div>
-      </div>
+
+        <ReuInput
+          label="Unidad de Medida"
+          placeholder="Ej: °C, %, lux"
+          type="text"
+          name="unidad_medida"
+          value={sensor.unidad_medida || ""}
+          disabled
+        />
+
+        <ReuInput
+          label="Descripción"
+          placeholder="Descripción del sensor"
+          type="textarea"
+          name="descripcion"
+          value={sensor.descripcion || ""}
+          onChange={handleChange}
+        />
+
+        <ReuInput
+          label="Código del Dispositivo"
+          placeholder="Código del dispositivo"
+          type="text"
+          name="device_code"
+          value={sensor.device_code || ""}
+          onChange={handleChange}
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ReuInput
+            label="Medida Mínima"
+            placeholder="Valor mínimo"
+            type="number"
+            name="medida_minima"
+            value={sensor.medida_minima?.toString() || "0"}
+            onChange={handleChange}
+          />
+
+          <ReuInput
+            label="Medida Máxima"
+            placeholder="Valor máximo"
+            type="number"
+            name="medida_maxima"
+            value={sensor.medida_maxima?.toString() || "0"}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Bancal</label>
+          <select
+            name="bancal_id"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={sensor.bancal_id?.toString() || ""}
+            onChange={handleChange}
+          >
+            <option value="">Sin bancal</option>
+            {bancales?.map((bancal) => (
+              <option key={bancal.id} value={bancal.id}>
+                {bancal.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+          <Switcher
+            size="sm"
+            isSelected={sensor.estado === "activo"}
+            color={sensor.estado === "activo" ? "success" : "danger"}
+            onChange={(e) => {
+              setSensor({
+                ...sensor,
+                estado: e.target.checked ? "activo" : "inactivo",
+              });
+            }}
+          />
+        </div>
+
+        <div className="col-span-1 md:col-span-2 flex justify-center">
+          <button
+            className="w-full max-w-md px-4 py-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-all duration-200 shadow-md hover:shadow-lg font-medium text-sm uppercase tracking-wide"
+            type="button"
+            onClick={() => navigate("/iot/listar-sensores")}
+          >
+            Listar Sensores
+          </button>
+        </div>
+      </Formulario>
     </DefaultLayout>
   );
 };
