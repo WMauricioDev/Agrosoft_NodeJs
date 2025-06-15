@@ -29,6 +29,7 @@ import lotes from "./modulos/cultivo/routers/router.lotes.js";
 import bancal from "./modulos/cultivo/routers/router.bancal.js";
 import unidadmedida from "./modulos/cultivo/routers/router.unidadmedida.js";
 import RouterGraficos from './modulos/cultivo/routers/router.GraficasCostos.js';
+import RouterGraficosCosechas from './modulos/cultivo/routers/router.graficaCosechas.js';
 // Rutas del módulo Usuarios
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
 import Roles from './modulos/usuarios/routers/Roles.routes.js';
@@ -104,6 +105,7 @@ app.use('/api/cultivo', lotes);
 app.use('/api/cultivo', bancal);
 app.use('/api/cultivo', unidadmedida);
 app.use('/api/cultivo', RouterGraficos);
+app.use('/api/cultivo', RouterGraficosCosechas);
 
 // Rutas del módulo Usuarios
 app.use('/api', Usuarios);
