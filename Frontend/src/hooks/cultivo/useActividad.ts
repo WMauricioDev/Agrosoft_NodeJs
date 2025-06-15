@@ -37,7 +37,7 @@ const fetchUsuarios = async (): Promise<User[]> => {
         throw new Error("No se encontró el token de autenticación.");
     }
 
-    const response = await api.get(`${BASE_URL}/usuarios/usuarios/`, {
+    const response = await api.get(`${BASE_URL}/api/usuarios/`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -59,7 +59,7 @@ const fetchInsumos = async (): Promise<Insumo[]>=> {
         throw new Error("No se encontró el token de autenticación.");
     }
 
-    const response = await api.get(`${BASE_URL}/inventario/insumo/`, {
+    const response = await api.get(`${BASE_URL}/api/inv/insumos/`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -78,24 +78,32 @@ const registrarActividad = async (actividad: Actividad) => {
   const token = localStorage.getItem("access_token");
 
   if (!token) {
-      throw new Error("No se encontró el token de autenticación.");
+    throw new Error("No se encontró el token de autenticación.");
   }
 
-  try {
-      const response = await api.post(API_URL, {
-          ...actividad,
-          usuarios: actividad.usuarios, 
-          insumos: actividad.insumos, 
-          herramientas: actividad.herramientas, 
-      }, {
-          headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-          },
-      });
-      console.log("Datos enviados a la API:", actividad);
+  const payload = {
+    descripcion: actividad.descripcion,
+    fecha_inicio: actividad.fecha_inicio,
+    fecha_fin: actividad.fecha_fin,
+    tipo_actividad_id: actividad.tipo_actividad_id,
+    cultivo_id: actividad.cultivo_id,
+    estado: actividad.estado,
+    prioridad: actividad.prioridad,
+    instrucciones_adicionales: actividad.instrucciones_adicionales,
+    usuarios: actividad.usuarios || [],
+    insumos: actividad.insumos || [],
+    herramientas: actividad.herramientas || [],
+  };
 
-      return response.data;
+  try {
+    const response = await api.post(API_URL, payload, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("Datos enviados a la API:", JSON.stringify(payload, null, 2));
+    return response.data;
   } catch (error: any) {
     console.error("Error en la API:", {
       mensaje: error.message,
@@ -103,7 +111,7 @@ const registrarActividad = async (actividad: Actividad) => {
       data: error.response?.data,
       headers: error.response?.headers,
     });
-          throw error;
+    throw error;
   }
 };
 const eliminarActividad = async (id: number) => {
