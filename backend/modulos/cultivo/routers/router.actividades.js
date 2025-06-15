@@ -5,7 +5,6 @@ const RouterActividades = Router();
 
 RouterActividades.get('/actividades', verificarToken, actividadController.getAll);
 RouterActividades.post('/actividades', verificarToken, actividadController.create);
-RouterActividades.put('/actividades/:id',verificarToken,  actividadController.update);
 RouterActividades.post('/actividades/:id/finalizar',verificarToken, actividadController.finalizar);
 RouterActividades.delete('/actividades/:id',verificarToken,actividadController.delete);
 
