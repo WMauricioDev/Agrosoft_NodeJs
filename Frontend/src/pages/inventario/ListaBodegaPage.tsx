@@ -6,6 +6,7 @@ import ReuModal from "@/components/globales/ReuModal";
 import { ReuInput } from "@/components/globales/ReuInput";
 import Tabla from "@/components/globales/Tabla";
 import { EditIcon, Trash2 } from 'lucide-react';
+import { Switch } from "@heroui/react";
 
 interface Bodega {
   id: number;
@@ -160,15 +161,13 @@ const ListaBodegaPage: React.FC = () => {
               }
             />
             <div className="mb-4 flex items-center">
-              <input
-                type="checkbox"
-                checked={selectedBodega.activo}
-                onChange={(e) =>
-                  setSelectedBodega({ ...selectedBodega, activo: e.target.checked })
-                }
-                className="mr-2 leading-tight"
-              />
-              <label className="text-gray-700 text-sm font-bold">Activo</label>
+            <Switch
+                color="success"
+                size="sm"
+                isSelected={selectedBodega.activo}
+                onChange={(e) => setSelectedBodega({ ...selectedBodega, activo: e.target.checked })}
+            />
+            <label className="ml-2 text-sm font-medium text-gray-700">Activo</label>
             </div>
           </>
         )}

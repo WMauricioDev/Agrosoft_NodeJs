@@ -8,8 +8,8 @@ import Tabla from "@/components/globales/Tabla";
 import { EditIcon, Trash2 } from 'lucide-react';
 import { useAuth } from "@/context/AuthContext";
 import { Insumo, UnidadMedida, TipoInsumo } from "@/types/inventario/Insumo";
-import { addToast } from "@heroui/react";
-
+import { Plus } from 'lucide-react';
+import { Switch } from "@heroui/react";
 const formatCOPNumber = (value: number | string): string => {
     const num = typeof value === 'string' ? parseFloat(value.replace(/\./g, '')) : value;
     if (isNaN(num)) return '';
@@ -102,16 +102,8 @@ const ListaInsumoPage: React.FC = () => {
             onSuccess: () => {
                 setIsUnidadModalOpen(false);
                 setNuevaUnidad({ nombre: "", descripcion: "" });
-                addToast({ 
-                    title: "Éxito",
-                    description: "Unidad de medida creada exitosamente"
-                });
             },
             onError: () => {
-                addToast({ 
-                    title: "Error",
-                    description: "Error al crear la unidad de medida"
-                });
             },
         });
     };
@@ -121,16 +113,8 @@ const ListaInsumoPage: React.FC = () => {
             onSuccess: () => {
                 setIsTipoModalOpen(false);
                 setNuevoTipo({ nombre: "", descripcion: "" });
-                addToast({ 
-                    title: "Éxito",
-                    description: "Tipo de insumo creado exitosamente"
-                });
             },
             onError: () => {
-                addToast({ 
-                    title: "Error",
-                    description: "Error al crear el tipo de insumo"
-                });
             },
         });
     };
@@ -209,16 +193,16 @@ const ListaInsumoPage: React.FC = () => {
                             value={selectedInsumo.cantidad}
                             onChange={(e) => setSelectedInsumo({ ...selectedInsumo, cantidad: Number(e.target.value) })}
                         />
-                        <div className="flex items-end gap-2">
+                        <div className="flex items-center gap-2 mb-1">
                             <div className="flex-1">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Unidad de Medida</label>
+                                <label className="block text-sm font-medium text-gray-700">Unidad de Medida</label>
                                 <select
                                     value={selectedInsumo.unidad_medida?.id || ""}
                                     onChange={(e) => setSelectedInsumo({
                                         ...selectedInsumo,
                                         unidad_medida: unidadesMedida?.find(u => u.id === Number(e.target.value)) || null
                                     })}
-                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled.opacity-50"
                                     disabled={isLoadingUnidades}
                                 >
                                     <option value="">Seleccione una unidad</option>
@@ -230,11 +214,11 @@ const ListaInsumoPage: React.FC = () => {
                                 </select>
                             </div>
                             <button
-                                type="button"
+                                className="p-1 h-6 w-6 flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500"
                                 onClick={() => setIsUnidadModalOpen(true)}
-                                className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                type="button"
                             >
-                                Nueva Unidad
+                                <Plus className="h-4 w-4" />
                             </button>
                         </div>
                         <div className="flex items-end gap-2">
@@ -258,19 +242,19 @@ const ListaInsumoPage: React.FC = () => {
                                 </select>
                             </div>
                             <button
+                                className="p-1 h-6 w-6 flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                onClick={() => setIsUnidadModalOpen(true)}
                                 type="button"
-                                onClick={() => setIsTipoModalOpen(true)}
-                                className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                             >
-                                Nuevo Tipo
+                                <Plus className="h-4 w-4" />
                             </button>
                         </div>
                         <div className="flex items-center">
-                            <input
-                                type="checkbox"
-                                checked={selectedInsumo.activo}
+                            <Switch
+                                color="success"
+                                size="sm"
+                                isSelected={selectedInsumo.activo}
                                 onChange={(e) => setSelectedInsumo({ ...selectedInsumo, activo: e.target.checked })}
-                                className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
                             />
                             <label className="ml-2 text-sm font-medium text-gray-700">Activo</label>
                         </div>

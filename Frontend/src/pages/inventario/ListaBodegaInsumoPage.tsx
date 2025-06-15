@@ -56,8 +56,8 @@ const ListaBodegaInsumoPage: React.FC = () => {
 
   
   const transformedData = (bodegaInsumos ?? []).map((item: BodegaInsumo) => {
-    const bodegaNombre = bodegas?.find((b: { id: number }) => b.id === item.bodega_id)?.nombre || "Desconocido";
-    const insumoNombre = insumos?.find((i: Insumo) => i.id === item.insumo_id)?.nombre || "Desconocido";
+    const bodegaNombre = bodegas?.find((b: { id: number }) => b.id === item.bodega)?.nombre || "Desconocido";
+    const insumoNombre = insumos?.find((i: Insumo) => i.id === item.insumo)?.nombre || "Desconocido";
     return {
       id: item.id?.toString() || "",
       bodega: bodegaNombre,
@@ -113,8 +113,8 @@ const ListaBodegaInsumoPage: React.FC = () => {
               {
                 id: selectedBodegaInsumo.id!,
                 bodegaInsumo: {
-                  bodega_id: selectedBodegaInsumo.bodega_id,
-                  insumo_id: selectedBodegaInsumo.insumo_id,
+                  bodega: selectedBodegaInsumo.bodega,
+                  insumo: selectedBodegaInsumo.insumo,
                   cantidad: selectedBodegaInsumo.cantidad,
                 },
               },
@@ -133,9 +133,9 @@ const ListaBodegaInsumoPage: React.FC = () => {
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Bodega</label>
               <select
-                name="bodega_id"
-                value={selectedBodegaInsumo.bodega_id}
-                onChange={(e) => setSelectedBodegaInsumo({ ...selectedBodegaInsumo, bodega_id: Number(e.target.value) })}
+                name="bodega"
+                value={selectedBodegaInsumo.bodega}
+                onChange={(e) => setSelectedBodegaInsumo({ ...selectedBodegaInsumo, bodega: Number(e.target.value) })}
                 className="w-full p-2 border rounded"
               >
                 <option value="0">Seleccione una Bodega</option>
@@ -149,9 +149,9 @@ const ListaBodegaInsumoPage: React.FC = () => {
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Insumo</label>
               <select
-                name="insumo_id"
-                value={selectedBodegaInsumo.insumo_id}
-                onChange={(e) => setSelectedBodegaInsumo({ ...selectedBodegaInsumo, insumo_id: Number(e.target.value) })}
+                name="insumo"
+                value={selectedBodegaInsumo.insumo}
+                onChange={(e) => setSelectedBodegaInsumo({ ...selectedBodegaInsumo, insumo: Number(e.target.value) })}
                 className="w-full p-2 border rounded"
               >
                 <option value="0">Seleccione un Insumo</option>

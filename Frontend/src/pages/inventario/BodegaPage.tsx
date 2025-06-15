@@ -4,6 +4,7 @@ import DefaultLayout from "@/layouts/default";
 import { useRegistrarBodega } from "@/hooks/inventario/useBodega";
 import Formulario from "@/components/globales/Formulario";
 import { ReuInput } from "@/components/globales/ReuInput";
+import { Switch } from "@heroui/react";
 
 interface Bodega {
   id: number;
@@ -79,14 +80,13 @@ const BodegaPage: React.FC = () => {
           onChange={(e) => setBodega({ ...bodega, telefono: e.target.value })}
         />
         <div className="flex items-center">
-          <input
-            type="checkbox"
-            name="activo"
-            checked={bodega.activo}
-            onChange={(e) => setBodega({ ...bodega, activo: e.target.checked })}
-            className="mr-2 h-5 w-5 text-green-500 border-gray-300 rounded"
-          />
-          <label className="text-gray-700 text-sm font-medium">Activo</label>
+            <Switch
+                color="success"
+                size="sm"
+                isSelected={bodega.activo}
+                onChange={(e) => setBodega({ ...bodega, activo: e.target.checked })}
+            />
+            <label className="ml-2 text-sm font-medium text-gray-700">Activo</label>
         </div>
         <div className="col-span-1 md:col-span-2 flex justify-center">
           <button
