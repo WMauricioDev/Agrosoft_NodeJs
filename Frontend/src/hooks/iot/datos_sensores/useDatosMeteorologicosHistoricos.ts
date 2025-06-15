@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import api from "@/components/utils/axios"; 
+import api from "@/components/utils/axios";
 import { addToast } from "@heroui/react";
-import { SensorData } from "@/types/iot/type";
 import { obtenerNuevoToken } from "@/components/utils/refresh";
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = `${BASE_URL}/api/iot/datoshistoricos`;
 
-const API_URL = `${BASE_URL}/api/iot/datosmeteorologicos`;
-
-const fetchDatosHistoricos = async (): Promise<SensorData[]> => {
+const fetchDatosHistoricos = async () => {
   const token = localStorage.getItem("access_token");
   if (!token) {
     console.error("[useDatosMeteorologicosHistoricos] No se encontró el token de autenticación.");
@@ -20,31 +19,33 @@ const fetchDatosHistoricos = async (): Promise<SensorData[]> => {
     throw new Error("No se encontró el token de autenticación.");
   }
 
-  console.log("[useDatosMeteorologicosHistoricos] Enviando GET a /api/iot/datosmeteorologicos");
+  console.log("[useDatosMeteorologicosHistoricos] Enviando GET a /api/iot/datos-historicos");
   try {
     const response = await api.get(API_URL, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    console.log("[useDatosMeteorologicosHistoricos] Respuesta de GET /api/iot/datosmeteorologicos: ", response.data);
-
+    console.log("[useDatosMeteorologicosHistoricos] Respuesta de GET /api/iot/datos-historicos: ", response.data);
+    if (!response.data || response.data.length === 0) {
+      return [];
+    }
     return response.data.map((item: any) => ({
       id: item.id || 0,
       sensor_nombre: item.sensor_nombre || "Desconocido",
-      bancal_nombre: item.bancal_nombre || "N/A",
-      temperatura: item.temperatura ? parseFloat(item.temperatura) : null,
-      humedad_ambiente: item.humedad_ambiente ? parseFloat(item.humedad_ambiente) : null,
-      luminosidad: item.luminosidad ? parseFloat(item.luminosidad) : null,
-      lluvia: item.lluvia ? parseFloat(item.lluvia) : null,
-      velocidad_viento: item.velocidad_viento ? parseFloat(item.velocidad_viento) : null,
-      direccion_viento: item.direccion_viento ? item.direccion_viento : null,
-      humedad_suelo: item.humedad_suelo ? parseFloat(item.humedad_suelo) : null,
-      ph_suelo: item.ph_suelo ? parseFloat(item.ph_suelo) : null,
-      fecha_medicion: item.fecha_medicion || "",
+      bancal_nombre: item.bancal_nombre || null,
+      temperatura: item.temperatura != null ? parseFloat(item.temperatura) : null,
+      humedad_ambiente: item.humedad_ambiente != null ? parseFloat(item.humedad_ambiente) : null,
+      luminosidad: item.luminosidad != null ? parseFloat(item.luminosidad) : null,
+      lluvia: item.lluvia != null ? parseFloat(item.lluvia) : null,
+      velocidad_viento: item.velocidad_viento != null ? parseFloat(item.velocidad_viento) : null,
+      direccion_viento: item.direccion_viento != null ? parseFloat(item.direccion_viento) : null,
+      humedad_suelo: item.humedad_suelo != null ? parseFloat(item.humedad_suelo) : null,
+      ph_suelo: item.ph_suelo != null ? parseFloat(item.ph_suelo) : null,
+      fecha_promedio: item.fecha_promedio || "",
+      cantidad_mediciones: item.cantidad_mediciones || 0,
     }));
   } catch (error: any) {
-    console.error("[useDatosMeteorologicosHistoricos] Error en GET /api/iot/datosmeteorologicos: ", error);
-
+    console.error("[useDatosMeteorologicosHistoricos] Error en GET /api/iot/datos-historicos: ", error);
     if (error.response?.status === 401) {
       const refreshToken = localStorage.getItem("refresh_token");
       if (!refreshToken) {
@@ -63,21 +64,24 @@ const fetchDatosHistoricos = async (): Promise<SensorData[]> => {
         const response = await api.get(API_URL, {
           headers: { Authorization: `Bearer ${newToken}` },
         });
-
         console.log("[useDatosMeteorologicosHistoricos] Respuesta de reintento: ", response.data);
+        if (!response.data || response.data.length === 0) {
+          return [];
+        }
         return response.data.map((item: any) => ({
           id: item.id || 0,
           sensor_nombre: item.sensor_nombre || "Desconocido",
-          bancal_nombre: item.bancal_nombre || "N/A",
-          temperatura: item.temperatura ? parseFloat(item.temperatura) : null,
-          humedad_ambiente: item.humedad_ambiente ? parseFloat(item.humedad_ambiente) : null,
-          luminosidad: item.luminosidad ? parseFloat(item.luminosidad) : null,
-          lluvia: item.lluvia ? parseFloat(item.lluvia) : null,
-          velocidad_viento: item.velocidad_viento ? parseFloat(item.velocidad_viento) : null,
-          direccion_viento: item.direccion_viento ? item.direccion_viento : null,
-          humedad_suelo: item.humedad_suelo ? parseFloat(item.humedad_suelo) : null,
-          ph_suelo: item.ph_suelo ? parseFloat(item.ph_suelo) : null,
-          fecha_medicion: item.fecha_medicion || "",
+          bancal_nombre: item.bancal_nombre || null,
+          temperatura: item.temperatura != null ? parseFloat(item.temperatura) : null,
+          humedad_ambiente: item.humedad_ambiente != null ? parseFloat(item.humedad_ambiente) : null,
+          luminosidad: item.luminosidad != null ? parseFloat(item.luminosidad) : null,
+          lluvia: item.lluvia != null ? parseFloat(item.lluvia) : null,
+          velocidad_viento: item.velocidad_viento != null ? parseFloat(item.velocidad_viento) : null,
+          direccion_viento: item.direccion_viento != null ? parseFloat(item.direccion_viento) : null,
+          humedad_suelo: item.humedad_suelo != null ? parseFloat(item.humedad_suelo) : null,
+          ph_suelo: item.ph_suelo != null ? parseFloat(item.ph_suelo) : null,
+          fecha_promedio: item.fecha_promedio || "",
+          cantidad_mediciones: item.cantidad_mediciones || 0,
         }));
       } catch (refreshError: any) {
         console.error("[useDatosMeteorologicosHistoricos] Error al refrescar token: ", refreshError);
@@ -96,10 +100,12 @@ const fetchDatosHistoricos = async (): Promise<SensorData[]> => {
         timeout: 3000,
         color: "danger",
       });
+    } else if (error.response?.status === 404) {
+      return [];
     } else {
       addToast({
         title: "Error",
-        description: "Error al cargar los datos históricos",
+        description: error.response?.data?.message || "Error al cargar los datos históricos",
         timeout: 3000,
         color: "danger",
       });
@@ -109,9 +115,11 @@ const fetchDatosHistoricos = async (): Promise<SensorData[]> => {
 };
 
 export const useDatosMeteorologicosHistoricos = () => {
-  return useQuery<SensorData[], Error>({
+  return useQuery({
     queryKey: ["datosMeteorologicosHistoricos"],
     queryFn: fetchDatosHistoricos,
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 60 * 5, // 5 minutos
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 };

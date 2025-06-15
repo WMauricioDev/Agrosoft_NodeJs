@@ -13,25 +13,25 @@ const fetchSensores = async (): Promise<Sensor[]> => {
     throw new Error("No se encontró el token de autenticación.");
   }
 
-  console.log("[useSensores] Enviando GET a /api/iot/sensores");
+  console.log("[useSensores] Enviando GET a", API_URL);
   try {
     const response = await api.get(API_URL, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log("[useSensores] Respuesta de GET /api/iot/sensores: ", response.data);
+    console.log("[useSensores] Respuesta de GET /api/iot/sensores:", response.data);
     return response.data.map((sensor: any): Sensor => ({
       id: sensor.id || 0,
       nombre: sensor.nombre || "Sin nombre",
       tipo_sensor: sensor.tipo_sensor_nombre || "Desconocido",
       tipo_sensor_id: sensor.tipo_sensor_id || 0,
-      unidad_medida: sensor.unidad_medida || "",
+      unidad_medida: sensor.unidad_medida || "N/A",
       descripcion: sensor.descripcion || null,
       estado: sensor.estado || "activo",
       medida_minima: sensor.medida_minima != null ? parseFloat(sensor.medida_minima) : null,
       medida_maxima: sensor.medida_maxima != null ? parseFloat(sensor.medida_maxima) : null,
       device_code: sensor.device_code || null,
       bancal_id: sensor.bancal_id || null,
-      bancal_nombre: sensor.bancal_nombre || null,
+      bancal_nombre: sensor.bancal_nombre || "Sin bancal",
     }));
   } catch (error: any) {
     const errorMessage =
@@ -40,7 +40,7 @@ const fetchSensores = async (): Promise<Sensor[]> => {
         .map(([key, value]) => `${key}: ${value}`)
         .join(", ") ||
       "Error al cargar los sensores";
-    console.error("[useSensores] Error en GET /api/iot/sensores: ", {
+    console.error("[useSensores] Error en GET /api/iot/sensores:", {
       message: error.message,
       response: error.response?.data,
       status: error.response?.status,
@@ -64,7 +64,7 @@ export const useSensores = () => {
     refetchOnWindowFocus: false,
   });
 
-  console.log("[useSensores] Estado actual: ", {
+  console.log("[useSensores] Estado actual:", {
     sensores: sensoresQuery.data,
     isLoading: sensoresQuery.isLoading,
     error: sensoresQuery.error,

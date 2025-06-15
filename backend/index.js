@@ -126,6 +126,7 @@ app.use('/api/iot', tipoSensor);
 app.use('/api/iot', datosMeteorologicos);
 app.use('/api/iot', reportePDF);
 app.use('/api/iot', rutaDatosHistoricos);
+
 // Rutas del módulo Finanzas
 app.use('/api/fin', salario_minimo);
 app.use('/api/fin', Registro_venta);
