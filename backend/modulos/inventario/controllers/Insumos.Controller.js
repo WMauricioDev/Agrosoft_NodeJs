@@ -90,12 +90,60 @@ export const registrarInsumo = async (req, res) => {
 export const listarInsumos = async (req, res) => {
     try {
         const sql = `
-            SELECT id, nombre, descripcion, cantidad, unidad_medida_id, tipo_insumo_id,
-                   activo, tipo_empacado, fecha_registro, fecha_caducidad, precio_insumo
-            FROM insumos_insumo
+            SELECT 
+                i.id, 
+                i.nombre, 
+                i.descripcion, 
+                i.cantidad, 
+                i.unidad_medida_id,
+                um.nombre AS unidad_medida_nombre,
+                um.descripcion AS unidad_medida_descripcion,
+                um.creada_por_usuario AS unidad_medida_creada_por_usuario,
+                um.fecha_creacion AS unidad_medida_fecha_creacion,
+                i.tipo_insumo_id,
+                ti.nombre AS tipo_insumo_nombre,
+                ti.descripcion AS tipo_insumo_descripcion,
+                ti.creada_por_usuario AS tipo_insumo_creada_por_usuario,
+                ti.fecha_creacion AS tipo_insumo_fecha_creacion,
+                i.activo, 
+                i.tipo_empacado, 
+                i.fecha_registro, 
+                i.fecha_caducidad, 
+                i.precio_insumo
+            FROM insumos_insumo i
+            LEFT JOIN unidad_medida_unidadmedida um ON i.unidad_medida_id = um.id
+            LEFT JOIN insumos_tiposinsumo ti ON i.tipo_insumo_id = ti.id
         `;
         const { rows } = await pool.query(sql);
-        res.status(200).json(rows);
+        
+        // Transformar los datos para que coincidan con la estructura esperada por el frontend
+        const transformedRows = rows.map(row => ({
+            id: row.id,
+            nombre: row.nombre,
+            descripcion: row.descripcion,
+            cantidad: row.cantidad,
+            unidad_medida: row.unidad_medida_id ? {
+                id: row.unidad_medida_id,
+                nombre: row.unidad_medida_nombre,
+                descripcion: row.unidad_medida_descripcion,
+                creada_por_usuario: row.unidad_medida_creada_por_usuario,
+                fecha_creacion: row.unidad_medida_fecha_creacion
+            } : null,
+            tipo_insumo: row.tipo_insumo_id ? {
+                id: row.tipo_insumo_id,
+                nombre: row.tipo_insumo_nombre,
+                descripcion: row.tipo_insumo_descripcion,
+                creada_por_usuario: row.tipo_insumo_creada_por_usuario,
+                fecha_creacion: row.tipo_insumo_fecha_creacion
+            } : null,
+            activo: row.activo,
+            tipo_empacado: row.tipo_empacado,
+            fecha_registro: row.fecha_registro,
+            fecha_caducidad: row.fecha_caducidad,
+            precio_insumo: row.precio_insumo
+        }));
+
+        res.status(200).json(transformedRows);
     } catch (error) {
         res.status(500).json({ message: "Error en el sistema", error: error.message });
     }

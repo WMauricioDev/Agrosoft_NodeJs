@@ -7,7 +7,6 @@ import Formulario from "@/components/globales/Formulario";
 import ReuModal from "@/components/globales/ReuModal";
 import { Insumo, UnidadMedida, TipoInsumo } from "@/types/inventario/Insumo";
 import { useAuth } from "@/context/AuthContext";
-import { addToast } from "@heroui/react";
 import { Plus } from 'lucide-react';
 import { Switch } from "@heroui/react";
 
@@ -76,16 +75,8 @@ const InsumoPage: React.FC = () => {
             onSuccess: () => {
                 setIsUnidadModalOpen(false);
                 setNuevaUnidad({ nombre: "", descripcion: "" });
-                addToast({ 
-                    title: "Éxito",
-                    description: "Unidad de medida creada exitosamente"
-                });
             },
             onError: () => {
-                addToast({ 
-                    title: "Error",
-                    description: "Error al crear la unidad de medida"
-                });
             },
         });
     };
@@ -95,16 +86,8 @@ const InsumoPage: React.FC = () => {
             onSuccess: () => {
                 setIsTipoModalOpen(false);
                 setNuevoTipo({ nombre: "", descripcion: "" });
-                addToast({ 
-                    title: "Éxito",
-                    description: "Tipo de insumo creado exitosamente"
-                });
             },
             onError: () => {
-                addToast({ 
-                    title: "Error",
-                    description: "Error al crear el tipo de insumo"
-                });
             },
         });
     };

@@ -3,7 +3,6 @@ import pool from '../database/Conexion.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 const secretKey = 'estoesmuysecreto';
-// Registrar un nuevo usuario
 export const RegistrarUsuarios = async (req, res) => {
   try {
     const { numero_documento, nombre, apellido, username, email, password, is_staff } = req.body;
@@ -28,14 +27,14 @@ export const RegistrarUsuarios = async (req, res) => {
       nombre,
       apellido,
       username,
-      1, // rol_id por defecto
+      1, 
       email,
       hashedPassword,
       is_staff === true,
-      false, // is_superuser
-      '',    // first_name
-      '',    // last_name
-      true,  // is_active
+      false, 
+      '',    
+      '',    
+      true,  
       now,
       now
     ]);
@@ -54,7 +53,6 @@ export const RegistrarUsuarios = async (req, res) => {
   }
 };
 
-// Listar todos los usuarios
 export const listarUsuarios = async (req, res) => {
   try {
     const sql = `
@@ -73,7 +71,6 @@ export const listarUsuarios = async (req, res) => {
     `;
     const result = await pool.query(sql);
 
-    // Formatear los datos para incluir el rol como objeto
     const usuarios = result.rows.map(row => ({
       id: row.id,
       numero_documento: row.numero_documento,

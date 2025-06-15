@@ -7,12 +7,11 @@ const rutaInsumos = Router();
 /**
  * @swagger
  * tags:
- *   - name: Insumos
- *     description: API para la gestión de insumos
- *   - name: TiposInsumos
- *     description: API para la gestión de tipos de insumos
+ *   name: Insumos
+ *   description: API para la gestión de insumos
+ *   name: TiposInsumos
+ *   description: API para la gestión de tipos de insumos
  */
-
 
 /**
  * @swagger
