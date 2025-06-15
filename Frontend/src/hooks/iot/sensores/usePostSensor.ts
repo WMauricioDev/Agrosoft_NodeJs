@@ -2,8 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/components/utils/axios";
 import { addToast } from "@heroui/react";
 import { Sensor } from "@/types/iot/type";
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/iot/sensores/`;
+const API_URL = `${BASE_URL}/api/iot/sensores`;
 
 const createSensor = async (sensor: Sensor) => {
   const token = localStorage.getItem("access_token");
@@ -28,12 +29,12 @@ const createSensor = async (sensor: Sensor) => {
     bancal_id: sensor.bancal_id || null,
   };
 
-  console.log("[useCreateSensor] Enviando POST a /iot/sensores/ con datos:", JSON.stringify(sensorData, null, 2));
+  console.log("[useCreateSensor] Enviando POST a /api/iot/sensores con datos:", JSON.stringify(sensorData, null, 2));
   try {
     const response = await api.post(API_URL, sensorData, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log("[useCreateSensor] Respuesta de POST /iot/sensores/: ", response.data);
+    console.log("[useCreateSensor] Respuesta de POST /api/iot/sensores: ", response.data);
     return response.data;
   } catch (error: any) {
     const errorMessage =
@@ -42,7 +43,7 @@ const createSensor = async (sensor: Sensor) => {
         .map(([key, value]) => `${key}: ${value}`)
         .join(", ") ||
       "Error al crear el sensor";
-    console.error("[useCreateSensor] Error en POST /iot/sensores/: ", {
+    console.error("[useCreateSensor] Error en POST /api/iot/sensores: ", {
       message: error.message,
       response: error.response?.data,
       status: error.response?.status,

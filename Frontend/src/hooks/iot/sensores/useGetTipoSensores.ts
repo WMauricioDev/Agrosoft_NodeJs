@@ -4,7 +4,7 @@ import { addToast } from '@heroui/react';
 import { TipoSensor } from '@/types/iot/type';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/iot/tiposensor/`;
+const API_URL = `${BASE_URL}/api/iot/tiposensor`;
 
 const fetchTipoSensores = async (): Promise<TipoSensor[]> => {
   const token = localStorage.getItem('access_token');

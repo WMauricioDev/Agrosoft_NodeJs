@@ -5,9 +5,9 @@ import { SensorData } from "@/types/iot/type";
 import { obtenerNuevoToken } from "@/components/utils/refresh";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}/iot/datosmeteorologicos/`;
+const API_URL = `${BASE_URL}/api/iot/datosmeteorologicos`;
 
-const fetchDatosMeteorologicos = async (sensorId: number): Promise<SensorData[]> => {
+const fetchDatosMeteorologicos = async (sensorId: number, fechaInicio?: string, fechaFin?: string): Promise<SensorData[]> => {
   const token = localStorage.getItem("access_token");
   if (!token) {
     addToast({
@@ -22,15 +22,21 @@ const fetchDatosMeteorologicos = async (sensorId: number): Promise<SensorData[]>
   try {
     console.log(`Fetching data for sensor ${sensorId}`);
     const response = await api.get(API_URL, {
-      params: { fk_sensor_id: sensorId },
+      params: { fk_sensor_id: sensorId, fecha_inicio: fechaInicio, fecha_fin: fechaFin },
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log("Response from /iot/datosmeteorologicos/:", response.data);
+    console.log("Response from /api/iot/datosmeteorologicos:", response.data);
     return response.data.map((item: any) => ({
       id: item.id,
-      fk_sensor: item.fk_sensor,
-      temperatura: item.temperatura || null,
-      humedad_ambiente: item.humedad_ambiente || null,
+      fk_sensor: item.fk_sensor_id,
+      temperatura: item.temperatura ?? null,
+      humedad_ambiente: item.humedad_ambiente ?? null,
+      luminosidad: item.luminosidad ?? null,
+      humedad_suelo: item.humedad_suelo ?? null,
+      lluvia: item.lluvia ?? null,
+      ph_suelo: item.ph_suelo ?? null,
+      direccion_viento: item.direccion_viento ?? null,
+      velocidad_viento: item.velocidad_viento ?? null,
       fecha_medicion: item.fecha_medicion,
     }));
   } catch (error: any) {
@@ -50,15 +56,20 @@ const fetchDatosMeteorologicos = async (sensorId: number): Promise<SensorData[]>
         localStorage.setItem("access_token", newToken);
         console.log(`Fetching data for sensor ${sensorId} with new token`);
         const response = await api.get(API_URL, {
-          params: { fk_sensor_id: sensorId },
+          params: { fk_sensor_id: sensorId, fecha_inicio: fechaInicio, fecha_fin: fechaFin },
           headers: { Authorization: `Bearer ${newToken}` },
         });
-        console.log("Response from /iot/datosmeteorologicos/:", response.data);
         return response.data.map((item: any) => ({
           id: item.id,
-          fk_sensor: item.fk_sensor,
-          temperatura: item.temperatura || null,
-          humedad_ambiente: item.humedad_ambiente || null,
+          fk_sensor: item.fk_sensor_id,
+          temperatura: item.temperatura ?? null,
+          humedad_ambiente: item.humedad_ambiente ?? null,
+          luminosidad: item.luminosidad ?? null,
+          humedad_suelo: item.humedad_suelo ?? null,
+          lluvia: item.lluvia ?? null,
+          ph_suelo: item.ph_suelo ?? null,
+          direccion_viento: item.direccion_viento ?? null,
+          velocidad_viento: item.velocidad_viento ?? null,
           fecha_medicion: item.fecha_medicion,
         }));
       } catch (refreshError) {
@@ -70,13 +81,6 @@ const fetchDatosMeteorologicos = async (sensorId: number): Promise<SensorData[]>
         });
         throw new Error("No se pudo refrescar el token");
       }
-    } else if (error.response?.status === 403) {
-      addToast({
-        title: "Acceso denegado",
-        description: "No tienes permiso para realizar esta acción, contacta a un administrador.",
-        timeout: 3000,
-        color: "danger",
-      });
     } else {
       addToast({
         title: "Error",
@@ -84,15 +88,15 @@ const fetchDatosMeteorologicos = async (sensorId: number): Promise<SensorData[]>
         timeout: 3000,
         color: "danger",
       });
+      throw error;
     }
-    throw error;
   }
 };
 
-export const useDatosMeteorologicos = (sensorId: number) => {
+export const useDatosMeteorologicos = (sensorId: number, fechaInicio?: string, fechaFin?: string) => {
   return useQuery<SensorData[], Error>({
-    queryKey: ["datosMeteorologicos", sensorId],
-    queryFn: () => fetchDatosMeteorologicos(sensorId),
+    queryKey: ["datosMeteorologicos", sensorId, fechaInicio, fechaFin],
+    queryFn: () => fetchDatosMeteorologicos(sensorId, fechaInicio, fechaFin),
     enabled: !!sensorId,
     staleTime: 1000 * 60,
   });

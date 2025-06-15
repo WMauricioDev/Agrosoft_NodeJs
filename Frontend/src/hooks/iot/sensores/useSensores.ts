@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/components/utils/axios";
 import { Sensor } from "@/types/iot/type";
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}/iot/sensores/`;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = `${BASE_URL}/api/iot/sensores`;
 
 const fetchSensores = async (): Promise<Sensor[]> => {
   const token = localStorage.getItem("access_token");
@@ -12,12 +12,12 @@ const fetchSensores = async (): Promise<Sensor[]> => {
     throw new Error("No se encontró el token de autenticación.");
   }
 
-  console.log("[useSensores] Enviando GET a /iot/sensores/");
+  console.log("[useSensores] Enviando GET a /api/iot/sensores");
   try {
     const response = await api.get(API_URL, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log("[useSensores] Respuesta de GET /iot/sensores/: ", response.data);
+    console.log("[useSensores] Respuesta de GET /api/iot/sensores: ", response.data);
     return response.data.map((sensor: any) => ({
       id: sensor.id || 0,
       nombre: sensor.nombre || "Sin nombre",
@@ -33,7 +33,7 @@ const fetchSensores = async (): Promise<Sensor[]> => {
       bancal_nombre: sensor.bancal_nombre || "Sin bancal",
     }));
   } catch (error: any) {
-    console.error("[useSensores] Error en GET /iot/sensores/: ", {
+    console.error("[useSensores] Error en GET /api/iot/sensores: ", {
       message: error.message,
       response: error.response?.data,
       status: error.response?.status,
