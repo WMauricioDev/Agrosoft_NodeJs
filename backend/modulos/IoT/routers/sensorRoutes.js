@@ -1,8 +1,14 @@
 import { Router } from 'express';
 import verificarToken from '../../usuarios/middlewares/verificarToken.js';
-import { registrarSensor, listarSensores, actualizarSensor, eliminarSensor, obtenerSensor } from '../controller/sensorController.js';
+import {
+  registrarSensor,
+  listarSensores,
+  eliminarSensor,
+  actualizarSensor,
+  obtenerSensor,
+} from '../controller/sensorController.js';
 
-const rutaSensor = Router();
+const rutaSensores = Router();
 
 /**
  * @swagger
@@ -34,7 +40,7 @@ const rutaSensor = Router();
  *                 example: 1
  *               descripcion:
  *                 type: string
- *                 example: "Sensor de temperatura para bancal 1"
+ *                 example: "Sensor de temperatura"
  *               bancal_id:
  *                 type: integer
  *                 example: 1
@@ -49,12 +55,12 @@ const rutaSensor = Router();
  *                 example: "activo"
  *               device_code:
  *                 type: string
- *                 example: "TEMP001"
+ *                 example: "SENSOR123"
  *     responses:
  *       201:
- *         description: Sensor registrado correctamente
+ *         description: Sensor registrado con éxito
  */
-rutaSensor.post('/sensores', verificarToken, registrarSensor);
+rutaSensores.post('/sensores', verificarToken, registrarSensor);
 
 /**
  * @swagger
@@ -68,7 +74,7 @@ rutaSensor.post('/sensores', verificarToken, registrarSensor);
  *       200:
  *         description: Lista de sensores obtenida con éxito
  */
-rutaSensor.get('/sensores', verificarToken, listarSensores);
+rutaSensores.get('/sensores', verificarToken, listarSensores);
 
 /**
  * @swagger
@@ -89,13 +95,13 @@ rutaSensor.get('/sensores', verificarToken, listarSensores);
  *       200:
  *         description: Sensor obtenido con éxito
  */
-rutaSensor.get('/sensores/:id', verificarToken, obtenerSensor);
+rutaSensores.get('/sensores/:id', verificarToken, obtenerSensor);
 
 /**
  * @swagger
  * /sensores/{id}:
  *   put:
- *     summary: Actualizar un sensor por ID
+ *     summary: Actualizar un sensor
  *     tags: [Sensores]
  *     security:
  *       - BearerAuth: []
@@ -105,7 +111,7 @@ rutaSensor.get('/sensores/:id', verificarToken, obtenerSensor);
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del sensor a actualizar
+ *         description: ID del sensor
  *     requestBody:
  *       required: true
  *       content:
@@ -115,13 +121,13 @@ rutaSensor.get('/sensores/:id', verificarToken, obtenerSensor);
  *             properties:
  *               nombre:
  *                 type: string
- *                 example: "Sensor Temp 1 Modificado"
+ *                 example: "Sensor Temp Actualizado"
  *               tipo_sensor_id:
  *                 type: integer
  *                 example: 1
  *               descripcion:
  *                 type: string
- *                 example: "Sensor de temperatura modificado"
+ *                 example: "Sensor actualizado"
  *               bancal_id:
  *                 type: integer
  *                 example: 1
@@ -136,18 +142,18 @@ rutaSensor.get('/sensores/:id', verificarToken, obtenerSensor);
  *                 example: "activo"
  *               device_code:
  *                 type: string
- *                 example: "TEMP001"
+ *                 example: "SENSOR123"
  *     responses:
  *       200:
- *         description: Sensor actualizado correctamente
+ *         description: Sensor actualizado con éxito
  */
-rutaSensor.put('/sensores/:id', verificarToken, actualizarSensor);
+rutaSensores.put('/sensores/:id', verificarToken, actualizarSensor);
 
 /**
  * @swagger
  * /sensores/{id}:
  *   delete:
- *     summary: Eliminar un sensor por ID
+ *     summary: Eliminar un sensor
  *     tags: [Sensores]
  *     security:
  *       - BearerAuth: []
@@ -157,11 +163,11 @@ rutaSensor.put('/sensores/:id', verificarToken, actualizarSensor);
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del sensor a eliminar
+ *         description: ID del sensor
  *     responses:
  *       200:
- *         description: Sensor eliminado correctamente
+ *         description: Sensor eliminado con éxito
  */
-rutaSensor.delete('/sensores/:id', verificarToken, eliminarSensor);
+rutaSensores.delete('/sensores/:id', verificarToken, eliminarSensor);
 
-export default rutaSensor;
+export default rutaSensores;

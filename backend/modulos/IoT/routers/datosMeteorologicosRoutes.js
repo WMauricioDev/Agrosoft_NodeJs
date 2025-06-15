@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import verificarToken from '../../usuarios/middlewares/verificarToken.js';
-import { registrarDatosMeteorologicos, listarDatosMeteorologicos, obtenerDatosMeteorologicos, generarReporteMeteorologico } from '../controller/datosMeteorologicosController.js';
+import {
+  registrarDatosMeteorologicos,
+  listarDatosMeteorologicos,
+  obtenerDatosMeteorologicos,
+} from '../controller/datosMeteorologicosController.js';
 
 const rutaDatosMeteorologicos = Router();
 
@@ -24,9 +28,9 @@ const rutaDatosMeteorologicos = Router();
  *           schema:
  *             type: object
  *             properties:
- *               fk_sensor_id:
- *                 type: integer
- *                 example: 1
+ *               device_code:
+ *                 type: string
+ *                 example: "SENSOR123"
  *               fk_bancal_id:
  *                 type: integer
  *                 example: 1
@@ -113,35 +117,5 @@ rutaDatosMeteorologicos.get('/datosmeteorologicos', verificarToken, listarDatosM
  *         description: Dato meteorológico obtenido con éxito
  */
 rutaDatosMeteorologicos.get('/datosmeteorologicos/:id', verificarToken, obtenerDatosMeteorologicos);
-
-/**
- * @swagger
- * /datosmeteorologicos/reporte:
- *   get:
- *     summary: Generar un reporte de datos meteorológicos
- *     tags: [Datos Meteorológicos]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: query
- *         name: fecha_inicio
- *         schema:
- *           type: string
- *         description: Fecha de inicio (YYYY-MM-DD)
- *       - in: query
- *         name: fecha_fin
- *         schema:
- *           type: string
- *         description: Fecha de fin (YYYY-MM-DD)
- *       - in: query
- *         name: fk_bancal_id
- *         schema:
- *           type: integer
- *         description: ID del bancal
- *     responses:
- *       200:
- *         description: Reporte generado con éxito
- */
-rutaDatosMeteorologicos.get('/datosmeteorologicos/reporte', verificarToken, generarReporteMeteorologico);
 
 export default rutaDatosMeteorologicos;

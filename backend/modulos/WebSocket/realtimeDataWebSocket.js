@@ -1,18 +1,18 @@
 import { WebSocketServer } from 'ws';
-import pool from '../../modulos/usuarios/database/Conexion.js';
+import pool from '../../usuarios/database/Conexion.js';
 import crypto from 'crypto';
 
-const ALERT_CACHE = {}; // Caché para alertas: {device_code: {alert_id: alert_data}}
+const ALERT_CACHE = {};
 
 const checkThresholds = (data, sensorNombre, bancalNombre) => {
   const thresholds = {
-    temperatura: { min: 0, max: 40 }, // °C
-    humedad_ambiente: { min: 20, max: 90 }, // %
-    luminosidad: { min: 100, max: 100000 }, // lux
-    lluvia: { min: 0, max: 50 }, // mm
-    velocidad_viento: { min: 0, max: 20 }, // m/s
-    humedad_suelo: { min: 10, max: 80 }, // %
-    ph_suelo: { min: 5.5, max: 7.5 }, // pH
+    temperatura: { min: 0, max: 40 },
+    humedad_ambiente: { min: 20, max: 90 },
+    luminosidad: { min: 100, max: 10000 },
+    lluvia: { min: 0, max: 50 },
+    velocidad_viento: { min: 0, max: 20 },
+    humedad_suelo: { min: 10, max: 80 },
+    ph_suelo: { min: 5.5, max: 7.5 },
   };
 
   const alerts = [];
@@ -33,7 +33,7 @@ const checkThresholds = (data, sensorNombre, bancalNombre) => {
           message: `Alerta: ${field.replace('_', ' ').replace(/^\w/, c => c.toUpperCase())} bajo en ${sensorNombre} (${bancalNombre}): ${numValue} (mínimo permitido: ${limits.min})`,
           timestamp,
           device_code,
-          source: 'meteorological_data',
+          fuente: 'meteorological_data',
         });
       } else if (numValue > limits.max) {
         const alertId = crypto.createHash('md5').update(`${device_code}_${field}_above_${timestamp}`).digest('hex');
@@ -43,7 +43,7 @@ const checkThresholds = (data, sensorNombre, bancalNombre) => {
           message: `Alerta: ${field.replace('_', ' ').replace(/^\w/, c => c.toUpperCase())} alto en ${sensorNombre} (${bancalNombre}): ${numValue} (máximo permitido: ${limits.max})`,
           timestamp,
           device_code,
-          source: 'meteorological_data',
+          fuente: 'meteorological_data',
         });
       }
     }
@@ -65,7 +65,17 @@ export const initializeRealtimeData = (server) => {
     ws.on('message', async (message) => {
       try {
         const data = JSON.parse(message);
-        const { device_code, temperatura, humedad_ambiente, luminosidad, humedad_suelo, lluvia, ph_suelo, direccion_viento, velocidad_viento } = data;
+        const {
+          device_code,
+          temperatura,
+          humedad_ambiente,
+          luminosidad,
+          humedad_suelo,
+          lluvia,
+          ph_suelo,
+          direccion_viento,
+          velocidad_viento,
+        } = data;
 
         if (!device_code) {
           ws.send(JSON.stringify({ message: 'device_code requerido' }));
@@ -73,16 +83,19 @@ export const initializeRealtimeData = (server) => {
         }
 
         // Verificar sensor
-        const sensorResult = await pool.query('SELECT id, nombre, bancal_id, estado FROM sensores_sensor WHERE device_code = $1 AND estado = $2', [device_code, 'activo']);
+        const sensorResult = await pool.query(
+          'SELECT id, nombre, bancal_id, estado FROM sensores_sensor WHERE device_code = $1 AND estado = $2',
+          [device_code, 'activo']
+        );
         if (sensorResult.rowCount === 0) {
-          ws.send(JSON.stringify({ message: `Sensor con device_code ${device_code} no existe o está inactivo` }));
+          ws.send(JSON.stringify({ message: `Sensor con ${device_code} no existe o está inactivo` }));
           return;
         }
 
         const sensor = sensorResult.rows[0];
         const fk_sensor_id = sensor.id;
         const sensorNombre = sensor.nombre;
-        const fk_bancal_id = sensor.bancal_id || 1;
+        const fk_bancal_id = sensor.bancal_id || null;
 
         // Obtener nombre del bancal
         let bancalNombre = 'N/A';
@@ -93,16 +106,27 @@ export const initializeRealtimeData = (server) => {
 
         // Guardar datos
         const fecha_medicion = new Date().toISOString();
-        const result = await pool.query(`
+        const sql = `
           INSERT INTO datos_meteorologicos_datos_metereologicos (
-            fecha_medicion, fk_bancal_id, fk_sensor_id, temperatura, humedad_ambiente, luminosidad,
-            humedad_suelo, lluvia, ph_suelo, direccion_viento, velocidad_viento
+            fk_sensor_id, fk_bancal_id, temperatura, humedad_ambiente, luminosidad, humedad_suelo,
+            lluvia, ph_suelo, direccion_viento, velocidad_viento, fecha_medicion
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
           RETURNING id
-        `, [
-          fecha_medicion, fk_bancal_id, fk_sensor_id, temperatura, humedad_ambiente, luminosidad,
-          humedad_suelo, lluvia, ph_suelo, direccion_viento, velocidad_viento
-        ]);
+        `;
+        const values = [
+          fk_sensor_id,
+          fk_bancal_id,
+          temperatura != null ? parseFloat(temperatura) : null,
+          humedad_ambiente != null ? parseFloat(humedad_ambiente) : null,
+          luminosidad != null ? parseFloat(luminosidad) : null,
+          humedad_suelo != null ? parseFloat(humedad_suelo) : null,
+          lluvia != null ? parseFloat(lluvia) : null,
+          ph_suelo != null ? parseFloat(ph_suelo) : null,
+          direccion_viento != null ? parseFloat(direccion_viento) : null,
+          velocidad_viento != null ? parseFloat(velocidad_viento) : null,
+          fecha_medicion,
+        ];
+        const result = await pool.query(sql, values);
 
         if (result.rowCount === 0) {
           ws.send(JSON.stringify({ message: 'Datos no guardados' }));
@@ -115,24 +139,25 @@ export const initializeRealtimeData = (server) => {
           sensor_nombre: sensorNombre,
           fk_bancal_id,
           bancal_nombre: bancalNombre,
-          temperatura,
-          humedad_ambiente,
-          luminosidad,
-          lluvia,
-          velocidad_viento,
-          direccion_viento,
-          humedad_suelo,
-          ph_suelo,
+          temperatura: temperatura != null ? parseFloat(temperatura) : null,
+          humedad_ambiente: humedad_ambiente != null ? parseFloat(humedad_ambiente) : null,
+          luminosidad: luminosidad != null ? parseFloat(luminosidad) : null,
+          lluvia: lluvia != null ? parseFloat(lluvia) : null,
+          velocidad_viento: velocidad_viento != null ? parseFloat(velocidad_viento) : null,
+          direccion_viento: direccion_viento != null ? parseFloat(direccion_viento) : null,
+          humedad_suelo: humedad_suelo != null ? parseFloat(humedad_suelo) : null,
+          ph_suelo: ph_suelo != null ? parseFloat(ph_suelo) : null,
           fecha_medicion,
         };
 
         // Verificar umbrales
         const alerts = checkThresholds(data, sensorNombre, bancalNombre);
         const existingAlerts = ALERT_CACHE[device_code] || {};
+
         for (const alert of alerts) {
           if (!existingAlerts[alert.id]) {
             saveAlert(alert, device_code);
-            wss.clients.forEach((client) => {
+            wss.clients.forEach(client => {
               if (client.readyState === WebSocket.OPEN) {
                 client.send(JSON.stringify({ type: 'weather_alert', data: alert }));
               }
@@ -141,7 +166,7 @@ export const initializeRealtimeData = (server) => {
         }
 
         // Enviar datos a todos los clientes
-        wss.clients.forEach((client) => {
+        wss.clients.forEach(client => {
           if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify({ type: 'weather_data', data: savedData }));
           }
