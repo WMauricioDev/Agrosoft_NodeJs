@@ -1,3 +1,4 @@
+// src/pages/ListaResiduoPage.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DefaultLayout from '@/layouts/default';
@@ -114,7 +115,8 @@ const ListaResiduoPage: React.FC = () => {
   };
 
   const transformedData = (residuos ?? []).map((residuo) => {
-    const cosechaNombre = cosechas?.find(c => c.id === residuo.id_cosecha_id)?.cultivo_nombre || 'Desconocido';
+    const cosecha = cosechas?.find(c => c.id === residuo.id_cosecha_id);
+    const cosechaNombre = cosecha ? `Cultivo ID: ${cosecha.id_cultivo_id} - Fecha: ${cosecha.fecha}` : 'Desconocido';
     const tipoResiduoNombre = tiposResiduos?.find(t => t.id === residuo.id_tipo_residuo_id)?.nombre || 'Desconocido';
 
     return {
@@ -233,7 +235,7 @@ const ListaResiduoPage: React.FC = () => {
             <option value="">Seleccione una cosecha</option>
             {cosechas?.map((cosecha) => (
               <option key={cosecha.id} value={cosecha.id}>
-                {cosecha.cultivo_nombre}
+                Cultivo ID: {cosecha.id_cultivo_id} - Fecha: {cosecha.fecha}
               </option>
             ))}
           </select>

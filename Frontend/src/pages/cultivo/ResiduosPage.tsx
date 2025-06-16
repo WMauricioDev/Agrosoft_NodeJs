@@ -1,3 +1,4 @@
+// src/pages/ResiduoPage.tsx
 import React, { useState } from "react";
 import DefaultLayout from "@/layouts/default";
 import { ReuInput } from "@/components/globales/ReuInput";
@@ -10,6 +11,7 @@ import { Plus } from 'lucide-react';
 import { ModalCosecha } from "@/components/cultivo/ModalCosecha";
 import { ModalTipoResiduo } from "@/components/cultivo/ModalTipoResiduo";
 import CustomSpinner from "@/components/globales/Spinner";
+import { addToast } from "@heroui/react";
 
 const ResiduoPage: React.FC = () => {
   const [residuo, setResiduo] = useState({
@@ -18,11 +20,11 @@ const ResiduoPage: React.FC = () => {
     nombre: "",
     descripcion: "",
     fecha: "",
-    cantidad: 0
+    cantidad: 0,
   });
 
   const mutation = useRegistrarResiduo();
-  const { data: cosechas, isLoading: loadingCosechas } = useCosechas();
+  const { data: cosechas, isLoading: loadingCosechas, refetch: refetchCosechas } = useCosechas();
   const { data: tiposResiduos, isLoading: loadingTiposResiduos } = useTipoResiduos();
   const [openCosechaModal, setOpenCosechaModal] = useState(false);
   const [openTipoResiduoModal, setOpenTipoResiduoModal] = useState(false);
@@ -151,6 +153,7 @@ const ResiduoPage: React.FC = () => {
         <ModalCosecha
           isOpen={openCosechaModal}
           onOpenChange={setOpenCosechaModal}
+          onSuccess={() => refetchCosechas()} // Refrescar cosechas al registrar
         />
 
         <ModalTipoResiduo
@@ -169,19 +172,25 @@ const ResiduoPage: React.FC = () => {
               <Plus className="h-4 w-4" />
             </button>
           </div>
-
           <select
             name="id_cosecha_id"
             value={residuo.id_cosecha_id || ""}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+            disabled={cosechas?.length === 0}
           >
             <option value="">Seleccione una cosecha</option>
-            {cosechas?.map((cosecha) => (
-              <option key={cosecha.id} value={cosecha.id}>
-                {cosecha.cultivo_nombre}
+            {cosechas?.length > 0 ? (
+              cosechas.map((cosecha) => (
+                <option key={cosecha.id} value={cosecha.id}>
+                  Cultivo ID: {cosecha.id_cultivo_id} - Fecha: {cosecha.fecha}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>
+                No hay cosechas disponibles
               </option>
-            ))}
+            )}
           </select>
         </div>
 
@@ -196,7 +205,6 @@ const ResiduoPage: React.FC = () => {
               <Plus className="h-4 w-4" />
             </button>
           </div>
-
           <select
             name="id_tipo_residuo_id"
             value={residuo.id_tipo_residuo_id || ""}
