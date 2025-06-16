@@ -18,3 +18,23 @@ VALUES (
   NOW(),              -- date_joined
   NULL                -- last_login (puede ser NULL si nunca ha iniciado sesión)
 );
+
+
+
+
+{
+  "numero_documento": "12345678",
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "username": "juanp",
+  "rol_id": 2,
+  "email": "juanp@example.com",
+  "password": "TuPasswordSeguro123",
+  "is_staff": true,
+  "is_superuser": false,
+  "first_name": "Juan",
+  "last_name": "Pérez",
+  "is_active": true,
+  "date_joined": "2025-06-16T10:00:00Z",
+  "last_login": null
+}
