@@ -14,9 +14,9 @@ import { ModalUnidadMedida } from "@/components/cultivo/ModalUnidadMedida";
 
 const VentaPage: React.FC = () => {
   const [detalle, setDetalle] = useState<DetalleVenta>({
-    producto: 0,
+    producto_id: 0,
     cantidad: 0,
-    unidades_de_medida: 0,
+    unidades_de_medida_id: 0,
     total: 0,
   });
 
@@ -36,32 +36,45 @@ const VentaPage: React.FC = () => {
     const { value } = e.target;
     setDetalle((prev) => ({
       ...prev,
-      [field]: field === "cantidad" || field === "producto" || field === "unidades_de_medida" 
+      [field]: field === "cantidad" || field === "producto_id" || field === "unidades_de_medida_id" 
         ? Number(value) 
         : value,
     }));
   };
 
-const agregarDetalle = () => {
-  const productoSeleccionado = precio_producto?.find(p => p.id === detalle.producto);
-  if (!productoSeleccionado) return;
-
-  agregarDetalleVenta(
-    detalle,
-    detallesAgregados,
-    editIndex,
-    productoSeleccionado,
-    setDetallesAgregados,
-    setEditIndex,
-    () =>
-      setDetalle({
-        producto: 0,
-        cantidad: 0,
-        unidades_de_medida: 0,
-        total: 0,
-      })
-  );
-};
+  const agregarDetalle = () => {
+    const productoSeleccionado = precio_producto?.find(p => p.id=== detalle.producto_id);
+    if (!productoSeleccionado) {
+      alert("Seleccione un producto válido.");
+      return;
+    }
+  
+    if (detalle.cantidad > productoSeleccionado.stock) {
+      alert(`La cantidad solicitada (${detalle.cantidad}) excede el stock disponible (${productoSeleccionado.stock}).`);
+      return;
+    }
+  
+    if (detalle.unidades_de_medida_id === 0) {
+      alert("Seleccione una unidad de medida.");
+      return;
+    }
+  
+    agregarDetalleVenta(
+      detalle,
+      detallesAgregados,
+      editIndex,
+      productoSeleccionado,
+      setDetallesAgregados,
+      setEditIndex,
+      () =>
+        setDetalle({
+          producto_id: 0,
+          cantidad: 0,
+          unidades_de_medida_id: 0,
+          total: 0,
+        })
+    );
+  };
 
   const handleEdit = (index: number) => {
     const detalleAEditar = detallesAgregados[index];
@@ -84,10 +97,10 @@ const agregarDetalle = () => {
   ];
   
   const transformedData = detallesAgregados.map((detalle, index) => {
-    const productoSeleccionado = precio_producto?.find(p => p.id === detalle.producto);
+    const productoSeleccionado = precio_producto?.find(p => p.id === detalle.producto_id);
     const productoNombre = productoSeleccionado?.nombre_cultivo || "Desconocido";
 
-    const unidadNombre = unidadesMedida?.find(u => u.id === detalle.unidades_de_medida)?.nombre?.toString() || "unidad";
+    const unidadNombre = unidadesMedida?.find(u => u.id === detalle.unidades_de_medida_id)?.nombre?.toString() || "unidad";
     const precio = productoSeleccionado?.precio || 0;
     const total = detalle.total || 0;
     
@@ -137,9 +150,9 @@ const agregarDetalle = () => {
         onSuccess: (ventaRegistrada) => {
           setDetallesAgregados([]);
           setDetalle({
-            producto: 0,
+            producto_id: 0,
             cantidad: 0,
-            unidades_de_medida: 0,
+            unidades_de_medida_id: 0,
             total: 0,
           });
           setIsModalOpen(false);
@@ -199,16 +212,16 @@ const agregarDetalle = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Producto *</label>
                 <select
-                  name="producto"
-                  value={detalle.producto || ""}
-                  onChange={handleChange("producto")}
+                  name="producto_id"
+                  value={detalle.producto_id || ""}
+                  onChange={handleChange("producto_id")}
                   className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
                   disabled={precioProductoLoading}
                 >
                   <option value="0">Seleccione un producto</option>
                   {precio_producto?.map((producto) => (
                     <option key={producto.id} value={producto.id}>
-                      {producto.nombre_cultivo || 'Producto'} - ${producto.precio?.toFixed(2) || '0.00'}
+                      {producto.id || 'Producto'} - ${producto.precio?.toFixed(2) || '0.00'}
                     </option>
                   ))}
                 </select>
@@ -227,10 +240,10 @@ const agregarDetalle = () => {
                   onChange={(e) => setDetalle({...detalle, cantidad: parseInt(e.target.value) || 0})}
                 />
 
-                    {detalle.producto !== 0 && (
+                    {detalle.producto_id !== 0 && (
            <p className="text-sm text-gray-500 mt-1">
            Stock disponible: {
-              precio_producto?.find(p => p.id === detalle.producto)?.stock ?? 'N/A'
+              precio_producto?.find(p => p.id === detalle.producto_id)?.stock ?? 'N/A'
             }
           </p>
         )}
@@ -253,8 +266,8 @@ const agregarDetalle = () => {
                   </button>
                 </div>
                 <select
-                  value={detalle.unidades_de_medida}
-                  onChange={handleChange("unidades_de_medida")}
+                  value={detalle.unidades_de_medida_id}
+                  onChange={handleChange("unidades_de_medida_id")}
                   className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   disabled={loadingUnidadesMedida}
                 >
@@ -271,7 +284,7 @@ const agregarDetalle = () => {
             <div className="mt-6 flex justify-end">
               <button
                 className={`px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all ${
-                  detalle.producto === 0 || detalle.cantidad <= 0
+                  detalle.producto_id === 0 || detalle.cantidad <= 0
                     ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                     : "bg-green-600 text-white hover:bg-green-700 shadow-md hover:shadow-lg"
                 }`}
@@ -279,7 +292,7 @@ const agregarDetalle = () => {
                   e.preventDefault();
                   agregarDetalle();
                 }}
-                disabled={detalle.producto === 0 || detalle.cantidad <= 0}
+                disabled={detalle.producto_id === 0 || detalle.cantidad <= 0}
               >
                 {editIndex !== null ? (
                   <>

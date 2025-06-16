@@ -9,9 +9,9 @@ export interface Venta {
 export interface DetalleVenta {
   id?: number;
   venta?: number;
-  producto: number; 
+  producto_id: number; 
   cantidad: number;
-  unidades_de_medida: number; 
+  unidades_de_medida_id: number; 
   total: number; 
   precio_unitario?: number; 
 }

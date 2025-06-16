@@ -80,38 +80,43 @@ const CalcularPagoPage: React.FC = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    if (!selectedUsuario) return;
-    
-    calcularPagoMutation.mutate({
-      usuario_id: selectedUsuario.value,
-      fecha_inicio: fechaInicio,
-      fecha_fin: fechaFin,
-    }, {
-      onSuccess: () => {
-        navigate('/finanzas/listarpagos');
-        addToast({
-          title: "Pago calculado",
-          description: "El pago se ha calculado y registrado correctamente",
-          timeout: 3000,
-          color: "success"
-        });
-      },
-      onError: (error: any) => {
-        addToast({
-          title: "Error al calcular",
-          description: error.response?.data?.detail || "Ocurrió un error al calcular el pago",
-          timeout: 3000,
-          color: "danger"
-        });
-      }
-    });
-  };
-
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  if (!validateForm()) return;
+  
+  if (!selectedUsuario) return;
+  
+  console.log("Datos enviados al backend:", {
+    usuario_id: selectedUsuario.value,
+    fecha_inicio: fechaInicio,
+    fecha_fin: fechaFin,
+  }); // Añade este log para depurar
+  
+  calcularPagoMutation.mutate({
+    usuario_id: selectedUsuario.value,
+    fecha_inicio: fechaInicio,
+    fecha_fin: fechaFin,
+  }, {
+    onSuccess: () => {
+      navigate('/finanzas/listarpagos');
+      addToast({
+        title: "Pago calculado",
+        description: "El pago se ha calculado y registrado correctamente",
+        timeout: 3000,
+        color: "success"
+      });
+    },
+    onError: (error: any) => {
+      addToast({
+        title: "Error al calcular",
+        description: error.response?.data?.detail || "Ocurrió un error al calcular el pago",
+        timeout: 3000,
+        color: "danger"
+      });
+    }
+  });
+};
   return (
     <DefaultLayout>
       <Formulario

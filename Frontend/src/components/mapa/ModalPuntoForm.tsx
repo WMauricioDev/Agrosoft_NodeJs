@@ -4,6 +4,9 @@ import { ReuInput } from "@/components/globales/ReuInput";
 import { useRegistrarPuntoMapa, useActualizarPuntoMapa } from "@/hooks/mapa/usePuntoMapa";
 import { PuntoMapa } from "@/types/mapa/PuntoMapa";
 import { ChangeEvent } from "react";
+import { useUsuarios, Usuario } from "@/hooks/usuarios/useUsuarios";
+import { useCultivos } from "@/hooks/cultivo/useCultivo";
+import { Select, MenuItem } from "@mui/material";
 
 interface ModalPuntoFormProps {
   isOpen: boolean;
@@ -27,10 +30,14 @@ export const ModalPuntoForm: React.FC<ModalPuntoFormProps> = ({
     descripcion: initialPunto?.descripcion || "",
     latitud: initialPunto ? parseFloat(initialPunto.latitud as any) || 0 : initialLat || 0,
     longitud: initialPunto ? parseFloat(initialPunto.longitud as any) || 0 : initialLng || 0,
+    usuario_id: initialPunto?.usuario_id || null, // ← nuevo campo opcional
+
   });
 
   const registrarMutation = useRegistrarPuntoMapa();
   const actualizarMutation = useActualizarPuntoMapa();
+  const { data: usuarios } = useUsuarios();
+const { data: cultivos, isLoading: cargandoCultivos } = useCultivos();
 
   useEffect(() => {
     if (initialPunto) {
@@ -67,7 +74,7 @@ export const ModalPuntoForm: React.FC<ModalPuntoFormProps> = ({
       console.error("El nombre debe tener al menos 5 caracteres.");
       return;
     }
-    if (!punto.descripcion || punto.descripcion.length < 5) {
+    if (!punto.descripcion || punto.descripcion.length < 2) {
       console.error("La descripción debe tener al menos 5 caracteres.");
       return;
     }
@@ -76,12 +83,18 @@ export const ModalPuntoForm: React.FC<ModalPuntoFormProps> = ({
       return;
     }
 
-    const puntoData = {
+    const puntoData: any = {
       nombre: punto.nombre,
       descripcion: punto.descripcion,
       latitud: Number(punto.latitud.toFixed(6)),
       longitud: Number(punto.longitud.toFixed(6)),
     };
+    if (punto.usuario_id) {
+  puntoData.usuario_id = punto.usuario_id;
+}
+if (punto.cultivo_id) {
+  puntoData.cultivo_id = punto.cultivo_id;
+}
 
     console.log("Enviando punto:", JSON.stringify(puntoData, null, 2));
 
@@ -139,6 +152,52 @@ export const ModalPuntoForm: React.FC<ModalPuntoFormProps> = ({
           value={punto.descripcion}
           onChange={handleChange}
         />
+        <select
+        name="usuario_id"
+        value={punto.usuario_id ?? ""}
+        onChange={(e) =>
+          setPunto((prev) => ({
+            ...prev,
+            usuario_id: e.target.value ? parseInt(e.target.value) : null,
+          }))
+        }
+      >
+        <option value="">Asignar un usuario (opcional)</option>
+        {usuarios?.map((usuario: Usuario) => (
+          <option key={usuario.id} value={usuario.id}>
+            {usuario.nombre} {usuario.apellido}
+          </option>
+        ))}
+      </select>
+
+      
+<Select
+  value={punto.cultivo_id}
+  onChange={(e) => setPunto({ ...punto, cultivo_id: e.target.value })}
+  sx={{ width: 400, height: 30, fontSize: 14 }}
+  displayEmpty
+  renderValue={(selected) => {
+    if (!selected) {
+      return <em>Seleccionar Cultivo (opcional)</em>;
+    }
+    const cultivo = cultivos?.find((c) => c.id === selected);
+    return cultivo ? cultivo.nombre : selected;
+  }}
+  MenuProps={{
+    disablePortal: true,
+    PaperProps: {
+      sx: {
+        maxHeight: 300,
+      },
+    },
+  }}
+>
+  {cultivos?.map((cultivo) => (
+    <MenuItem key={cultivo.id} value={cultivo.id}>
+      {cultivo.nombre}
+    </MenuItem>
+  ))}
+</Select>
         <div className="grid grid-cols-2 gap-4">
           <ReuInput
             label="Latitud"

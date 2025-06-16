@@ -4,7 +4,7 @@ import { addToast } from "@heroui/react";
 import { PrecioProducto, UnidadMedida } from "@/types/inventario/Precio_producto";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/inventario/precio-producto/`;
+const API_URL = `${BASE_URL}/api/inv/precio-producto/`;
 
 const fetchPreciosProductos = async (): Promise<PrecioProducto[]> => {
     const token = localStorage.getItem("access_token");
@@ -22,13 +22,13 @@ cosecha: item.nombre_producto
     }
   : null,
         nombre_cultivo: item.nombre_producto|| "",
-        unidad_medida: item.unidad_medida
+        unidad_medida: item.unidad_medida_id
             ? {
-                  id: item.unidad_medida.id,
-                  nombre: item.unidad_medida.nombre,
-                  descripcion: item.unidad_medida.descripcion || null,
-                  creada_por_usuario: item.unidad_medida.creada_por_usuario || false,
-                  fecha_creacion: item.unidad_medida.fecha_creacion,
+                  id: item.unidad_medida_id.id,
+                  nombre: item.unidad_medida_id.nombre,
+                  descripcion: item.unidad_medida_id.descripcion || null,
+                  creada_por_usuario: item.unidad_medida_id.creada_por_usuario || false,
+                  fecha_creacion: item.unidad_medida_id.fecha_creacion,
               }
             : null,
         precio: Number(item.precio),
@@ -76,7 +76,7 @@ const registrarPrecioProducto = async (
     }
     try {
         const payload = {
-            Producto_id: precioProducto.cosecha || null,
+            Producto_id: precioProducto.cosecha_id || null,
             unidad_medida_id: precioProducto.unidad_medida_id,
             precio: precioProducto.precio,
             fecha_registro: precioProducto.fecha_registro,
@@ -145,8 +145,8 @@ const actualizarPrecioProducto = async (
     if (!token) throw new Error("No se encontró el token de autenticación.");
     try {
         const data = {
-            Producto_id: precioProducto.cosecha || null,
-            unidad_medida_id: precioProducto.unidad_medida?.id || null,
+            Producto_id: precioProducto.cosecha_id || null,
+            unidad_medida_id: precioProducto.unidad_medida_id?.id || null,
             precio: precioProducto.precio,
             fecha_registro: precioProducto.fecha_registro,
             stock: precioProducto.stock,

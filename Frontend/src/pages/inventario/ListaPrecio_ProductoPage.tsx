@@ -8,6 +8,7 @@ import { ReuInput } from "@/components/globales/ReuInput";
 import Tabla from "@/components/globales/Tabla";
 import { EditIcon, Trash2 } from "lucide-react";
 import { PrecioProducto, UnidadMedida } from "@/types/inventario/Precio_producto";
+import { Plus } from 'lucide-react';
 
 const formatCOPNumber = (value: number | string): string => {
     const num = typeof value === 'string' ? parseFloat(value.replace(/\./g, '')) : value;
@@ -180,9 +181,9 @@ const ListaPrecioProductoPage: React.FC = () => {
                                 </select>
                             </div>
                         </div>
-                        <div className="flex items-end gap-2">
+                        <div className="flex items-center gap-2 mb-1">
                             <div className="flex-1">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-gray-700">
                                     Unidad de Medida
                                 </label>
                                 <select
@@ -218,13 +219,13 @@ const ListaPrecioProductoPage: React.FC = () => {
                                 </select>
                             </div>
                             <button
-                                type="button"
+                                className="p-1 h-6 w-6 flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500"
                                 onClick={() => setIsUnidadModalOpen(true)}
-                                className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                type="button"
                             >
-                                Nueva Unidad
+                                <Plus className="h-4 w-4" />
                             </button>
-                        </div>
+                            </div>
                         <ReuInput
                             label="Precio"
                             placeholder="Ingrese el precio"

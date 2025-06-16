@@ -1,4 +1,5 @@
 import { Router } from "express";
+import upload from "../../usuarios/middlewares/Multer.js";
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
 import { postPlagas, getPlagas, getIdPlagas, updatePlagas, deletePlagas } from "../controller/controller.plagas.js";
 
@@ -40,7 +41,7 @@ const RouterPlagas = Router();
  *       400:
  *         description: Error en la solicitud
  */
-RouterPlagas.post("/plagas", verificarToken, postPlagas);
+RouterPlagas.post("/plagas", upload.single("img"), verificarToken, postPlagas);
 
 /**
  * @swagger

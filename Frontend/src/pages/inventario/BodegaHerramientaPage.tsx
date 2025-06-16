@@ -16,10 +16,10 @@ import { Plus } from 'lucide-react';
 const BodegaHerramientaPage: React.FC = () => {
   const { user } = useAuth();
   const [bodegaHerramienta, setBodegaHerramienta] = useState<Omit<BodegaHerramienta, "id" | "costo_total">>({
-    bodega_id: 0,
-    herramienta_id: 0,
+    bodega: 0,
+    herramienta: 0,
     cantidad: 0,
-    creador_id: user?.id,
+    creador: user?.id,
     cantidad_prestada: 0,
   });
   const [isBodegaModalOpen, setIsBodegaModalOpen] = useState(false);
@@ -41,13 +41,13 @@ const BodegaHerramientaPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!bodegaHerramienta.bodega_id || !bodegaHerramienta.herramienta_id || !bodegaHerramienta.cantidad) {
+    if (!bodegaHerramienta.bodega || !bodegaHerramienta.herramienta || !bodegaHerramienta.cantidad) {
       alert("Por favor, completa todos los campos requeridos.");
       return;
     }
     mutation.mutate(bodegaHerramienta, {
       onSuccess: () => {
-        setBodegaHerramienta({ bodega_id: 0, herramienta_id: 0, cantidad: 0, creador_id: user?.id, cantidad_prestada: 0 });
+        setBodegaHerramienta({ bodega: 0, herramienta: 0, cantidad: 0, creador: user?.id, cantidad_prestada: 0 });
         navigate("/inventario/listarbodegaherramienta/");
       },
     });
@@ -73,8 +73,8 @@ const BodegaHerramientaPage: React.FC = () => {
             </button>
           </div>
           <select
-            name="bodega_id"
-            value={bodegaHerramienta.bodega_id}
+            name="bodega"
+            value={bodegaHerramienta.bodega}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 transition-all duration-200"
           >
@@ -98,8 +98,8 @@ const BodegaHerramientaPage: React.FC = () => {
             </button>
           </div>
           <select
-            name="herramienta_id"
-            value={bodegaHerramienta.herramienta_id}
+            name="herramienta"
+            value={bodegaHerramienta.herramienta}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 transition-all duration-200"
           >

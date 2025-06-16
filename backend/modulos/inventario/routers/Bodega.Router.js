@@ -19,13 +19,11 @@ const rutaBodega = Router();
 
 /**
  * @swagger
- * /bodega:
+ * /api/inv/bodega:
  *   get:
  *     summary: Obtener la lista de bodegas registradas
  *     tags: [Bodega]
  *     security:
- *       - bearerAuth: []
- *     responses:
  *       200:
  *         description: Lista de bodegas obtenida correctamente
  *         content:
@@ -35,20 +33,25 @@ const rutaBodega = Router();
  *               items:
  *                 type: object
  *                 properties:
- *                   id_bodega:
+ *                   id:
  *                     type: integer
  *                     example: 1
  *                   nombre:
- *                     type: string
- *                     example: "Bodega Central"
+ *                     type: "Bodega Central",
  *                   ubicacion:
  *                     type: string
  *                     example: "Calle 123, Ciudad"
- *                   tipo_bodega:
+ *                   telefono:
  *                     type: string
- *                     example: "Almacén principal"
+ *                     example: "12345678"
+ *                   activo:
+ *                     type: boolean
+ *                     example: true
+ *                   capacidad:
+ *                     type: integer
+ *                     example: 1000
  */
-rutaBodega.get("/bodega", verificarToken, listarBodega);
+rutaBodega.get("/bodega/", verificarToken, listarBodega);
 
 /**
  * @swagger

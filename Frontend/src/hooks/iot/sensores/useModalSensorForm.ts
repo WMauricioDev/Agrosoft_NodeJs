@@ -4,7 +4,7 @@ import { Sensor, TipoSensor } from "@/types/iot/type";
 import { Bancal } from "@/types/cultivo/Bancal";
 
 interface UseModalSensorFormProps {
-  sensor: Sensor;  
+  sensor: Sensor;
   tipoSensores: TipoSensor[] | undefined;
   bancales: Bancal[] | undefined;
   onConfirm: (editedSensor: Sensor | null) => void;
@@ -32,10 +32,16 @@ export const useModalSensorForm = ({
     }
 
     const tipoSensor = tipoSensores.find((type) => type.nombre === sensor.tipo_sensor) || null;
-    const updatedSensor = {
+    const updatedSensor: Sensor = {
       ...sensor,
       tipo_sensor_id: tipoSensor ? tipoSensor.id : sensor.tipo_sensor_id || 0,
       unidad_medida: tipoSensor ? tipoSensor.unidad_medida : sensor.unidad_medida || "",
+      medida_minima: tipoSensor ? tipoSensor.medida_minima : sensor.medida_minima ?? null,
+      medida_maxima: tipoSensor ? tipoSensor.medida_maxima : sensor.medida_maxima ?? null,
+      estado: sensor.estado || "activo",
+      descripcion: sensor.descripcion || null,
+      device_code: sensor.device_code || null,
+      bancal_id: sensor.bancal_id || null,
     };
 
     console.log("[useModalSensorForm] Actualizando editedSensor: ", updatedSensor);
@@ -72,26 +78,38 @@ export const useModalSensorForm = ({
           });
           return prev;
         }
-        const newSensor = {
+        const newSensor: Sensor = {
           ...prev,
           tipo_sensor: value,
           tipo_sensor_id: tipoSensor.id,
           unidad_medida: tipoSensor.unidad_medida || "",
-          medida_minima: tipoSensor.medida_minima || 0,
-          medida_maxima: tipoSensor.medida_maxima || 0,
+          medida_minima: tipoSensor.medida_minima ?? null,
+          medida_maxima: tipoSensor.medida_maxima ?? null,
         };
         console.log("[useModalSensorForm] Nuevo estado de editedSensor tras cambio de tipo_sensor: ", newSensor);
         return newSensor;
       }
-      const newSensor = {
+      if (field === "estado") {
+        if (!["activo", "inactivo"].includes(value)) {
+          console.error("[useModalSensorForm] Estado inválido: ", value);
+          addToast({
+            title: "Error",
+            description: "El estado debe ser 'activo' o 'inactivo'.",
+            timeout: 3000,
+            color: "danger",
+          });
+          return prev;
+        }
+      }
+      const newSensor: Sensor = {
         ...prev,
         [field]:
           field === "medida_minima" || field === "medida_maxima"
-            ? Number(value)
+            ? value === "" ? null : parseFloat(value)
             : field === "bancal_id"
-            ? value === ""
-              ? null
-              : Number(value)
+            ? value === "" ? null : parseInt(value)
+            : field === "descripcion" || field === "device_code"
+            ? value || null
             : value,
       };
       console.log("[useModalSensorForm] Nuevo estado de editedSensor: ", newSensor);
@@ -125,7 +143,7 @@ export const useModalSensorForm = ({
         });
         return;
       }
-      if (editedSensor.bancal_id && !bancales?.some((b) => b.id === editedSensor.bancal_id)) {
+      if (editedSensor.bancal_id && !bancales?.some((b) => parseInt(b.id) === editedSensor.bancal_id)) {
         console.error("[useModalSensorForm] Validación fallida: bancal_id no existe", {
           bancal_id: editedSensor.bancal_id,
           bancales,
@@ -143,6 +161,16 @@ export const useModalSensorForm = ({
         addToast({
           title: "Error",
           description: "El nombre del sensor es obligatorio.",
+          timeout: 3000,
+          color: "danger",
+        });
+        return;
+      }
+      if (!["activo", "inactivo"].includes(editedSensor.estado)) {
+        console.error("[useModalSensorForm] Validación fallida: estado inválido", editedSensor);
+        addToast({
+          title: "Error",
+          description: "El estado debe ser 'activo' o 'inactivo'.",
           timeout: 3000,
           color: "danger",
         });

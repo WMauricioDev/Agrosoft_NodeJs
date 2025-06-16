@@ -7,6 +7,7 @@ import { ReuInput } from "@/components/globales/ReuInput";
 import Tabla from "@/components/globales/Tabla";
 import { EditIcon, Trash2 } from "lucide-react";
 import { Herramienta } from "@/types/inventario/Herramientas";
+import { Switch } from "@heroui/react";
 
 const ListaHerramientaPage: React.FC = () => {
     const [selectedHerramienta, setSelectedHerramienta] = useState<Herramienta | null>(null);
@@ -167,15 +168,15 @@ const ListaHerramientaPage: React.FC = () => {
                             value={selectedHerramienta.precio.toLocaleString("es-CO")}
                             onChange={(e) => setSelectedHerramienta({ ...selectedHerramienta, precio: formatPrice(e.target.value) })}
                         />
-                        <div className="mb-4 flex items-center">
-                            <input
-                                type="checkbox"
-                                checked={selectedHerramienta.activo}
+                         <div className="flex items-center">
+                            <Switch
+                                color="success"
+                                size="sm"
+                                isSelected={selectedHerramienta.activo}
                                 onChange={(e) => setSelectedHerramienta({ ...selectedHerramienta, activo: e.target.checked })}
-                                className="mr-2 leading-tight"
                             />
-                            <label className="text-gray-700 text-sm font-bold">Activo</label>
-                        </div>
+                            <label className="ml-2 text-sm font-medium text-gray-700">Activo</label>
+                         </div>
                     </>
                 )}
             </ReuModal>

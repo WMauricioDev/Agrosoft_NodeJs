@@ -21,7 +21,7 @@ const ListaPlagasPage: React.FC = () => {
   const columns = [
     { name: 'Nombre', uid: 'nombre' },
     { name: 'Descripción', uid: 'descripcion' },
-    { name: 'Tipo de Plaga', uid: 'tipo_plaga' },
+    { name: 'Tipo de Plaga', uid: 'fk_tipo_plaga_id' },
     { name: 'Imagen', uid: 'imagen' },
     { name: 'Acciones', uid: 'acciones' },
   ];
@@ -51,7 +51,7 @@ const ListaPlagasPage: React.FC = () => {
     id: plaga.id?.toString() || '',
     nombre: plaga.nombre,
     descripcion: plaga.descripcion,
-    tipo_plaga: plaga.tipo_plaga || 'Sin tipo',
+    fk_tipo_plaga_id: plaga.tipo_plaga_nombre || 'Sin tipo',
     imagen: plaga.img
       ? typeof plaga.img === 'string'
         ? plaga.img

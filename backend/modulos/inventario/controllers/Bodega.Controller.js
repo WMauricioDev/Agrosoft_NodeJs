@@ -17,17 +17,13 @@ export const registrarBodega = async (req, res) => {
   }
 };
 
-// Listar todas las bodegas
 export const listarBodega = async (req, res) => {
   try {
     const sql = 'SELECT id, nombre, ubicacion, telefono, activo, capacidad FROM bodega_bodega';
     const { rows } = await pool.query(sql);
 
-    if (rows.length > 0) {
-      res.status(200).json(rows);
-    } else {
-      res.status(404).json({ message: 'No hay registros de bodega' });
-    }
+    // Siempre devolver 200 con los datos (puede ser un arreglo vacío)
+    res.status(200).json(rows);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error en el sistema' });

@@ -4,7 +4,7 @@ import { addToast } from "@heroui/react";
 import { TipoControl } from "@/types/cultivo/TipoControl";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/cultivo/tipo_control/`;
+const API_URL = `${BASE_URL}/api/cultivo/tipos_control/`;
 
 const fetchTipoControl = async (): Promise<TipoControl[]> => {
   const token = localStorage.getItem("access_token");

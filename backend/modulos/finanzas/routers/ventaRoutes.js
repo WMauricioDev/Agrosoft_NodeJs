@@ -1,6 +1,6 @@
 import { Router } from "express";
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
-import { registrarVenta, listarVentas, actualizarVenta, eliminarVenta } from "../controllers/ventaController.js";
+import { registrarVenta, listarVentas, actualizarVenta, eliminarVenta, registrarDetalleVenta, listarDetalleVentas } from "../controllers/ventaController.js";
 
 const rutaVenta = Router();
 
@@ -23,7 +23,7 @@ const rutaVenta = Router();
  *       200:
  *         description: Lista de ventas obtenida con éxito
  */
-rutaVenta.get("/ventas", verificarToken, listarVentas);
+rutaVenta.get("/venta", verificarToken, listarVentas);
 
 /**
  * @swagger
@@ -60,7 +60,7 @@ rutaVenta.get("/ventas", verificarToken, listarVentas);
  *       201:
  *         description: Venta registrada correctamente
  */
-rutaVenta.post("/ventas", verificarToken, registrarVenta);
+rutaVenta.post("/venta", verificarToken, registrarVenta);
 
 /**
  * @swagger
@@ -104,7 +104,7 @@ rutaVenta.post("/ventas", verificarToken, registrarVenta);
  *       200:
  *         description: Venta actualizada correctamente
  */
-rutaVenta.put("/ventas/:id", verificarToken, actualizarVenta);
+rutaVenta.put("/venta/:id", verificarToken, actualizarVenta);
 
 /**
  * @swagger
@@ -125,6 +125,10 @@ rutaVenta.put("/ventas/:id", verificarToken, actualizarVenta);
  *       200:
  *         description: Venta eliminada correctamente
  */
-rutaVenta.delete("/ventas/:id", verificarToken, eliminarVenta);
+rutaVenta.delete("/venta/:id", verificarToken, eliminarVenta);
+
+rutaVenta.post("/venta/:id/detalles", verificarToken, registrarDetalleVenta);
+rutaVenta.get("/venta/:id/detalles", verificarToken, listarDetalleVentas);
+
 
 export default rutaVenta;
