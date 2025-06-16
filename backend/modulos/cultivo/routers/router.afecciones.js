@@ -1,6 +1,6 @@
 import { Router } from "express";
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
-import { postAfecciones, getAfecciones, getIdAfecciones, updateAfecciones, deleteAfecciones } from "../controller/controller.afecciones.js";
+import { postAfecciones, getAfecciones, getIdAfecciones, updateAfecciones, deleteAfecciones, cambiarEstadoAfeccion} from "../controller/controller.afecciones.js";
 
 const RouterAfecciones = Router();
 
@@ -117,7 +117,7 @@ RouterAfecciones.get("/afecciones/:id", verificarToken, getIdAfecciones);
  *       400:
  *         description: Error en la solicitud
  */
-RouterAfecciones.put("/afecciones/:id", verificarToken, updateAfecciones);
+RouterAfecciones.patch("/afecciones/:id", verificarToken, updateAfecciones);
 
 /**
  * @swagger
@@ -140,5 +140,6 @@ RouterAfecciones.put("/afecciones/:id", verificarToken, updateAfecciones);
  *         description: No se pudo eliminar la afección
  */
 RouterAfecciones.delete("/afecciones/:id", verificarToken, deleteAfecciones);
+RouterAfecciones.post("/afecciones/:id/cambiar_estado", verificarToken, cambiarEstadoAfeccion)
 
 export default RouterAfecciones;

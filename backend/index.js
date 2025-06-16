@@ -28,6 +28,8 @@ import cultivos from "./modulos/cultivo/routers/router.cultivos.js";
 import lotes from "./modulos/cultivo/routers/router.lotes.js";
 import bancal from "./modulos/cultivo/routers/router.bancal.js";
 import unidadmedida from "./modulos/cultivo/routers/router.unidadmedida.js";
+import RouterGraficos from './modulos/cultivo/routers/router.GraficasCostos.js';
+import RouterGraficosCosechas from './modulos/cultivo/routers/router.graficaCosechas.js';
 // Rutas del módulo Usuarios
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
 import Roles from './modulos/usuarios/routers/Roles.routes.js';
@@ -52,10 +54,16 @@ import salario_minimo from "./modulos/finanzas/routers/salarioMinimoRoutes.js";
 import Registro_venta from "./modulos/finanzas/routers/registroVentaRoutes.js";
 import Inventario_producto from "./modulos/finanzas/routers/inventarioProductoRoutes.js";
 import Venta from "./modulos/finanzas/routers/ventaRoutes.js";
-
+import pago from "./modulos/finanzas/routers/PagoRouter.js"
 // Rutas de mapa
 import Mapa from "./modulos/cultivo/routers/router.mapa.js"
- 
+
+// Rutas de Reportes PDF
+import UsuariosPDF from "./modulos/reportes/usuarios/routers/routerReporteUsuarios.js"
+import BancalesPDF from './modulos/reportes/cultivo/routers/routerReporteBancal.js';
+import LotesPDF from './modulos/reportes/cultivo/routers/routerReporteLote.js';
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -96,6 +104,8 @@ app.use('/api/cultivo', cultivos);
 app.use('/api/cultivo', lotes);
 app.use('/api/cultivo', bancal);
 app.use('/api/cultivo', unidadmedida);
+app.use('/api/cultivo', RouterGraficos);
+app.use('/api/cultivo', RouterGraficosCosechas);
 
 // Rutas del módulo Usuarios
 app.use('/api', Usuarios);
@@ -116,14 +126,21 @@ app.use('/api/iot', tipoSensor);
 app.use('/api/iot', datosMeteorologicos);
 app.use('/api/iot', reportePDF);
 app.use('/api/iot', rutaDatosHistoricos);
+
 // Rutas del módulo Finanzas
 app.use('/api/fin', salario_minimo);
 app.use('/api/fin', Registro_venta);
 app.use('/api/fin', Inventario_producto);
 app.use('/api/fin', Venta);
+app.use('/api/fin', pago);
 
 // Rutas de mapa
 app.use('/api', Mapa);
+
+//Rutas de reporte UsuariosPDF
+app.use("/usuarios",UsuariosPDF)
+app.use("/cultivo" ,BancalesPDF)
+app.use("/cultivo",LotesPDF)
 
 // Swagger Docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

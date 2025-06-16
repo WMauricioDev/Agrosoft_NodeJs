@@ -143,7 +143,7 @@ export const useModalSensorForm = ({
         });
         return;
       }
-      if (editedSensor.bancal_id && !bancales?.some((b) => b.id === editedSensor.bancal_id)) {
+      if (editedSensor.bancal_id && !bancales?.some((b) => parseInt(b.id) === editedSensor.bancal_id)) {
         console.error("[useModalSensorForm] Validación fallida: bancal_id no existe", {
           bancal_id: editedSensor.bancal_id,
           bancales,

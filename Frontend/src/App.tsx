@@ -71,7 +71,7 @@ import ListaBodegaPage from './pages/inventario/ListaBodegaPage';
 //import ListaBodegaPrecioProductoPage from "./pages/inventario/ListaBodegaPrecioProductoPage";
 
 // IoT
-import SensoresPage from "./pages/iot/SensoresPage";
+import SensoresPage from "./pages/iot/SensoresPage2";
 import DatosMeteorologicosPage from "./pages/iot/DatosMeteorologicosPage";
 import RegistrarSensorPage from "./pages/iot/sensores/RegistrarSensorPage";
 import ListarSensores from "./pages/iot/sensores/ListarSensoresPage"; 

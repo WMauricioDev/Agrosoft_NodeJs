@@ -1,31 +1,21 @@
 import pool from "../../usuarios/database/Conexion.js";
 async function validateStock(insumos = [], herramientas = []) {
   const errors = [];
-
-  // Depuración para inspeccionar los datos recibidos
-  console.log('validateStock - Insumos:', insumos);
-  console.log('validateStock - Herramientas:', herramientas);
-
-  // Asegurarse de que insumos y herramientas sean arrays
   const insumosArray = Array.isArray(insumos) ? insumos : [];
   const herramientasArray = Array.isArray(herramientas) ? herramientas : [];
 
-  // Validar insumos
   for (const insumo of insumosArray) {
     try {
-      // Verificar que insumo tenga insumo_id y cantidad_usada
       if (!insumo || typeof insumo !== 'object' || !insumo.insumo_id || !insumo.cantidad_usada) {
         errors.push(`Insumo inválido: ${JSON.stringify(insumo)}`);
         continue;
       }
 
-      // Consultar la base de datos
       const queryResult = await pool.query(
         'SELECT cantidad FROM insumos_insumo WHERE id = $1', 
         [insumo.insumo_id]
       );
       
-      // Verificar si hay resultados
       if (queryResult.rows.length === 0 || queryResult.rows[0].cantidad < insumo.cantidad_usada) {
         errors.push(`Insumo ${insumo.insumo_id} no tiene suficiente stock`);
       }
@@ -35,22 +25,18 @@ async function validateStock(insumos = [], herramientas = []) {
     }
   }
 
-  // Validar herramientas
   for (const herramienta of herramientasArray) {
     try {
-      // Verificar que herramienta tenga herramienta_id y cantidad_entregada
       if (!herramienta || typeof herramienta !== 'object' || !herramienta.herramienta_id || !herramienta.cantidad_entregada) {
         errors.push(`Herramienta inválida: ${JSON.stringify(herramienta)}`);
         continue;
       }
 
-      // Consultar la base de datos
       const queryResult = await pool.query(
         'SELECT cantidad FROM bodega_herramienta_bodegaherramienta WHERE herramienta_id = $1', 
         [herramienta.herramienta_id]
       );
       
-      // Verificar si hay resultados
       if (queryResult.rows.length === 0 || queryResult.rows[0].cantidad < herramienta.cantidad_entregada) {
         errors.push(`Herramienta ${herramienta.herramienta_id} no tiene suficiente stock`);
       }
@@ -62,9 +48,7 @@ async function validateStock(insumos = [], herramientas = []) {
 
   return errors;
 }
-// Controller object
 export const actividadController = {
-// Get all activities
 async getAll(req, res) {
   try {
     // Consulta principal de actividades
@@ -82,10 +66,8 @@ async getAll(req, res) {
       ORDER BY a.fecha_fin DESC
     `);
     
-    // Obtener las filas de resultados
     const actividades = actividadesResult.rows;
 
-    // Fetch related insumos and herramientas
     for (const actividad of actividades) {
       const insumosResult = await pool.query(`
         SELECT pi.*, i.nombre as insumo_nombre
@@ -116,9 +98,7 @@ async getAll(req, res) {
   }
 }
 ,
-  // Get single activity
 
-  // Create activity
  async create(req, res) {
   const client = await pool.connect();
   try {
@@ -131,12 +111,10 @@ async getAll(req, res) {
       usuarios, insumos, herramientas
     } = req.body;
 
-    // Depuración adicional
     console.log('Desestructurado - Usuarios:', usuarios);
     console.log('Desestructurado - Insumos:', insumos);
     console.log('Desestructurado - Herramientas:', herramientas);
 
-    // Validar entrada
     if (!Array.isArray(usuarios)) {
       throw new Error('Usuarios debe ser un array');
     }
@@ -147,7 +125,6 @@ async getAll(req, res) {
       throw new Error('Herramientas debe ser un array');
     }
 
-    // Validar stock
     console.log('Antes de validateStock - Insumos:', insumos);
     console.log('Antes de validateStock - Herramientas:', herramientas);
     const stockErrors = await validateStock(insumos, herramientas);
@@ -155,7 +132,6 @@ async getAll(req, res) {
       return res.status(400).json({ errors: stockErrors });
     }
 
-    // Crear actividad
     const result = await client.query(`
       INSERT INTO actividades_actividad (
         descripcion, fecha_inicio, fecha_fin, tipo_actividad_id, cultivo_id,
@@ -167,16 +143,13 @@ async getAll(req, res) {
       estado, prioridad, instrucciones_adicionales || null
     ]);
 
-    // Acceder a rows desde el resultado
     const actividad = result.rows[0];
     console.log('Actividad creada:', actividad);
 
-    // Verificar que actividad se creó correctamente
     if (!actividad?.id) {
       throw new Error('No se pudo crear la actividad');
     }
 
-    // Asignar usuarios
     console.log('Antes de procesar usuarios - Usuarios:', usuarios);
     for (const usuarioId of usuarios) {
       await client.query(`
@@ -185,7 +158,6 @@ async getAll(req, res) {
       `, [actividad.id, usuarioId]);
     }
 
-    // Procesar insumos
     console.log('Antes de procesar insumos - Insumos:', insumos);
     if (insumos.length > 0) {
       for (const insumo of insumos) {
@@ -204,7 +176,6 @@ async getAll(req, res) {
       console.log('No hay insumos para procesar');
     }
 
-    // Procesar herramientas
     console.log('Antes de procesar herramientas - Herramientas:', herramientas);
     if (herramientas.length > 0) {
       for (const herramienta of herramientas) {
@@ -242,185 +213,12 @@ async getAll(req, res) {
     client.release();
   }
 },
-  // Update activity
-  async update(req, res) {
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
 
-    const {
-      descripcion, fecha_inicio, fecha_fin, tipo_actividad_id, cultivo_id,
-      estado, prioridad, instrucciones_adicionales, 
-      usuarios = [], insumos = [], herramientas = []
-    } = req.body;
-
-    // Validar que la actividad existe
-    const actividadExistente = await client.query(
-      'SELECT * FROM actividades_actividad WHERE id = $1', 
-      [req.params.id]
-    );
-    
-    if (actividadExistente.rows.length === 0) {
-      return res.status(404).json({ error: 'Actividad no encontrada' });
-    }
-
-    // Validar stock si se están actualizando insumos/herramientas
-    if (insumos.length > 0 || herramientas.length > 0) {
-      const stockErrors = await validateStock(insumos, herramientas);
-      if (stockErrors.length > 0) {
-        return res.status(400).json({ 
-          error: 'Problemas con el stock', 
-          details: stockErrors 
-        });
-      }
-    }
-
-    // Actualizar actividad
-    const actividadUpdate = await client.query(`
-      UPDATE actividades_actividad 
-      SET 
-        descripcion = COALESCE($1, descripcion),
-        fecha_inicio = COALESCE($2, fecha_inicio),
-        fecha_fin = COALESCE($3, fecha_fin),
-        tipo_actividad_id = COALESCE($4, tipo_actividad_id),
-        cultivo_id = COALESCE($5, cultivo_id),
-        estado = COALESCE($6, estado),
-        prioridad = COALESCE($7, prioridad),
-        instrucciones_adicionales = COALESCE($8, instrucciones_adicionales)
-      WHERE id = $9
-      RETURNING *
-    `, [
-      descripcion, fecha_inicio, fecha_fin, tipo_actividad_id, cultivo_id,
-      estado, prioridad, instrucciones_adicionales, req.params.id
-    ]);
-
-    // Actualizar usuarios si se proporcionan
-    if (usuarios !== undefined) {
-      await client.query(
-        'DELETE FROM actividades_actividad_usuarios WHERE actividad_id = $1', 
-        [req.params.id]
-      );
-      
-      if (usuarios.length > 0) {
-        await client.query(
-          'INSERT INTO actividades_actividad_usuarios (actividad_id, usuarios_id) SELECT $1, unnest($2::int[])',
-          [req.params.id, usuarios]
-        );
-      }
-    }
-
-    // Actualizar insumos si se proporcionan
-    if (insumos !== undefined) {
-      // Restaurar stock de insumos anteriores
-      const currentInsumos = await client.query(
-        'SELECT * FROM actividades_prestamoinsumo WHERE actividad_id = $1', 
-        [req.params.id]
-      );
-      
-      for (const insumo of currentInsumos.rows) {
-        await client.query(
-          'UPDATE insumos_insumo SET cantidad = cantidad + $1 WHERE id = $2', 
-          [insumo.cantidad_usada, insumo.insumo_id]
-        );
-      }
-      
-      // Eliminar insumos anteriores
-      await client.query(
-        'DELETE FROM actividades_prestamoinsumo WHERE actividad_id = $1', 
-        [req.params.id]
-      );
-      
-      // Agregar nuevos insumos
-      for (const insumo of insumos) {
-        await client.query(
-          'UPDATE insumos_insumo SET cantidad = cantidad - $1 WHERE id = $2', 
-          [insumo.cantidad_usada, insumo.insumo_id]
-        );
-        
-        await client.query(
-          'INSERT INTO actividades_prestamoinsumo (actividad_id, insumo_id, cantidad_usada, cantidad_devuelta, unidad_medida_id) VALUES ($1, $2, $3, 0, $4)',
-          [req.params.id, insumo.insumo_id, insumo.cantidad_usada, insumo.unidad_medida_id || null]
-        );
-      }
-    }
-
-    // Actualizar herramientas si se proporcionan
-    if (herramientas !== undefined) {
-      // Restaurar stock de herramientas anteriores
-      const currentHerramientas = await client.query(
-        `SELECT * FROM actividades_prestamoherramienta 
-         WHERE actividad_id = $1 AND devuelta = false`, 
-        [req.params.id]
-      );
-      
-      for (const herramienta of currentHerramientas.rows) {
-        await client.query(
-          `UPDATE bodega_herramienta_bodegaherramienta 
-           SET cantidad = cantidad + $1, cantidad_prestada = cantidad_prestada - $1
-           WHERE id = $2`,
-          [herramienta.cantidad_entregada, herramienta.bodega_herramienta_id]
-        );
-      }
-      
-      // Eliminar herramientas anteriores
-      await client.query(
-        'DELETE FROM actividades_prestamoherramienta WHERE actividad_id = $1', 
-        [req.params.id]
-      );
-      
-      // Agregar nuevas herramientas
-      for (const herramienta of herramientas) {
-        const bodega = await client.query(
-          `UPDATE bodega_herramienta_bodegaherramienta 
-           SET cantidad = cantidad - $1, cantidad_prestada = cantidad_prestada + $1
-           WHERE herramienta_id = $2
-           RETURNING id`,
-          [herramienta.cantidad_entregada, herramienta.herramienta_id]
-        );
-        
-        await client.query(
-          `INSERT INTO actividades_prestamoherramienta (
-            actividad_id, herramienta_id, bodega_herramienta_id, 
-            cantidad_entregada, cantidad_devuelta, entregada, devuelta
-          ) VALUES ($1, $2, $3, $4, 0, true, false)`,
-          [
-            req.params.id, 
-            herramienta.herramienta_id, 
-            bodega.rows[0]?.id || null,
-            herramienta.cantidad_entregada
-          ]
-        );
-      }
-    }
-
-    await client.query('COMMIT');
-    
-    // Obtener la actividad actualizada
-    const actividadActualizada = await client.query(
-      'SELECT * FROM actividades_actividad WHERE id = $1', 
-      [req.params.id]
-    );
-    
-    res.status(200).json(actividadActualizada.rows[0]);
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Error in update:', error);
-    res.status(500).json({ 
-      error: 'Error al actualizar la actividad',
-      details: error.message 
-    });
-  } finally {
-    client.release();
-  }
-},
-
-  // Finalize activity
 async finalizar(req, res) {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    // Consultar la actividad
     const actividadResult = await client.query(
       'SELECT * FROM actividades_actividad WHERE id = $1', 
       [req.params.id]
@@ -440,7 +238,6 @@ async finalizar(req, res) {
       return res.status(400).json({ error: 'La fecha de finalización es requerida' });
     }
 
-    // Actualizar estado de la actividad
     await client.query(
       `UPDATE actividades_actividad 
        SET estado = 'COMPLETADA', fecha_fin = $1
@@ -448,7 +245,6 @@ async finalizar(req, res) {
       [req.body.fecha_fin, req.params.id]
     );
 
-    // Actualizar insumos
     await client.query(
       `UPDATE actividades_prestamoinsumo 
        SET cantidad_devuelta = cantidad_usada, fecha_devolucion = $1
@@ -456,7 +252,6 @@ async finalizar(req, res) {
       [req.body.fecha_fin, req.params.id]
     );
 
-    // Actualizar herramientas
     const herramientasResult = await client.query(
       `SELECT * FROM actividades_prestamoherramienta 
        WHERE actividad_id = $1 AND devuelta = false`,
@@ -485,7 +280,6 @@ async finalizar(req, res) {
 
     await client.query('COMMIT');
     
-    // Obtener conteo de insumos devueltos
     const insumosCountResult = await client.query(
       'SELECT COUNT(*) FROM actividades_prestamoinsumo WHERE actividad_id = $1',
       [req.params.id]
@@ -508,13 +302,11 @@ async finalizar(req, res) {
   }
 },
 
-  // Delete activity
  async delete(req, res) {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    // Restaurar stock de insumos
     const insumosResult = await client.query(
       'SELECT * FROM actividades_prestamoinsumo WHERE actividad_id = $1', 
       [req.params.id]
@@ -527,7 +319,6 @@ async finalizar(req, res) {
       );
     }
 
-    // Restaurar stock de herramientas
     const herramientasResult = await client.query(
       'SELECT * FROM actividades_prestamoherramienta WHERE actividad_id = $1 AND devuelta = false', 
       [req.params.id]
@@ -542,7 +333,6 @@ async finalizar(req, res) {
       );
     }
 
-    // Eliminar registros relacionados
     await client.query(
       'DELETE FROM actividades_prestamoinsumo WHERE actividad_id = $1', 
       [req.params.id]
