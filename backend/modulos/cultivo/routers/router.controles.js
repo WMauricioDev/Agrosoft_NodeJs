@@ -45,7 +45,7 @@ const RouterControles = Router();
  *       400:
  *         description: Error en la solicitud
  */
-RouterControles.post("/controles", verificarToken, postControles);
+RouterControles.post("/controles",  postControles);
 
 /**
  * @swagger
@@ -61,7 +61,7 @@ RouterControles.post("/controles", verificarToken, postControles);
  *       401:
  *         description: No autorizado
  */
-RouterControles.get("/controles", verificarToken, getControles);
+RouterControles.get("/controles", getControles);
 
 /**
  * @swagger
