@@ -26,20 +26,20 @@ export const useBodegaHerramienta = () => {
 };
 
 const registrarBodegaHerramienta = async ({
-  bodega_id,
-  herramienta_id,
+  bodega,
+  herramienta,
   cantidad,
-  creador_id,
+  creador,
   cantidad_prestada = 0,
 }: Omit<BodegaHerramienta, "id" | "costo_total">) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
   const payload = {
-    bodega_id,
-    herramienta_id: Number(herramienta_id),
+    bodega,
+    herramienta: Number(herramienta),
     cantidad,
-    creador_id,
+    creador,
     cantidad_prestada,
   };
 
@@ -84,20 +84,20 @@ export const useRegistrarBodegaHerramienta = () => {
 
 const actualizarBodegaHerramienta = async ({
   id,
-  bodega_id,
-  herramienta_id,
+  bodega,
+  herramienta,
   cantidad,
-  creador_id,
+  creador,
   cantidad_prestada,
 }: Omit<BodegaHerramienta, "costo_total">) => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("No se encontró el token de autenticación.");
 
   const payload = {
-    bodega_id,
-    herramienta_id: Number(herramienta_id),
+    bodega,
+    herramienta: Number(herramienta),
     cantidad,
-    creador_id,
+    creador,
     cantidad_prestada,
   };
 

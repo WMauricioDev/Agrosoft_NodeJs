@@ -36,6 +36,7 @@ const ControlPage: React.FC = () => {
   const [openAfeccion, setOpenAfeccion] = useState(false)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+      console.log("🔴 Enviando formulario con datos:", control); // <-- AQUÍ
     mutation.mutate(control);
   };
 

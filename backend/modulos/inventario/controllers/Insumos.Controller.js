@@ -18,13 +18,13 @@ export const registrarTipoInsumo = async (req, res) => {
             nombre,
             descripcion || null,
             creada_por_usuario !== undefined ? creada_por_usuario : false,
-            new Date() // Agrega la fecha actual
+            new Date()
         ];
 
         const { rows } = await pool.query(sql, values);
         res.status(200).json({ message: "Tipo de insumo registrado", id: rows[0].id });
     } catch (error) {
-        if (error.code === '23505') { // Error de violación de unicidad
+        if (error.code === '23505') {
             res.status(400).json({ message: "El nombre del tipo de insumo ya existe" });
         } else {
             res.status(500).json({ message: "Error en el sistema", error: error.message });
@@ -34,7 +34,15 @@ export const registrarTipoInsumo = async (req, res) => {
 
 export const obtenerTiposInsumo = async (req, res) => {
     try {
-        const sql = `SELECT * FROM insumos_tiposinsumo`;
+        const sql = `
+            SELECT 
+                id,
+                nombre,
+                descripcion,
+                creada_por_usuario,
+                TO_CHAR(fecha_creacion, 'YYYY-MM-DD') AS fecha_creacion
+            FROM insumos_tiposinsumo
+        `;
         const { rows } = await pool.query(sql);
 
         res.status(200).json(rows);
@@ -42,8 +50,6 @@ export const obtenerTiposInsumo = async (req, res) => {
         res.status(500).json({ message: "Error al obtener los tipos de insumo", error: error.message });
     }
 };
-
-
 
 export const registrarInsumo = async (req, res) => {
     try {
@@ -76,7 +82,7 @@ export const registrarInsumo = async (req, res) => {
             tipo_empacado || null,
             fecha_caducidad || null,
             precio_insumo || 0.00,
-            new Date() // Fecha de registro actual
+            new Date()
         ];
 
         const { rows } = await pool.query(sql, values);
@@ -85,7 +91,6 @@ export const registrarInsumo = async (req, res) => {
         res.status(500).json({ message: "Error en el sistema", error: error.message });
     }
 };
-
 
 export const listarInsumos = async (req, res) => {
     try {
@@ -99,16 +104,20 @@ export const listarInsumos = async (req, res) => {
                 um.nombre AS unidad_medida_nombre,
                 um.descripcion AS unidad_medida_descripcion,
                 um.creada_por_usuario AS unidad_medida_creada_por_usuario,
-                um.fecha_creacion AS unidad_medida_fecha_creacion,
+                TO_CHAR(um.fecha_creacion, 'YYYY-MM-DD') AS unidad_medida_fecha_creacion,
                 i.tipo_insumo_id,
                 ti.nombre AS tipo_insumo_nombre,
                 ti.descripcion AS tipo_insumo_descripcion,
                 ti.creada_por_usuario AS tipo_insumo_creada_por_usuario,
-                ti.fecha_creacion AS tipo_insumo_fecha_creacion,
+                TO_CHAR(ti.fecha_creacion, 'YYYY-MM-DD') AS tipo_insumo_fecha_creacion,
                 i.activo, 
                 i.tipo_empacado, 
-                i.fecha_registro, 
-                i.fecha_caducidad, 
+                TO_CHAR(i.fecha_registro, 'YYYY-MM-DD') AS fecha_registro, 
+                CASE 
+                    WHEN i.fecha_caducidad IS NOT NULL 
+                    THEN TO_CHAR(i.fecha_caducidad, 'YYYY-MM-DD') 
+                    ELSE NULL 
+                END AS fecha_caducidad,
                 i.precio_insumo
             FROM insumos_insumo i
             LEFT JOIN unidad_medida_unidadmedida um ON i.unidad_medida_id = um.id

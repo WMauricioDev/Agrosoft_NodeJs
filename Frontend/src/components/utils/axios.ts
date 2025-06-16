@@ -3,7 +3,7 @@ import { addToast } from "@heroui/react";
 import { obtenerNuevoToken } from "./refresh"; 
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000", 
+  baseURL: "http://127.0.0.1:3000", 
   headers: {
     "Content-Type": "application/json",
   },

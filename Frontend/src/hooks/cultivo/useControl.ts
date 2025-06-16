@@ -4,7 +4,8 @@ import { Control, ControlDetalle } from "@/types/cultivo/Control";
 import axios from "axios";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}api/cultivo/control/`;
+const API_URL = `${BASE_URL}/api/cultivo/controles/`;
+console.log("URL usada:", API_URL);
 
 const fetchControles = async (): Promise<ControlDetalle[]> => {
   const token = localStorage.getItem("access_token");
@@ -24,6 +25,7 @@ const fetchControl = async (id: number): Promise<ControlDetalle> => {
 
 const crearControl = async (control: Omit<Control, 'id'>) => {
   const token = localStorage.getItem("access_token");
+   console.log("📡 Enviando request al backend:", API_URL);
   return axios.post(API_URL, control, {
     headers: { Authorization: `Bearer ${token}` },
   });
