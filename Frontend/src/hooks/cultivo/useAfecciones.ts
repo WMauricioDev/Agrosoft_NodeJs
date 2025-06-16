@@ -3,7 +3,7 @@ import api from "@/components/utils/axios";
 import { addToast } from "@heroui/react";
 import { Afeccion, AfeccionDetalle } from "@/types/cultivo/Afeccion";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL =`${BASE_URL}/api/cultivo/afecciones`;
+const API_URL =`${BASE_URL}/api/cultivo/afecciones/`;
 
 const fetchAfecciones = async (): Promise<AfeccionDetalle[]> => {
   const token = localStorage.getItem("access_token");
