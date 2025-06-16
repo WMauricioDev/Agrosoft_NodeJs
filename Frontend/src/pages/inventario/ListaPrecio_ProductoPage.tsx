@@ -175,7 +175,7 @@ const ListaPrecioProductoPage: React.FC = () => {
                                             key={cosecha.id}
                                             value={cosecha.id}
                                         >
-                                            {`Cosecha ${cosecha.id_cultivo} - ${cosecha.fecha}`}
+                                            {`Cosecha ${cosecha.id_cultivo_id} - ${cosecha.fecha}`}
                                         </option>
                                     ))}
                                 </select>

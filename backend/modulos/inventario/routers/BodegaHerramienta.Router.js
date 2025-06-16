@@ -1,11 +1,10 @@
 import { Router } from "express";
 import {
-    registrarBodegaHerramienta,
-    listarBodegaHerramienta,
-    actualizarBodegaHerramienta,
-    eliminarBodegaHerramienta,
+  registrarBodegaHerramienta,
+  listarBodegaHerramienta,
+  actualizarBodegaHerramienta,
+  eliminarBodegaHerramienta,
 } from "../controllers/BodegaHerramienta.Controller.js";
-
 import verificarToken from "../../usuarios/middlewares/verificarToken.js";
 
 const rutaBodegaHerramienta = Router();
@@ -35,21 +34,31 @@ const rutaBodegaHerramienta = Router();
  *               items:
  *                 type: object
  *                 properties:
- *                   id_bodegaHerramienta:
+ *                   id:
  *                     type: integer
  *                     example: 1
- *                   id_bodega:
+ *                   bodega_id:
  *                     type: integer
  *                     example: 2
- *                   id_herramienta:
+ *                   herramienta_id:
  *                     type: integer
  *                     example: 3
-
-*                   cantidad_disponible:
+ *                   cantidad:
  *                     type: integer
  *                     example: 10
+ *                   creador_id:
+ *                     type: integer
+ *                     example: 1
+ *                   costo_total:
+ *                     type: number
+ *                     format: float
+ *                     example: 500.00
+ *                   cantidad_prestada:
+ *                     type: integer
+ *                     example: 2
+ *       404:
+ *         description: No hay registros
  */
-rutaBodegaHerramienta.get("/bodega_herramienta", verificarToken, listarBodegaHerramienta);
 
 /**
  * @swagger
@@ -66,24 +75,31 @@ rutaBodegaHerramienta.get("/bodega_herramienta", verificarToken, listarBodegaHer
  *           schema:
  *             type: object
  *             properties:
- *               id_bodega:
+ *               bodega_id:
  *                 type: integer
  *                 example: 2
- *               id_herramienta:
+ *               herramienta_id:
  *                 type: integer
  *                 example: 3
- *               cantidad_disponible:
+ *               cantidad:
  *                 type: integer
  *                 example: 10
+ *               creador_id:
+ *                 type: integer
+ *                 example: 1
+ *               cantidad_prestada:
+ *                 type: integer
+ *                 example: 0
  *     responses:
  *       201:
  *         description: Herramienta registrada correctamente
+ *       400:
+ *         description: Error en los datos proporcionados
  */
-rutaBodegaHerramienta.post("/bodega_herramienta", verificarToken, registrarBodegaHerramienta);
 
 /**
  * @swagger
- * /bodega_herramienta/{id_bodegaHerramienta}:
+ * /bodega_herramienta/{id}:
  *   put:
  *     summary: Actualizar los datos de una herramienta en la bodega
  *     tags: [BodegaHerramienta]
@@ -91,7 +107,7 @@ rutaBodegaHerramienta.post("/bodega_herramienta", verificarToken, registrarBodeg
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id_bodegaHerramienta
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer
@@ -103,24 +119,35 @@ rutaBodegaHerramienta.post("/bodega_herramienta", verificarToken, registrarBodeg
  *           schema:
  *             type: object
  *             properties:
- *               id_bodega:
+ *               bodega_id:
  *                 type: integer
  *                 example: 2
- *               id_herramienta:
+ *               herramienta_id:
  *                 type: integer
  *                 example: 3
- *               cantidad_disponible:
+ *               cantidad:
  *                 type: integer
  *                 example: 15
+ *               creador_id:
+ *                 type: integer
+ *                 example: 1
+ *               costo_total:
+ *                 type: number
+ *                 format: float
+ *                 example: 750.00
+ *               cantidad_prestada:
+ *                 type: integer
+ *                 example: 3
  *     responses:
  *       200:
  *         description: Herramienta actualizada correctamente
+ *       404:
+ *         description: Herramienta no encontrada
  */
-rutaBodegaHerramienta.put("/bodega_herramienta/:id_bodegaHerramienta", verificarToken, actualizarBodegaHerramienta);
 
 /**
  * @swagger
- * /bodega_herramienta/{id_bodegaHerramienta}:
+ * /bodega_herramienta/{id}:
  *   delete:
  *     summary: Eliminar una herramienta de la bodega
  *     tags: [BodegaHerramienta]
@@ -128,7 +155,7 @@ rutaBodegaHerramienta.put("/bodega_herramienta/:id_bodegaHerramienta", verificar
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id_bodegaHerramienta
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer
@@ -136,7 +163,13 @@ rutaBodegaHerramienta.put("/bodega_herramienta/:id_bodegaHerramienta", verificar
  *     responses:
  *       200:
  *         description: Herramienta eliminada correctamente
+ *       404:
+ *         description: Herramienta no encontrada
  */
-rutaBodegaHerramienta.delete("/bodega_herramienta/:id_bodegaHerramienta", verificarToken, eliminarBodegaHerramienta);
+
+rutaBodegaHerramienta.get("/bodega_herramienta", verificarToken, listarBodegaHerramienta);
+rutaBodegaHerramienta.post("/bodega_herramienta", verificarToken, registrarBodegaHerramienta);
+rutaBodegaHerramienta.put("/bodega_herramienta/:id", verificarToken, actualizarBodegaHerramienta);
+rutaBodegaHerramienta.delete("/bodega_herramienta/:id", verificarToken, eliminarBodegaHerramienta);
 
 export default rutaBodegaHerramienta;
