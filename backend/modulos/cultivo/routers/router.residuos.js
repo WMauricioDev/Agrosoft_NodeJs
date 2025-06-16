@@ -32,10 +32,10 @@ const RouterResiduos = Router();
  *           schema:
  *             type: object
  *             properties:
- *               fk_cultivo:
+ *               id_cosecha_id:
  *                 type: integer
- *                 description: ID del cultivo asociado
- *               fk_tipo:
+ *                 description: ID de la cosecha asociada
+ *               id_tipo_residuo_id:
  *                 type: integer
  *                 description: ID del tipo de residuo
  *               nombre:
@@ -48,9 +48,6 @@ const RouterResiduos = Router();
  *                 type: string
  *                 format: date
  *                 description: Fecha de generación del residuo
- *               tipo:
- *                 type: string
- *                 description: Tipo de residuo
  *               cantidad:
  *                 type: number
  *                 description: Cantidad de residuos en kg
@@ -123,10 +120,10 @@ RouterResiduos.get("/residuos/:id", verificarToken, getIdResiduos);
  *           schema:
  *             type: object
  *             properties:
- *               fk_cultivo:
+ *               id_cosecha_id:
  *                 type: integer
- *                 description: ID del cultivo asociado
- *               fk_tipo:
+ *                 description: ID de la cosecha asociada
+ *               id_tipo_residuo_id:
  *                 type: integer
  *                 description: ID del tipo de residuo
  *               nombre:
@@ -139,9 +136,6 @@ RouterResiduos.get("/residuos/:id", verificarToken, getIdResiduos);
  *                 type: string
  *                 format: date
  *                 description: Fecha de actualización del residuo
- *               tipo:
- *                 type: string
- *                 description: Tipo de residuo actualizado
  *               cantidad:
  *                 type: number
  *                 description: Cantidad de residuos actualizada en kg
