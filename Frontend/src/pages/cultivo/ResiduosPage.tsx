@@ -13,8 +13,8 @@ import CustomSpinner from "@/components/globales/Spinner";
 
 const ResiduoPage: React.FC = () => {
   const [residuo, setResiduo] = useState({
-    id_cosecha: 0,
-    id_tipo_residuo: 0,
+    id_cosecha_id: 0,
+    id_tipo_residuo_id: 0,
     nombre: "",
     descripcion: "",
     fecha: "",
@@ -26,7 +26,6 @@ const ResiduoPage: React.FC = () => {
   const { data: tiposResiduos, isLoading: loadingTiposResiduos } = useTipoResiduos();
   const [openCosechaModal, setOpenCosechaModal] = useState(false);
   const [openTipoResiduoModal, setOpenTipoResiduoModal] = useState(false);
-  
   const navigate = useNavigate();
 
   const handleChange = (
@@ -37,21 +36,64 @@ const ResiduoPage: React.FC = () => {
       ...prev,
       [name]: name === "nombre" || name === "descripcion" || name === "fecha"
         ? value
-        : Number(value),
+        : Number(value) || 0,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (residuo.nombre && residuo.id_cosecha && residuo.id_tipo_residuo && residuo.fecha) {
-      mutation.mutate(residuo);
+    if (!residuo.nombre) {
+      addToast({
+        title: "Error",
+        description: "El nombre es obligatorio",
+        timeout: 3000,
+        color: "danger",
+      });
+      return;
     }
+    if (!residuo.id_cosecha_id) {
+      addToast({
+        title: "Error",
+        description: "Seleccione una cosecha",
+        timeout: 3000,
+        color: "danger",
+      });
+      return;
+    }
+    if (!residuo.id_tipo_residuo_id) {
+      addToast({
+        title: "Error",
+        description: "Seleccione un tipo de residuo",
+        timeout: 3000,
+        color: "danger",
+      });
+      return;
+    }
+    if (!residuo.fecha) {
+      addToast({
+        title: "Error",
+        description: "La fecha es obligatoria",
+        timeout: 3000,
+        color: "danger",
+      });
+      return;
+    }
+    if (residuo.cantidad <= 0) {
+      addToast({
+        title: "Error",
+        description: "La cantidad debe ser mayor a 0",
+        timeout: 3000,
+        color: "danger",
+      });
+      return;
+    }
+    mutation.mutate(residuo);
   };
 
   if (loadingCosechas || loadingTiposResiduos) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-200px)]"> 
-        <CustomSpinner 
+      <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+        <CustomSpinner
           label="Cargando datos..."
           variant="wave"
           color="primary"
@@ -76,7 +118,7 @@ const ResiduoPage: React.FC = () => {
           type="text"
           name="nombre"
           value={residuo.nombre}
-          onChange={(e) => setResiduo({... residuo, nombre: e.target.value})}
+          onChange={handleChange}
         />
 
         <ReuInput
@@ -85,7 +127,7 @@ const ResiduoPage: React.FC = () => {
           type="text"
           name="descripcion"
           value={residuo.descripcion}
-          onChange={(e) => setResiduo({... residuo, descripcion: e.target.value})}
+          onChange={handleChange}
         />
 
         <ReuInput
@@ -94,7 +136,7 @@ const ResiduoPage: React.FC = () => {
           type="date"
           name="fecha"
           value={residuo.fecha}
-          onChange={(e) => setResiduo({... residuo, fecha: e.target.value})}
+          onChange={handleChange}
         />
 
         <ReuInput
@@ -103,14 +145,14 @@ const ResiduoPage: React.FC = () => {
           type="number"
           name="cantidad"
           value={residuo.cantidad.toString()}
-          onChange={(e) => setResiduo({... residuo, cantidad: parseInt(e.target.value)})}
+          onChange={handleChange}
         />
 
-        <ModalCosecha 
-          isOpen={openCosechaModal} 
-          onOpenChange={setOpenCosechaModal} 
+        <ModalCosecha
+          isOpen={openCosechaModal}
+          onOpenChange={setOpenCosechaModal}
         />
-        
+
         <ModalTipoResiduo
           isOpen={openTipoResiduoModal}
           onOpenChange={setOpenTipoResiduoModal}
@@ -119,7 +161,7 @@ const ResiduoPage: React.FC = () => {
         <div className="mb-1">
           <div className="flex items-center gap-2 mb-1">
             <label className="block text-sm font-medium text-gray-700">Cosecha</label>
-            <button 
+            <button
               className="p-1 h-6 w-6 flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500"
               onClick={() => setOpenCosechaModal(true)}
               type="button"
@@ -129,8 +171,8 @@ const ResiduoPage: React.FC = () => {
           </div>
 
           <select
-            name="id_cosecha"
-            value={residuo.id_cosecha || ""}
+            name="id_cosecha_id"
+            value={residuo.id_cosecha_id || ""}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
           >
@@ -146,7 +188,7 @@ const ResiduoPage: React.FC = () => {
         <div className="mb-1">
           <div className="flex items-center gap-2 mb-1">
             <label className="block text-sm font-medium text-gray-700">Tipo de Residuo</label>
-            <button 
+            <button
               className="p-1 h-6 w-6 flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500"
               onClick={() => setOpenTipoResiduoModal(true)}
               type="button"
@@ -156,8 +198,8 @@ const ResiduoPage: React.FC = () => {
           </div>
 
           <select
-            name="id_tipo_residuo"
-            value={residuo.id_tipo_residuo || ""}
+            name="id_tipo_residuo_id"
+            value={residuo.id_tipo_residuo_id || ""}
             onChange={handleChange}
             className="block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
           >
@@ -174,7 +216,7 @@ const ResiduoPage: React.FC = () => {
           <button
             className="w-full max-w-md px-4 py-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-all duration-200 shadow-md hover:shadow-lg font-medium text-sm uppercase tracking-wide"
             type="button"
-            onClick={() => navigate("/cultivo/listaresiduo/")}
+            onClick={() => navigate("/cultivo/listaresiduo")}
           >
             Listar Residuos
           </button>

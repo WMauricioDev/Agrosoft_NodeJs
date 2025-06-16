@@ -7,6 +7,8 @@ import ReuModal from '../../components/globales/ReuModal';
 import { ReuInput } from '@/components/globales/ReuInput';
 import Tabla from '@/components/globales/Tabla'; 
 import { EditIcon, Trash2 } from 'lucide-react';
+import { addToast } from '@heroui/react';
+
 const ListaTipoResiduoPage: React.FC = () => {
   const [selectedTipoResiduo, setSelectedTipoResiduo] = useState<TipoResiduo | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -33,6 +35,29 @@ const ListaTipoResiduoPage: React.FC = () => {
     setIsDeleteModalOpen(true);
   };
 
+  const handleConfirmEdit = () => {
+    if (selectedTipoResiduo && selectedTipoResiduo.id !== undefined) {
+      if (!selectedTipoResiduo.nombre) {
+        addToast({
+          title: "Error",
+          description: "El nombre es obligatorio",
+          timeout: 3000,
+          color: "danger",
+        });
+        return;
+      }
+      actualizarMutation.mutate(
+        { id: selectedTipoResiduo.id as number, tipoResiduo: selectedTipoResiduo },
+        {
+          onSuccess: () => {
+            setIsEditModalOpen(false);
+            refetch();
+          },
+        }
+      );
+    }
+  };
+
   const handleConfirmDelete = () => {
     if (selectedTipoResiduo && selectedTipoResiduo.id !== undefined) {
       eliminarMutation.mutate(selectedTipoResiduo.id as number, {
@@ -44,37 +69,37 @@ const ListaTipoResiduoPage: React.FC = () => {
     }
   };
 
-  const transformedData = (tipoResiduos ?? []).map((tipoResiduos) => ({
-    id: tipoResiduos.id?.toString() || '',
-    nombre: tipoResiduos.nombre,
-    descripcion: tipoResiduos.descripcion,
+  const transformedData = (tipoResiduos ?? []).map((tipoResiduo) => ({
+    id: tipoResiduo.id?.toString() || '',
+    nombre: tipoResiduo.nombre,
+    descripcion: tipoResiduo.descripcion || 'Sin descripción',
     acciones: (
       <>
         <button
           className="text-green-500 hover:underline mr-2"
-          onClick={() => handleEdit(tipoResiduos)}
+          onClick={() => handleEdit(tipoResiduo)}
         >
           <EditIcon size={22} color='black'/>
         </button>
         <button
           className="text-red-500 hover:underline"
-          onClick={() => handleDelete(tipoResiduos)}
+          onClick={() => handleDelete(tipoResiduo)}
         >
-        <Trash2   size={22} color='red'/>
-      </button>
+          <Trash2 size={22} color='red'/>
+        </button>
       </>
     ),
   }));
 
   return (
     <DefaultLayout>
-      <h2 className="text-2xl text-center font-bold text-gray-800 mb-6">Tipos de Residuos Registradas</h2><br /><br />
+      <h2 className="text-2xl text-center font-bold text-gray-800 mb-6">Tipos de Residuos Registrados</h2>
       <div className="mb-2 flex justify-start">
         <button
           className="px-3 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg 
                      hover:bg-green-700 transition-all duration-300 ease-in-out 
                      shadow-md hover:shadow-lg transform hover:scale-105"
-          onClick={() => navigate('/cultivo/tipoespecie')} 
+          onClick={() => navigate('/cultivo/tiporesiduo')} // Corregido a la ruta correcta
         >
           + Registrar
         </button>
@@ -89,20 +114,8 @@ const ListaTipoResiduoPage: React.FC = () => {
       <ReuModal
         isOpen={isEditModalOpen}
         onOpenChange={setIsEditModalOpen}
-        title="Editar Tipo de Especie"
-        onConfirm={() => {
-          if (selectedTipoResiduo && selectedTipoResiduo.id !== undefined) {
-            actualizarMutation.mutate(
-              { id: selectedTipoResiduo.id as number, tipoResiduo: selectedTipoResiduo },
-              {
-                onSuccess: () => {
-                  setIsEditModalOpen(false);
-                  refetch();
-                },
-              }
-            );
-          }
-        }}
+        title="Editar Tipo de Residuo" // Corregido el título
+        onConfirm={handleConfirmEdit}
       >
         <ReuInput
           label="Nombre"
@@ -133,15 +146,13 @@ const ListaTipoResiduoPage: React.FC = () => {
       <ReuModal
         isOpen={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
-        title="¿Estás seguro de eliminar esta especie?"
+        title="¿Estás seguro de eliminar este tipo de residuo?"  
         onConfirm={handleConfirmDelete}
       >
         <p>Esta acción es irreversible.</p>
       </ReuModal>
     </DefaultLayout>
   );
-  
-  
 };
 
 export default ListaTipoResiduoPage;

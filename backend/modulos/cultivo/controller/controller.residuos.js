@@ -2,12 +2,12 @@ import pool from "../../usuarios/database/Conexion.js";
 
 export const postResiduos = async (req, res) => {
     try {
-        const { fk_cultivo, fk_tipo, nombre, descripcion, fecha, tipo, cantidad } = req.body;
-        if (!fk_cultivo || !fk_tipo || !tipo || !cantidad || !fecha) {
-            return res.status(400).json({ "message": "fk_cultivo, fk_tipo, tipo, cantidad y fecha son campos requeridos" });
+        const { id_cosecha_id, id_tipo_residuo_id, nombre, descripcion, fecha, cantidad } = req.body;
+        if (!id_cosecha_id || !id_tipo_residuo_id || !cantidad || !fecha) {
+            return res.status(400).json({ "message": "id_cosecha_id, id_tipo_residuo_id, cantidad y fecha son campos requeridos" });
         }
-        const sql = "INSERT INTO residuos (fk_cultivo, fk_tipo, nombre, descripcion, fecha, tipo, cantidad) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
-        const result = await pool.query(sql, [fk_cultivo, fk_tipo, nombre, descripcion, fecha, tipo, cantidad]);
+        const sql = "INSERT INTO residuos_residuo (id_cosecha_id, id_tipo_residuo_id, nombre, descripcion, fecha, cantidad) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
+        const result = await pool.query(sql, [id_cosecha_id, id_tipo_residuo_id, nombre, descripcion, fecha, cantidad]);
         if (result.rows.length > 0) {
             return res.status(201).json({ 
                 "message": "Residuo registrado correctamente",
@@ -23,7 +23,7 @@ export const postResiduos = async (req, res) => {
 
 export const getResiduos = async (req, res) => {
     try {
-        const sql = "SELECT * FROM residuos ORDER BY fecha DESC";
+        const sql = "SELECT * FROM residuos_residuo ORDER BY fecha DESC";
         const result = await pool.query(sql);
         return res.status(200).json(result.rows);
     } catch (error) {
@@ -35,7 +35,7 @@ export const getResiduos = async (req, res) => {
 export const getIdResiduos = async (req, res) => {
     try {
         const { id } = req.params;
-        const sql = "SELECT * FROM residuos WHERE id = $1";
+        const sql = "SELECT * FROM residuos_residuo WHERE id = $1";
         const result = await pool.query(sql, [id]);
         if (result.rows.length > 0) {
             return res.status(200).json(result.rows[0]);
@@ -51,12 +51,12 @@ export const getIdResiduos = async (req, res) => {
 export const updateResiduos = async (req, res) => {
     try {
         const { id } = req.params;
-        const { fk_cultivo, fk_tipo, nombre, descripcion, fecha, tipo, cantidad } = req.body;
-        if (!fk_cultivo || !fk_tipo || !tipo || !cantidad || !fecha) {
-            return res.status(400).json({ "message": "fk_cultivo, fk_tipo, tipo, cantidad y fecha son campos requeridos" });
+        const { id_cosecha_id, id_tipo_residuo_id, nombre, descripcion, fecha, cantidad } = req.body;
+        if (!id_cosecha_id || !id_tipo_residuo_id || !cantidad || !fecha) {
+            return res.status(400).json({ "message": "id_cosecha_id, id_tipo_residuo_id, cantidad y fecha son campos requeridos" });
         }
-        const sql = "UPDATE residuos SET fk_cultivo = $1, fk_tipo = $2, nombre = $3, descripcion = $4, fecha = $5, tipo = $6, cantidad = $7 WHERE id = $8";
-        const result = await pool.query(sql, [fk_cultivo, fk_tipo, nombre, descripcion, fecha, tipo, cantidad, id]);
+        const sql = "UPDATE residuos_residuo SET id_cosecha_id = $1, id_tipo_residuo_id = $2, nombre = $3, descripcion = $4, fecha = $5, cantidad = $6 WHERE id = $7";
+        const result = await pool.query(sql, [id_cosecha_id, id_tipo_residuo_id, nombre, descripcion, fecha, cantidad, id]);
         if (result.rowCount > 0) {
             return res.status(200).json({ "message": "Residuo actualizado correctamente" });
         }
@@ -70,7 +70,7 @@ export const updateResiduos = async (req, res) => {
 export const deleteResiduos = async (req, res) => {
     try {
         const { id } = req.params;
-        const sql = "DELETE FROM residuos WHERE id = $1";
+        const sql = "DELETE FROM residuos_residuo WHERE id = $1";
         const result = await pool.query(sql, [id]);
         if (result.rowCount > 0) {
             return res.status(200).json({ "message": "Residuo eliminado correctamente" });
