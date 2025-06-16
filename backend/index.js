@@ -62,8 +62,11 @@ import Mapa from "./modulos/cultivo/routers/router.mapa.js"
 import UsuariosPDF from "./modulos/reportes/usuarios/routers/routerReporteUsuarios.js"
 import BancalesPDF from './modulos/reportes/cultivo/routers/routerReporteBancal.js';
 import LotesPDF from './modulos/reportes/cultivo/routers/routerReporteLote.js';
-
-
+import RouterCosechasPDF from './modulos/reportes/cultivo/routers/routerReporteCosechas.js';
+import RouterActividadesPDF from './modulos/reportes/cultivo/routers/routerReporteActividades.js';
+import RouterCultivoPDF from './modulos/reportes/cultivo/routers/routerReporteCultivo.js';
+import RouterEspeciesPDF from './modulos/reportes/cultivo/routers/routerReporteEspeciesTipos.js';
+import RouterPagoPDF from './modulos/reportes/finanzas/routers/routerReportePago.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -141,6 +144,11 @@ app.use('/api', Mapa);
 app.use("/usuarios",UsuariosPDF)
 app.use("/cultivo" ,BancalesPDF)
 app.use("/cultivo",LotesPDF)
+app.use('/cultivo', RouterCosechasPDF);
+app.use('/cultivo', RouterActividadesPDF);
+app.use('/cultivo', RouterCultivoPDF);
+app.use('/cultivo', RouterEspeciesPDF);
+app.use('/finanzas', RouterPagoPDF);
 
 // Swagger Docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
