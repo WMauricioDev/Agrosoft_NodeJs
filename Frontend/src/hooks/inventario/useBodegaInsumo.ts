@@ -35,8 +35,8 @@ const registrarBodegaInsumo = async (bodegaInsumo: Omit<BodegaInsumo, "id">) => 
     if (!token) throw new Error("No se encontró el token de autenticación.");
 
     const payload = {
-        bodega_id: Number(bodegaInsumo.bodega_id),
-        insumo_id: Number(bodegaInsumo.insumo_id),
+        bodega: Number(bodegaInsumo.bodega),
+        insumo: Number(bodegaInsumo.insumo),
         cantidad: Number(bodegaInsumo.cantidad),
     };
 
@@ -94,8 +94,8 @@ const actualizarBodegaInsumo = async (id: number, bodegaInsumo: Omit<BodegaInsum
     if (!token) throw new Error("No se encontró el token de autenticación.");
 
     const payload = {
-        bodega: Number(bodegaInsumo.bodega_id),
-        insumo: Number(bodegaInsumo.insumo_id),
+        bodega: Number(bodegaInsumo.bodega),
+        insumo: Number(bodegaInsumo.insumo),
         cantidad: Number(bodegaInsumo.cantidad),
     };
 

@@ -39,7 +39,7 @@ import Bodega_Herramienta from './modulos/inventario/routers/BodegaHerramienta.R
 import Bodega_Insumo from './modulos/inventario/routers/BodegaInsumo.Router.js';
 import Herramientas from './modulos/inventario/routers/Herramientas.Router.js';
 import Insumos from './modulos/inventario/routers/Insumos.Router.js';
-import precio from './modulos/inventario/routers/precio_producto.router.js';
+import precio_producto from './modulos/inventario/routers/precio_producto.router.js';
 
 // Rutas del módulo IoT
 import sensores from './modulos/IoT/routers/sensorRoutes.js';
@@ -108,7 +108,7 @@ app.use('/api/inv', Bodega_Herramienta);
 app.use('/api/inv', Bodega_Insumo);
 app.use('/api/inv', Herramientas);
 app.use('/api/inv', Insumos);
-app.use('/api/inv', precio);
+app.use('/api/inv', precio_producto);
 
 // Rutas del módulo IoT
 app.use('/api/iot', sensores);

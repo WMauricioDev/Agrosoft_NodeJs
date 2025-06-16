@@ -2,22 +2,34 @@ import pool from "../../usuarios/database/Conexion.js";
 
 export const registrarBodegaInsumo = async (req, res) => {
     try {
-        const { bodega_id, insumo_id, cantidad } = req.body;
+        const { bodega, insumo, cantidad } = req.body;
 
-        if (!bodega_id || !insumo_id || !cantidad || cantidad < 1) {
-            return res.status(400).json({ message: "bodega_id, insumo_id y cantidad (entero positivo) son requeridos" });
+        if (!bodega || !insumo || !cantidad || cantidad < 1) {
+            return res.status(400).json({ message: "bodega, insumo y cantidad (entero positivo) son requeridos" });
+        }
+
+        // Validar que bodega existe
+        const bodegaCheck = await pool.query("SELECT id FROM bodega_bodega WHERE id = $1", [bodega]);
+        if (bodegaCheck.rowCount === 0) {
+            return res.status(400).json({ message: "bodega no válido" });
+        }
+
+        // Validar que insumo existe
+        const insumoCheck = await pool.query("SELECT id FROM insumos_insumo WHERE id = $1", [insumo]);
+        if (insumoCheck.rowCount === 0) {
+            return res.status(400).json({ message: "insumo no válido" });
         }
 
         const sql = `
             INSERT INTO bodega_insumo_bodegainsumo (bodega_id, insumo_id, cantidad)
             VALUES ($1, $2, $3) RETURNING id
         `;
-        const { rows } = await pool.query(sql, [bodega_id, insumo_id, cantidad]);
+        const { rows } = await pool.query(sql, [bodega, insumo, cantidad]);
 
         res.status(201).json({ message: "Bodega-Insumo registrado", id: rows[0].id });
     } catch (error) {
         if (error.code === "23503") { // Error de violación de clave foránea en PostgreSQL
-            res.status(400).json({ message: "bodega_id o insumo_id no válido" });
+            res.status(400).json({ message: "bodega o insumo no válido" });
         } else {
             console.error(error);
             res.status(500).json({ message: "Error en el sistema", error: error.message });
@@ -29,9 +41,13 @@ export const listarBodegaInsumo = async (req, res) => {
     try {
         const sql = `
             SELECT 
-               *
-            FROM bodega_insumo_bodegainsumo
-           
+                bi.id AS id,
+                bi.bodega_id AS bodega,
+                bi.insumo_id AS insumo,
+                bi.cantidad AS cantidad
+            FROM bodega_insumo_bodegainsumo bi
+            INNER JOIN bodega_bodega b ON bi.bodega_id = b.id
+            INNER JOIN insumos_insumo i ON bi.insumo_id = i.id
         `;
 
         const { rows } = await pool.query(sql);
@@ -48,6 +64,7 @@ export const listarBodegaInsumo = async (req, res) => {
 };
 
 export const eliminarBodegaInsumo = async (req, res) => {
+    console.log(`📌 Solicitud DELETE recibida para ID: ${req.params.id}`);
     try {
         const { id } = req.params;
         const sql = `DELETE FROM bodega_insumo_bodegainsumo WHERE id = $1`;
@@ -65,13 +82,23 @@ export const eliminarBodegaInsumo = async (req, res) => {
 };
 
 export const actualizarBodegaInsumo = async (req, res) => {
+    console.log(`📌 Solicitud PUT recibida para ID: ${req.params.id}, Payload:`, req.body);
     try {
-        const { bodega_id, insumo_id, cantidad } = req.body;
+        const { bodega, insumo, cantidad } = req.body;
         const { id } = req.params;
 
-        // Validar que los campos requeridos estén presentes
-        if (!bodega_id || !insumo_id || !cantidad || cantidad < 1) {
-            return res.status(400).json({ message: "bodega_id, insumo_id y cantidad (entero positivo) son requeridos" });
+        if (!bodega || !insumo || !cantidad || cantidad < 1) {
+            return res.status(400).json({ message: "bodega, insumo y cantidad (entero positivo) son requeridos" });
+        }
+
+        const bodegaCheck = await pool.query("SELECT id FROM bodega_bodega WHERE id = $1", [bodega]);
+        if (bodegaCheck.rowCount === 0) {
+            return res.status(400).json({ message: "bodega no válido" });
+        }
+
+        const insumoCheck = await pool.query("SELECT id FROM insumos_insumo WHERE id = $1", [insumo]);
+        if (insumoCheck.rowCount === 0) {
+            return res.status(400).json({ message: "insumo no válido" });
         }
 
         const sql = `
@@ -79,7 +106,7 @@ export const actualizarBodegaInsumo = async (req, res) => {
             SET bodega_id = $1, insumo_id = $2, cantidad = $3
             WHERE id = $4
         `;
-        const { rowCount } = await pool.query(sql, [bodega_id, insumo_id, cantidad, id]);
+        const { rowCount } = await pool.query(sql, [bodega, insumo, cantidad, id]);
         
         if (rowCount > 0) {
             res.status(200).json({ message: "Bodega-Insumo actualizado" });
@@ -87,8 +114,8 @@ export const actualizarBodegaInsumo = async (req, res) => {
             res.status(404).json({ message: "Bodega-Insumo no encontrado" });
         }
     } catch (error) {
-        if (error.code === "23503") { // Error de violación de clave foránea en PostgreSQL
-            res.status(400).json({ message: "bodega_id o insumo_id no válido" });
+        if (error.code === "23503") {
+            res.status(400).json({ message: "bodega o insumo no válido" });
         } else {
             console.error(error);
             res.status(500).json({ message: "Error en el sistema", error: error.message });

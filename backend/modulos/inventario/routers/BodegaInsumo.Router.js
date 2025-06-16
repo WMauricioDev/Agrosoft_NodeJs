@@ -35,18 +35,20 @@ const rutaBodegaInsumo = Router();
  *               items:
  *                 type: object
  *                 properties:
- *                   id_bodega_insumo:
+ *                   id:
  *                     type: integer
  *                     example: 1
- *                   nombre_bodega:
- *                     type: string
- *                     example: "Bodega Central"
- *                   nombre_insumo:
- *                     type: string
- *                     example: "Clavos"
- *                   cantidad_disponible:
+ *                   bodega:
+ *                     type: integer
+ *                     example: 1
+ *                   insumo:
+ *                     type: integer
+ *                     example: 1
+ *                   cantidad:
  *                     type: integer
  *                     example: 500
+ *       404:
+ *         description: No hay registros en Bodega-Insumo
  */
 rutaBodegaInsumo.get("/bodega_insumo", verificarToken, listarBodegaInsumo);
 
@@ -65,24 +67,37 @@ rutaBodegaInsumo.get("/bodega_insumo", verificarToken, listarBodegaInsumo);
  *           schema:
  *             type: object
  *             properties:
- *               id_bodega:
+ *               bodega:
  *                 type: integer
- *                 example: 2
- *               id_insumo:
+ *                 example: 1
+ *               insumo:
  *                 type: integer
- *                 example: 3
- *               cantidad_disponible:
+ *                 example: 1
+ *               cantidad:
  *                 type: integer
  *                 example: 500
  *     responses:
  *       201:
  *         description: Insumo registrado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Bodega-Insumo registrado"
+ *                 id:
+ *                   type: integer
+ *                   example: 1
+ *       400:
+ *         description: Datos inválidos o incompletos
  */
 rutaBodegaInsumo.post("/bodega_insumo", verificarToken, registrarBodegaInsumo);
 
 /**
  * @swagger
- * /bodega_insumo/{id_bodega_insumo}:
+ * /bodega_insumo/{id}:
  *   put:
  *     summary: Actualizar los datos de un insumo en la bodega
  *     tags: [BodegaInsumo]
@@ -90,11 +105,11 @@ rutaBodegaInsumo.post("/bodega_insumo", verificarToken, registrarBodegaInsumo);
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id_bodega_insumo
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del insumo a actualizar
+ *         description: ID del registro de bodega-insumo a actualizar
  *     requestBody:
  *       required: true
  *       content:
@@ -102,24 +117,36 @@ rutaBodegaInsumo.post("/bodega_insumo", verificarToken, registrarBodegaInsumo);
  *           schema:
  *             type: object
  *             properties:
- *               id_bodega:
+ *               bodega:
  *                 type: integer
- *                 example: 2
- *               id_insumo:
+ *                 example: 1
+ *               insumo:
  *                 type: integer
- *                 example: 3
- *               cantidad_disponible:
+ *                 example: 1
+ *               cantidad:
  *                 type: integer
  *                 example: 300
  *     responses:
  *       200:
  *         description: Insumo actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Bodega-Insumo actualizado"
+ *       404:
+ *         description: Bodega-Insumo no encontrado
+ *       400:
+ *         description: Datos inválidos o incompletos
  */
-rutaBodegaInsumo.put("/bodega_insumo/:id_bodega_insumo", verificarToken, actualizarBodegaInsumo);
+rutaBodegaInsumo.put("/bodega_insumo/:id", verificarToken, actualizarBodegaInsumo);
 
 /**
  * @swagger
- * /bodega_insumo/{id_bodega_insumo}:
+ * /bodega_insumo/{id}:
  *   delete:
  *     summary: Eliminar un insumo de la bodega
  *     tags: [BodegaInsumo]
@@ -127,15 +154,25 @@ rutaBodegaInsumo.put("/bodega_insumo/:id_bodega_insumo", verificarToken, actuali
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id_bodega_insumo
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del insumo a eliminar
+ *         description: ID del registro de bodega-insumo a eliminar
  *     responses:
  *       200:
  *         description: Insumo eliminado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Bodega-Insumo eliminado"
+ *       404:
+ *         description: Bodega-Insumo no encontrado
  */
-rutaBodegaInsumo.delete("/bodega_insumo/:id_bodega_insumo", verificarToken, eliminarBodegaInsumo);
+rutaBodegaInsumo.delete("/bodega_insumo/:id", verificarToken, eliminarBodegaInsumo);
 
 export default rutaBodegaInsumo;
