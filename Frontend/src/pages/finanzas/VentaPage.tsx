@@ -5,20 +5,23 @@ import { useVenta } from "@/hooks/finanzas/useVenta";
 import { ReuInput } from "@/components/globales/ReuInput";
 import { DetalleVenta } from "@/types/finanzas/Venta";
 import { usePreciosProductos } from "@/hooks/inventario/usePrecio_Producto";
-import { PrecioProducto, UnidadMedida } from "@/types/inventario/Precio_producto";
 import Tabla from "@/components/globales/Tabla";
 import { Trash2, Edit, Plus, ArrowLeft, Printer, List, ShoppingCart } from 'lucide-react';
 import { PagoModal } from "@/components/finanzas/PagoModal";
 import { TiqueteModal } from "@/components/finanzas/TiqueteModal";
 import { useUnidadesMedida } from "@/hooks/inventario/useInsumo";
 import { ModalUnidadMedida } from "@/components/cultivo/ModalUnidadMedida";
-import { addToast } from "@heroui/toast";
+import { addToast } from "@heroui/react";
+
 const VentaPage: React.FC = () => {
   const [detalle, setDetalle] = useState<DetalleVenta>({
-    producto_id: 0,
+    producto: 0,
     cantidad: 0,
-    unidades_de_medida_id: 0,
+    unidades_de_medida: 0,
     total: 0,
+    producto_nombre: '',
+    precio_unitario: 0,
+    unidad_medida: ''
   });
 
   const [detallesAgregados, setDetallesAgregados] = useState<DetalleVenta[]>([]);
@@ -26,76 +29,79 @@ const VentaPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTiqueteModalOpen, setIsTiqueteModalOpen] = useState(false);
   const [ventaIdForTiquete, setVentaIdForTiquete] = useState<number | null>(null);
-  const { registrarVenta, isRegistrando } = useVenta();
-  const { agregarDetalleVenta } = useVenta();
-  const { data: precio_producto, isLoading: precioProductoLoading } = usePreciosProductos();
+  const { registrarVenta, isRegistrando, agregarDetalleVenta } = useVenta();
+  const { data: precioProducto, isLoading: precioProductoLoading, error: precioProductoError } = usePreciosProductos();
   const navigate = useNavigate();
-  const { data: unidadesMedida, isLoading: loadingUnidadesMedida } = useUnidadesMedida();
+  const { data: unidadesMedida, isLoading: unidadMedidaLoading } = useUnidadesMedida();
   const [openUnidadesMedidaModal, setOpenUnidadesMedidaModal] = useState(false);
 
   const handleChange = (field: keyof DetalleVenta) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { value } = e.target;
+    console.log(`Cambiando ${field} a ${value} (tipo: ${typeof value})`); // DEBUG
     setDetalle((prev) => ({
       ...prev,
-      [field]: field === "cantidad" || field === "producto_id" || field === "unidades_de_medida_id" 
+      [field]: field === "cantidad" || field === "producto" || field === "unidades_de_medida" 
         ? Number(value) 
         : value,
     }));
   };
 
-const agregarDetalle = () => {
- const productoSeleccionado = precio_producto?.find(
-  p => Number(p.id) === Number(detalle.producto_id)
-);
+  const agregarDetalle = () => {
+    console.log("agregarDetalle called with detalle:", detalle); // DEBUG
+    if (!precioProducto || precioProducto.length === 0) {
+      console.log("No hay productos disponibles"); // DEBUG
+      addToast({
+        title: "Error",
+        description: "No hay productos disponibles",
+        color: "danger",
+      });
+      return;
+    }
 
-  if (!productoSeleccionado) {
-    addToast({
-      title: "Producto inválido",
-      description: "Seleccione un producto válido.",
-      timeout: 3000,
-      color: "danger",
-    });
-    return;
-  }
+    if (detalle.producto === 0) {
+      console.log("Producto no seleccionado"); // DEBUG
+      addToast({
+        title: "Error",
+        description: "Por favor, selecciona un producto",
+        color: "danger",
+      });
+      return;
+    }
 
-  console.log("Producto válido seleccionado:", productoSeleccionado);
+    // Convertir p.id a número para manejar IDs como cadenas
+    const productoSeleccionado = precioProducto.find(p => Number(p.id) === detalle.producto);
+    if (!productoSeleccionado) {
+      console.log("Producto no encontrado para ID:", detalle.producto, "en precioProducto:", precioProducto); // DEBUG
+      addToast({
+        title: "Error",
+        description: `Producto no encontrado para ID ${detalle.producto}`,
+        color: "danger",
+      });
+      return;
+    }
 
-  if (detalle.cantidad > productoSeleccionado.stock) {
-    addToast({
-      title: "Stock insuficiente",
-      description: `La cantidad solicitada (${detalle.cantidad}) excede el stock disponible (${productoSeleccionado.stock}).`,
-      timeout: 3000,
-      color: "warning",
-    });
-    return;
-  }
-
-  if (detalle.unidades_de_medida_id === 0) {
-    addToast({
-      title: "Unidad no seleccionada",
-      description: "Seleccione una unidad de medida.",
-      timeout: 3000,
-      color: "danger",
-    });
-    return;
-  }
-
-  agregarDetalleVenta(
-    detalle,
-    detallesAgregados,
-    editIndex,
-    productoSeleccionado,
-    setDetallesAgregados,
-    setEditIndex,
-    () =>
-      setDetalle({
-        producto_id: 0,
-        cantidad: 0,
-        unidades_de_medida_id: 0,
-        total: 0,
-      })
-  );
-};
+    console.log("Llamando a agregarDetalleVenta con productoSeleccionado:", productoSeleccionado); // DEBUG
+    agregarDetalleVenta(
+      detalle,
+      detallesAgregados,
+      editIndex,
+      productoSeleccionado,
+      setDetallesAgregados,
+      setEditIndex,
+      () => {
+        console.log("Reseteando detalle"); // DEBUG
+        setDetalle({
+          producto: 0,
+          cantidad: 0,
+          unidades_de_medida: 0,
+          total: 0,
+          producto_nombre: '',
+          precio_unitario: 0,
+          unidad_medida: ''
+        });
+      }
+    );
+  };
 
   const handleEdit = (index: number) => {
     const detalleAEditar = detallesAgregados[index];
@@ -109,7 +115,7 @@ const agregarDetalle = () => {
   };
 
   const columns = [
-    { name: "Producto", uid: "nombre_producto" },
+    { name: "Producto", uid: "producto" },
     { name: "Cantidad", uid: "cantidad" },
     { name: "Unidad", uid: "unidad" },
     { name: "Precio Unitario", uid: "precio" },
@@ -117,74 +123,70 @@ const agregarDetalle = () => {
     { name: "Acciones", uid: "acciones" },
   ];
   
-const transformedData = detallesAgregados.map((detalle, index) => {
-  const productoSeleccionado = precio_producto?.find(
-    (p) => Number(p.Producto_id) === Number(detalle.producto_id)
-  );
-
-  const nombre_producto = productoSeleccionado?.nombre_producto || "Desconocido";
-  const unidad = unidadesMedida?.find(u => u.id === detalle.unidades_de_medida_id)?.nombre || "unidad";
-  const precio_unitario = productoSeleccionado?.precio || 0;
-  const total = detalle.total || 0;
-
-  return {
-    id: index,
-    nombre_producto,
-    cantidad: detalle.cantidad,
-    unidad,
-    precio_unitario,
-    total,          acciones: (
-        <div className="flex gap-2">
-          <button
-            className="p-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
-            onClick={() => handleEdit(index)}
-            title="Editar"
-          >
-            <Edit size={18} />
-          </button>
-          <button
-            className="p-1.5 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-            onClick={() => handleDelete(index)}
-            title="Eliminar"
-          >
-            <Trash2 size={18} />
-          </button>
-        </div>
-      ),
-    };
-  });
+  const transformedData = detallesAgregados.map((detalle, index) => ({
+    id: index.toString(),
+    producto: detalle.producto_nombre || "Desconocido",
+    cantidad: detalle.cantidad.toString(),
+    unidad: detalle.unidad_medida || "unidad",
+    precio: `$${detalle.precio_unitario.toFixed(2)}`,
+    total: `$${detalle.total.toFixed(2)}`,
+    acciones: (
+      <div className="flex gap-2">
+        <button
+          className="p-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+          onClick={() => handleEdit(index)}
+          title="Editar"
+        >
+          <Edit size={18} />
+        </button>
+        <button
+          className="p-1.5 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+          onClick={() => handleDelete(index)}
+          title="Eliminar"
+        >
+          <Trash2 size={18} />
+        </button>
+      </div>
+    ),
+  }));
 
   const calcularTotalVenta = () => {
     return detallesAgregados.reduce((sum, item) => sum + (item.total || 0), 0);
   };
 
   const handleFinalizarVenta = (montoEntregado: number) => {
-    const fechaActual = new Date().toISOString();
-    
-    registrarVenta(
-      {
-        fecha: fechaActual,
-        monto_entregado: montoEntregado,
-        cambio: montoEntregado - calcularTotalVenta(),
-        detalles: detallesAgregados
-      }, 
-      {
-        onSuccess: (ventaRegistrada) => {
-          setDetallesAgregados([]);
-          setDetalle({
-            producto_id: 0,
-            cantidad: 0,
-            unidades_de_medida_id: 0,
-            total: 0,
-          });
-          setIsModalOpen(false);
-          
-          setVentaIdForTiquete(ventaRegistrada.id ?? null);
-          setIsTiqueteModalOpen(true);
-        },
-      }
-    );
+    registrarVenta({
+      monto_entregado: montoEntregado,
+      detalles: detallesAgregados
+    }).then((ventaRegistrada) => {
+      setDetallesAgregados([]);
+      setDetalle({
+        producto: 0,
+        cantidad: 0,
+        unidades_de_medida: 0,
+        total: 0,
+        producto_nombre: '',
+        precio_unitario: 0,
+        unidad_medida: ''
+      });
+      setIsModalOpen(false);
+      setVentaIdForTiquete(ventaRegistrada.id);
+      setIsTiqueteModalOpen(true);
+    });
   };
+
+  // Depuración adicional para precioProducto
+  React.useEffect(() => {
+    console.log("precioProducto:", precioProducto); // DEBUG
+    if (precioProductoError) {
+      console.error("Error en usePreciosProductos:", precioProductoError); // DEBUG
+      addToast({
+        title: "Error",
+        description: "No se pudieron cargar los productos",
+        color: "danger",
+      });
+    }
+  }, [precioProducto, precioProductoError]);
 
   return (
     <DefaultLayout>
@@ -234,24 +236,22 @@ const transformedData = detallesAgregados.map((detalle, index) => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Producto *</label>
                 <select
-                  name="producto_id"
-                  value={detalle.producto_id || ""}
-                  onChange={handleChange("producto_id")}
+                  name="producto"
+                  value={detalle.producto || 0}
+                  onChange={handleChange("producto")}
                   className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
                   disabled={precioProductoLoading}
                 >
                   <option value="0">Seleccione un producto</option>
-                  {precio_producto?.map((producto) => (
-                    <option key={producto.id} value={producto.id}>
-                      {producto.id || 'Producto'} - ${producto.precio?.toFixed(2) || '0.00'}
+                  {precioProducto?.map((producto) => (
+                    <option key={producto.id} value={Number(producto.id)}>
+                      {producto.nombre_cultivo || producto.nombre_producto || 'Producto'} - ${Number(producto.precio).toFixed(2)}
                     </option>
                   ))}
                 </select>
               </div>
 
               {/* Cantidad */}
-
-              
               <div>
                 <ReuInput
                   label="Cantidad *"
@@ -259,20 +259,17 @@ const transformedData = detallesAgregados.map((detalle, index) => {
                   type="number"
                   min="1"
                   value={String(detalle.cantidad)}
-                  onChange={(e) => setDetalle({...detalle, cantidad: parseInt(e.target.value) || 0})}
+                  onChange={(e) => {
+                    console.log("Cantidad cambiada a:", e.target.value); // DEBUG
+                    setDetalle({...detalle, cantidad: parseInt(e.target.value) || 0})
+                  }}
                 />
-
-                    {detalle.producto_id !== 0 && (
-           <p className="text-sm text-gray-500 mt-1">
-           Stock disponible: {
-              precio_producto?.find(p => Number (p.id) === Number(detalle.producto_id))?.stock ?? 'N/A'
-            }
-          </p>
-        )}
+                {detalle.producto !== 0 && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Stock disponible: {precioProducto?.find(p => Number(p.id) === detalle.producto)?.stock ?? 'N/A'}
+                  </p>
+                )}
               </div>
-                  
-                  
-
 
               {/* Unidad de medida */}
               <div>
@@ -288,10 +285,10 @@ const transformedData = detallesAgregados.map((detalle, index) => {
                   </button>
                 </div>
                 <select
-                  value={detalle.unidades_de_medida_id}
-                  onChange={handleChange("unidades_de_medida_id")}
+                  value={detalle.unidades_de_medida}
+                  onChange={handleChange("unidades_de_medida")}
                   className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  disabled={loadingUnidadesMedida}
+                  disabled={unidadMedidaLoading}
                 >
                   <option value="0">Seleccione una unidad</option>
                   {unidadesMedida?.map((unidad) => (
@@ -306,15 +303,12 @@ const transformedData = detallesAgregados.map((detalle, index) => {
             <div className="mt-6 flex justify-end">
               <button
                 className={`px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all ${
-                  detalle.producto_id === 0 || detalle.cantidad <= 0
+                  detalle.producto === 0 || detalle.cantidad <= 0 || detalle.unidades_de_medida === 0 || precioProductoLoading
                     ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                     : "bg-green-600 text-white hover:bg-green-700 shadow-md hover:shadow-lg"
                 }`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  agregarDetalle();
-                }}
-                disabled={detalle.producto_id === 0 || detalle.cantidad <= 0}
+                onClick={() => agregarDetalle()}
+                disabled={detalle.producto === 0 || detalle.cantidad <= 0 || detalle.unidades_de_medida === 0 || precioProductoLoading}
               >
                 {editIndex !== null ? (
                   <>

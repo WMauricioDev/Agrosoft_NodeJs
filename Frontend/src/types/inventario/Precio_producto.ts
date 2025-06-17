@@ -9,7 +9,7 @@ export interface UnidadMedida {
 export interface PrecioProducto {
   id: number;
   Producto_id: number; 
-  nombre_producto: string;
+  nombre_cultivo: string;
   unidad_medida: UnidadMedida | null;
   precio: number | string; 
   fecha_registro: string;

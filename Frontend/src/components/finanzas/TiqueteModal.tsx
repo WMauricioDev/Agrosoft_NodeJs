@@ -60,7 +60,6 @@ export const TiqueteModal: React.FC<TiqueteModalProps> = ({
       onOpenChange={onOpenChange}
       title="Imprimir Tiquete"
       size="lg"
-      hideFooter
     >
       <div className="space-y-4">
         {isLoading && (
