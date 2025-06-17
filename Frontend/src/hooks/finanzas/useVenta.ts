@@ -6,7 +6,7 @@ import { Venta, DetalleVenta } from "@/types/finanzas/Venta";
 import { PrecioProducto } from "@/types/inventario/Precio_producto";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}api/fin/venta/`;
+const API_URL = `${BASE_URL}/api/fin/venta/`;
 
 interface CreateVentaData {
   fecha?: string;

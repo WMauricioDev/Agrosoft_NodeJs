@@ -5,13 +5,14 @@ import { useVenta } from "@/hooks/finanzas/useVenta";
 import { ReuInput } from "@/components/globales/ReuInput";
 import { DetalleVenta } from "@/types/finanzas/Venta";
 import { usePreciosProductos } from "@/hooks/inventario/usePrecio_Producto";
+import { PrecioProducto, UnidadMedida } from "@/types/inventario/Precio_producto";
 import Tabla from "@/components/globales/Tabla";
 import { Trash2, Edit, Plus, ArrowLeft, Printer, List, ShoppingCart } from 'lucide-react';
 import { PagoModal } from "@/components/finanzas/PagoModal";
 import { TiqueteModal } from "@/components/finanzas/TiqueteModal";
 import { useUnidadesMedida } from "@/hooks/inventario/useInsumo";
 import { ModalUnidadMedida } from "@/components/cultivo/ModalUnidadMedida";
-
+import { addToast } from "@heroui/toast";
 const VentaPage: React.FC = () => {
   const [detalle, setDetalle] = useState<DetalleVenta>({
     producto_id: 0,
@@ -42,39 +43,59 @@ const VentaPage: React.FC = () => {
     }));
   };
 
-  const agregarDetalle = () => {
-    const productoSeleccionado = precio_producto?.find(p => p.id=== detalle.producto_id);
-    if (!productoSeleccionado) {
-      alert("Seleccione un producto válido.");
-      return;
-    }
-  
-    if (detalle.cantidad > productoSeleccionado.stock) {
-      alert(`La cantidad solicitada (${detalle.cantidad}) excede el stock disponible (${productoSeleccionado.stock}).`);
-      return;
-    }
-  
-    if (detalle.unidades_de_medida_id === 0) {
-      alert("Seleccione una unidad de medida.");
-      return;
-    }
-  
-    agregarDetalleVenta(
-      detalle,
-      detallesAgregados,
-      editIndex,
-      productoSeleccionado,
-      setDetallesAgregados,
-      setEditIndex,
-      () =>
-        setDetalle({
-          producto_id: 0,
-          cantidad: 0,
-          unidades_de_medida_id: 0,
-          total: 0,
-        })
-    );
-  };
+const agregarDetalle = () => {
+ const productoSeleccionado = precio_producto?.find(
+  p => Number(p.id) === Number(detalle.producto_id)
+);
+
+  if (!productoSeleccionado) {
+    addToast({
+      title: "Producto inválido",
+      description: "Seleccione un producto válido.",
+      timeout: 3000,
+      color: "danger",
+    });
+    return;
+  }
+
+  console.log("Producto válido seleccionado:", productoSeleccionado);
+
+  if (detalle.cantidad > productoSeleccionado.stock) {
+    addToast({
+      title: "Stock insuficiente",
+      description: `La cantidad solicitada (${detalle.cantidad}) excede el stock disponible (${productoSeleccionado.stock}).`,
+      timeout: 3000,
+      color: "warning",
+    });
+    return;
+  }
+
+  if (detalle.unidades_de_medida_id === 0) {
+    addToast({
+      title: "Unidad no seleccionada",
+      description: "Seleccione una unidad de medida.",
+      timeout: 3000,
+      color: "danger",
+    });
+    return;
+  }
+
+  agregarDetalleVenta(
+    detalle,
+    detallesAgregados,
+    editIndex,
+    productoSeleccionado,
+    setDetallesAgregados,
+    setEditIndex,
+    () =>
+      setDetalle({
+        producto_id: 0,
+        cantidad: 0,
+        unidades_de_medida_id: 0,
+        total: 0,
+      })
+  );
+};
 
   const handleEdit = (index: number) => {
     const detalleAEditar = detallesAgregados[index];
@@ -88,7 +109,7 @@ const VentaPage: React.FC = () => {
   };
 
   const columns = [
-    { name: "Producto", uid: "producto" },
+    { name: "Producto", uid: "nombre_producto" },
     { name: "Cantidad", uid: "cantidad" },
     { name: "Unidad", uid: "unidad" },
     { name: "Precio Unitario", uid: "precio" },
@@ -96,22 +117,23 @@ const VentaPage: React.FC = () => {
     { name: "Acciones", uid: "acciones" },
   ];
   
-  const transformedData = detallesAgregados.map((detalle, index) => {
-    const productoSeleccionado = precio_producto?.find(p => p.id === detalle.producto_id);
-    const productoNombre = productoSeleccionado?.nombre_cultivo || "Desconocido";
+const transformedData = detallesAgregados.map((detalle, index) => {
+  const productoSeleccionado = precio_producto?.find(
+    (p) => Number(p.Producto_id) === Number(detalle.producto_id)
+  );
 
-    const unidadNombre = unidadesMedida?.find(u => u.id === detalle.unidades_de_medida_id)?.nombre?.toString() || "unidad";
-    const precio = productoSeleccionado?.precio || 0;
-    const total = detalle.total || 0;
-    
-    return {
-      id: index.toString(),
-      producto: productoNombre,
-      cantidad: detalle.cantidad.toString(),
-      unidad: unidadNombre,
-      precio: `$${precio.toFixed(2)}`,
-      total: `$${total.toFixed(2)}`,
-      acciones: (
+  const nombre_producto = productoSeleccionado?.nombre_producto || "Desconocido";
+  const unidad = unidadesMedida?.find(u => u.id === detalle.unidades_de_medida_id)?.nombre || "unidad";
+  const precio_unitario = productoSeleccionado?.precio || 0;
+  const total = detalle.total || 0;
+
+  return {
+    id: index,
+    nombre_producto,
+    cantidad: detalle.cantidad,
+    unidad,
+    precio_unitario,
+    total,          acciones: (
         <div className="flex gap-2">
           <button
             className="p-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
@@ -243,7 +265,7 @@ const VentaPage: React.FC = () => {
                     {detalle.producto_id !== 0 && (
            <p className="text-sm text-gray-500 mt-1">
            Stock disponible: {
-              precio_producto?.find(p => p.id === detalle.producto_id)?.stock ?? 'N/A'
+              precio_producto?.find(p => Number (p.id) === Number(detalle.producto_id))?.stock ?? 'N/A'
             }
           </p>
         )}
