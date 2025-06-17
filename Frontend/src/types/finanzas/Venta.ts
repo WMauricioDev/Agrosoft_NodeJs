@@ -15,3 +15,5 @@ export interface DetalleVenta {
   total: number; 
   precio_unitario?: number; 
 }
+
+
