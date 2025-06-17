@@ -67,6 +67,7 @@ import RouterActividadesPDF from './modulos/reportes/cultivo/routers/routerRepor
 import RouterCultivoPDF from './modulos/reportes/cultivo/routers/routerReporteCultivo.js';
 import RouterEspeciesPDF from './modulos/reportes/cultivo/routers/routerReporteEspeciesTipos.js';
 import RouterPagoPDF from './modulos/reportes/finanzas/routers/routerReportePago.js';
+import RouterTiquetePDF from './modulos/reportes/finanzas/routers/routerTiqueteVenta.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -149,6 +150,7 @@ app.use('/cultivo', RouterActividadesPDF);
 app.use('/cultivo', RouterCultivoPDF);
 app.use('/cultivo', RouterEspeciesPDF);
 app.use('/finanzas', RouterPagoPDF);
+app.use('/finanzas', RouterTiquetePDF);
 
 // Swagger Docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
