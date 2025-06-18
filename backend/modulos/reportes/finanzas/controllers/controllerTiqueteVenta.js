@@ -20,7 +20,6 @@ export const getFacturaPDF = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Check if venta exists
         const ventaCheck = await pool.query(
             'SELECT id, fecha, monto_entregado, cambio FROM venta_venta WHERE id = $1',
             [id]
@@ -30,7 +29,6 @@ export const getFacturaPDF = async (req, res) => {
         }
         const venta = ventaCheck.rows[0];
 
-        // Fetch venta details
         const detallesResult = await pool.query(
             `
             SELECT 
@@ -53,27 +51,23 @@ export const getFacturaPDF = async (req, res) => {
         );
         const detalles = detallesResult.rows;
 
-        // Validate numeric data
         if (!detalles.every(d => d.precio_unitario != null && d.total != null) || 
             venta.monto_entregado == null || venta.cambio == null) {
             console.error('Datos numéricos inválidos:', { venta, detalles });
             return res.status(500).json({ message: 'Datos numéricos inválidos en la venta o detalles' });
         }
 
-        // Conversion factor (1mm = 2.83465 points)
         const mmToPoints = 2.83465;
         const margin = 3 * mmToPoints;
         const lineSpacing = 2 * mmToPoints;
         const fontSizeHeader = 8;
         const fontSizeBody = 6;
 
-        // Create PDF document with fixed height (adjust as needed)
         const doc = new PDFDocument({
-            size: [80 * mmToPoints, 297 * mmToPoints], // 80mm width, A4 height (will adjust)
+            size: [80 * mmToPoints, 297 * mmToPoints],
             margin: margin
         });
 
-        // Set response headers
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename="factura_${venta.id}.pdf"`);
         doc.pipe(res);
@@ -81,10 +75,8 @@ export const getFacturaPDF = async (req, res) => {
         const width = 80 * mmToPoints - 2 * margin;
         let y = margin;
 
-        // Get current date and time
-        const { date, time, shortDateTime, fullDateTime } = getCurrentDateTime();
+        const { date, time } = getCurrentDateTime();
 
-        // Header
         doc.font('Courier-Bold').fontSize(fontSizeHeader);
         doc.text('Agrosoft', margin, y, { align: 'center', width });
         y += lineSpacing;
@@ -99,7 +91,6 @@ export const getFacturaPDF = async (req, res) => {
         doc.text('FACTURA DE VENTA', margin, y, { align: 'center', width });
         y += lineSpacing;
 
-        // DIAN Info
         doc.font('Courier').fontSize(fontSizeBody);
         const dianInfo = [
             'Documento equivalente electrónico',
@@ -111,7 +102,6 @@ export const getFacturaPDF = async (req, res) => {
             y += lineSpacing;
         }
 
-        // Venta Info
         doc.font('Courier').fontSize(fontSizeBody);
         const cajaInfo = [
             `No. Factura: ${venta.id}`,
@@ -126,13 +116,11 @@ export const getFacturaPDF = async (req, res) => {
             y += lineSpacing;
         }
 
-        // Product Details Header
         doc.text('DESCRIPCIÓN  CANT  V.UNIT  TOTAL', margin, y, { align: 'center', width });
         y += lineSpacing;
         doc.text('--------------------------------', margin, y, { align: 'center', width });
         y += lineSpacing;
 
-        // Product Details (column alignment)
         const colWidths = {
             descripcion: 28 * mmToPoints,
             cantidad: 8 * mmToPoints,
@@ -161,14 +149,12 @@ export const getFacturaPDF = async (req, res) => {
             y += lineSpacing;
             totalVenta += parseFloat(detalle.total);
             
-            // Add page break if we're running out of space
             if (y > (297 * mmToPoints - 20 * mmToPoints)) {
                 doc.addPage();
                 y = margin;
             }
         }
 
-        // Totals and Payment
         const subtotal = totalVenta / 1.19;
         const impuesto = totalVenta - subtotal;
         const totales = [
@@ -185,7 +171,6 @@ export const getFacturaPDF = async (req, res) => {
             y += lineSpacing;
         }
 
-        // Additional Info
         const pagoInfo = [
             'Forma de pago: Efectivo',
             '--------------------------------',
@@ -197,7 +182,6 @@ export const getFacturaPDF = async (req, res) => {
             y += lineSpacing;
         }
 
-        // Finalize PDF
         doc.end();
 
     } catch (error) {

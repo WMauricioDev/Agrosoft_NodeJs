@@ -32,7 +32,6 @@ export const generarReporteActividadesPDF = async (req, res) => {
     const result = await pool.query(sql);
     const actividades = result.rows;
 
-    // Calculate summary metrics
     const total_actividades = actividades.length;
     let periodo = 'No hay datos disponibles';
     let unique_insumos = 0;
@@ -55,18 +54,14 @@ export const generarReporteActividadesPDF = async (req, res) => {
 
     doc.pipe(res);
 
-    // Title
     doc.fontSize(18).text('Reporte de Actividades Completadas', { align: 'center' });
     doc.moveDown();
-
-    // 1. Objective
     doc.fontSize(12).text('1. Objetivo');
     doc.fontSize(10).text(
       'Este documento presenta un reporte detallado de las actividades COMPLETADAS en los cultivos, incluyendo información sobre insumos utilizados, fechas de ejecución y responsables.',
       { align: 'justify' }
     );
 
-    // 2. General Summary
     doc.moveDown();
     doc.fontSize(12).text('2. Resumen General');
     doc.fontSize(10).text(
@@ -76,7 +71,6 @@ export const generarReporteActividadesPDF = async (req, res) => {
       { align: 'justify' }
     );
 
-    // 3. Activity Details
     doc.moveDown();
     doc.fontSize(12).text('3. Detalle de Actividades');
     doc.moveDown(0.5);
@@ -93,7 +87,6 @@ export const generarReporteActividadesPDF = async (req, res) => {
       currentX += colWidths[i];
     }
 
-    // Table Headers
     doc.font('Helvetica-Bold').fontSize(10);
     colTitles.forEach((title, i) => {
       const x = colPositions[i];
@@ -101,7 +94,6 @@ export const generarReporteActividadesPDF = async (req, res) => {
       doc.text(title, x + 5, tableTop + 5, { width: colWidths[i] - 10 });
     });
 
-    // Table Rows
     doc.font('Helvetica').fontSize(8);
     actividades.forEach((actividad, i) => {
       const y = tableTop + rowHeight * (i + 1);
@@ -129,12 +121,10 @@ export const generarReporteActividadesPDF = async (req, res) => {
       });
     });
 
-    // 4. Additional Information
     const additionalInfoY = tableTop + rowHeight * (actividades.length + 2);
     doc.moveDown();
     doc.fontSize(12).text('4. Información Adicional', 50, additionalInfoY);
 
-    // Group activities by ID to avoid duplicates in additional info
     const groupedActividades = {};
     actividades.forEach(a => {
       if (!groupedActividades[a.id]) {

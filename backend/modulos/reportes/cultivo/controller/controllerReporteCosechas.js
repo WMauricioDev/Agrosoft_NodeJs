@@ -9,7 +9,6 @@ export const generarReporteCosechasPDF = async (req, res) => {
       return res.status(400).json({ message: 'Debes proporcionar fecha_inicio y fecha_fin' });
     }
 
-    // Validate date format (YYYY-MM-DD)
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(fecha_inicio) || !dateRegex.test(fecha_fin)) {
       return res.status(400).json({ message: 'Formato de fecha inválido (YYYY-MM-DD)' });
@@ -40,18 +39,15 @@ export const generarReporteCosechasPDF = async (req, res) => {
 
     doc.pipe(res);
 
-    // Title
     doc.fontSize(18).text('Informe de Cosechas', { align: 'center' });
     doc.moveDown();
 
-    // 1. Objective
     doc.fontSize(12).text('1. Objetivo');
     doc.fontSize(10).text(
       'Este documento presenta un resumen detallado de las cosechas registradas en el sistema, incluyendo información sobre cultivos, cantidades recolectadas y fechas de cosecha. El objetivo es proporcionar una visión general del rendimiento agrícola para facilitar la toma de decisiones y el análisis de productividad.',
       { align: 'justify' }
     );
 
-    // 2. Harvest Details
     doc.moveDown();
     doc.fontSize(12).text('2. Detalle de Cosechas');
     doc.moveDown(0.5);
@@ -68,7 +64,6 @@ export const generarReporteCosechasPDF = async (req, res) => {
       currentX += colWidths[i];
     }
 
-    // Table Headers
     doc.font('Helvetica-Bold').fontSize(10);
     colTitles.forEach((title, i) => {
       const x = colPositions[i];
@@ -76,14 +71,13 @@ export const generarReporteCosechasPDF = async (req, res) => {
       doc.text(title, x + 5, tableTop + 5, { width: colWidths[i] - 10 });
     });
 
-    // Table Rows
     doc.font('Helvetica');
     cosechas.forEach((cosecha, i) => {
       const y = tableTop + rowHeight * (i + 1);
       const values = [
         cosecha.id_cultivo_nombre,
         String(cosecha.cantidad),
-        cosecha.fecha.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        cosecha.fecha.toISOString().split('T')[0],
       ];
 
       values.forEach((text, j) => {
@@ -93,7 +87,6 @@ export const generarReporteCosechasPDF = async (req, res) => {
       });
     });
 
-    // 3. General Summary
     const summaryY = tableTop + rowHeight * (cosechas.length + 2);
     doc.moveDown();
     doc.fontSize(12).text('3. Resumen General', 50, summaryY);
