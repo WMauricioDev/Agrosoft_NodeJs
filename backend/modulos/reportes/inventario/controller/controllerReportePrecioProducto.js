@@ -1,74 +1,70 @@
 import PDFDocument from 'pdfkit';
 import pool from '../../../usuarios/database/Conexion.js';
 
-export const generarReporteInsumosPDF = async (req, res) => {
+export const generarReportePreciosProductosPDF = async (req, res) => {
   try {
     const { fecha_inicio, fecha_fin } = req.query;
     let sql = `
       SELECT 
-        i.id,
-        i.nombre,
-        i.descripcion,
-        i.cantidad,
-        um.nombre AS unidad_medida_nombre,
-        ti.nombre AS tipo_insumo_nombre,
-        i.activo,
-        i.tipo_empacado,
-        TO_CHAR(i.fecha_registro, 'YYYY-MM-DD') AS fecha_registro,
+        pp.id,
+        pp.precio,
+        TO_CHAR(pp.fecha_registro, 'YYYY-MM-DD') AS fecha_registro,
+        pp."Producto_id",
+        c.nombre AS nombre_producto,
         CASE 
-          WHEN i.fecha_caducidad IS NOT NULL 
-          THEN TO_CHAR(i.fecha_caducidad, 'YYYY-MM-DD') 
+          WHEN pp.fecha_caducidad IS NOT NULL 
+          THEN TO_CHAR(pp.fecha_caducidad, 'YYYY-MM-DD') 
           ELSE 'N/A' 
         END AS fecha_caducidad,
-        i.precio_insumo
-      FROM insumos_insumo i
-      LEFT JOIN unidad_medida_unidadmedida um ON i.unidad_medida_id = um.id
-      LEFT JOIN insumos_tiposinsumo ti ON i.tipo_insumo_id = ti.id
+        pp.stock,
+        um.nombre AS unidad_medida_nombre
+      FROM precios_productos_precio_producto pp
+      LEFT JOIN cosechas_cosecha ch ON pp."Producto_id" = ch.id
+      LEFT JOIN cultivos_cultivo c ON ch.id_cultivo_id = c.id
+      LEFT JOIN unidad_medida_unidadmedida um ON pp.unidad_medida_id = um.id
     `;
     const values = [];
 
     if (fecha_inicio && fecha_fin) {
-      sql += ` WHERE i.fecha_registro BETWEEN $1 AND $2`;
+      sql += ` WHERE pp.fecha_registro BETWEEN $1 AND $2`;
       values.push(fecha_inicio, fecha_fin);
     }
 
     const result = await pool.query(sql, values);
-    const insumos = result.rows;
+    const preciosProductos = result.rows;
 
     const doc = new PDFDocument({ margin: 30, size: 'A4' });
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="reporte_insumos.pdf"');
+    res.setHeader('Content-Disposition', 'attachment; filename="reporte_precios_productos.pdf"');
 
     doc.pipe(res);
 
-    doc.fontSize(16).text('Informe de Insumos Registrados', { align: 'center' });
+    doc.fontSize(16).text('Informe de Precios de Productos Registrados', { align: 'center' });
     doc.moveDown();
 
     doc.fontSize(12).text('1. Objetivo');
     doc.fontSize(10).text(
-      'Este documento presenta un listado completo de los insumos registrados en el sistema, incluyendo su nombre, descripción, cantidad, unidad de medida, tipo de insumo, estado, tipo de empaque, fecha de registro, fecha de caducidad y precio.',
+      'Este documento presenta un listado completo de los precios de productos registrados en el sistema, incluyendo el precio, fecha de registro, producto, fecha de caducidad, stock y unidad de medida.',
       { align: 'justify' }
     );
 
     doc.moveDown();
-    doc.fontSize(12).text('2. Detalle de Insumos');
+    doc.fontSize(12).text('2. Detalle de Precios de Productos');
     doc.moveDown(0.5);
 
     const tableTop = doc.y;
     const rowHeight = 30;
-    const colWidths = [70, 80, 40, 50, 50, 40, 50, 60, 60, 60];
+    const colWidths = [50, 60, 70, 50, 90, 70, 50, 60];
     const colTitles = [
-      'Nombre',
-      'Descripción',
-      'Cantidad',
-      'Unidad Medida',
-      'Tipo Insumo',
-      'Activo',
-      'Tipo Empaque',
+      'ID',
+      'Precio',
       'Fecha Registro',
+      'ID Producto',
+      'Producto',
       'Fecha Caducidad',
-      'Precio'
+      'Stock',
+      'Unidad Medida'
     ];
 
     if (colWidths.length !== colTitles.length) {
@@ -94,19 +90,17 @@ export const generarReporteInsumosPDF = async (req, res) => {
     });
 
     doc.font('Helvetica').fontSize(7);
-    insumos.forEach((insumo, i) => {
+    preciosProductos.forEach((precioProducto, i) => {
       const y = tableTop + rowHeight * (i + 1);
       const values = [
-        insumo.nombre || 'N/A',
-        insumo.descripcion || 'N/A',
-        String(insumo.cantidad || '0'),
-        insumo.unidad_medida_nombre || 'Sin unidad',
-        insumo.tipo_insumo_nombre || 'Sin tipo',
-        insumo.activo ? 'Sí' : 'No',
-        insumo.tipo_empacado || 'N/A',
-        insumo.fecha_registro || 'N/A',
-        insumo.fecha_caducidad || 'N/A',
-        `$${parseFloat(insumo.precio_insumo || 0).toFixed(2)}`
+        String(precioProducto.id || 'N/A'),
+        `$${parseFloat(precioProducto.precio || 0).toFixed(2)}`,
+        precioProducto.fecha_registro || 'N/A',
+        String(precioProducto.Producto_id || 'N/A'),
+        precioProducto.nombre_producto || 'Sin producto',
+        precioProducto.fecha_caducidad || 'N/A',
+        String(precioProducto.stock || '0'),
+        precioProducto.unidad_medida_nombre || 'Sin unidad'
       ];
 
       if (values.length !== colWidths.length) {
@@ -129,17 +123,17 @@ export const generarReporteInsumosPDF = async (req, res) => {
       });
     });
 
-    const summaryY = tableTop + rowHeight * (insumos.length + 2);
+    const summaryY = tableTop + rowHeight * (preciosProductos.length + 2);
     doc.moveDown();
     doc.fontSize(12).text('3. Resumen General', 30, summaryY);
     doc.fontSize(10).text(
-      `Se encontraron ${insumos.length} insumos registrados en el sistema.`,
+      `Se encontraron ${preciosProductos.length} precios de productos registrados en el sistema.`,
       { align: 'justify' }
     );
 
     doc.end();
   } catch (error) {
-    console.error('Error al generar PDF de insumos:', error);
-    res.status(500).json({ message: 'Error al generar el reporte PDF de insumos' });
+    console.error('Error al generar PDF de precios de productos:', error);
+    res.status(500).json({ message: 'Error al generar el reporte PDF de precios de productos' });
   }
 };

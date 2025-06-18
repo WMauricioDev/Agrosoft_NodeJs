@@ -79,7 +79,6 @@ bancales.forEach((b, i) => {
   });
 });
 
-    // Resumen
     const summaryY = tableTop + rowHeight * (bancales.length + 2);
     doc.moveDown();
     doc.fontSize(12).text('3. Resumen General', 50, summaryY);

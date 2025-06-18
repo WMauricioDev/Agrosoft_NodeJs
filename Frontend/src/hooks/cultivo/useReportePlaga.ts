@@ -4,7 +4,7 @@ import { ReportePlaga, ReportePlagaDetalle } from "@/types/cultivo/ReportePlaga"
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${BASE_URL}/cultivo/reportes-plagas/`;
+const API_URL = `${BASE_URL}/api/cultivo/reportes-plagas/`;
 
 const fetchReportes = async (): Promise<ReportePlagaDetalle[]> => {
   const token = localStorage.getItem("access_token");

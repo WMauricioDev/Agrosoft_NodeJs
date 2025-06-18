@@ -1,17 +1,18 @@
 export interface Venta {
-  id?: number;
+  id: number;
   fecha: string;
   monto_entregado: number;
   cambio: number;
-  detalles?: DetalleVenta[];
+  detalles: DetalleVenta[];
 }
 
 export interface DetalleVenta {
   id?: number;
-  venta?: number;
-  producto_id: number; 
+  producto: number;
+  producto_nombre: string;
   cantidad: number;
-  unidades_de_medida_id: number; 
-  total: number; 
-  precio_unitario?: number; 
+  precio_unitario: number;
+  total: number;
+  unidades_de_medida: number;
+  unidad_medida: string;
 }

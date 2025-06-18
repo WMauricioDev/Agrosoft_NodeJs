@@ -7,12 +7,12 @@ export interface UnidadMedida {
 }
 
 export interface PrecioProducto {
-    id: number;
-    cosecha: number | null; 
-    nombre_cultivo: string;
-    unidad_medida: UnidadMedida | null;
-    precio: number;
-    fecha_registro: string;
-    stock: number;
-    fecha_caducidad: string | null;
+  id: number;
+  Producto_id: number; 
+  nombre_cultivo: string;
+  unidad_medida: UnidadMedida | null;
+  precio: number | string; 
+  fecha_registro: string;
+  stock: number;
+  fecha_caducidad: string | null;
 }

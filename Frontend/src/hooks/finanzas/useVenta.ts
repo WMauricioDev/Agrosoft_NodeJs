@@ -1,4 +1,3 @@
-// useVenta.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/components/utils/axios";
 import { addToast } from "@heroui/react";
@@ -6,13 +5,11 @@ import { Venta, DetalleVenta } from "@/types/finanzas/Venta";
 import { PrecioProducto } from "@/types/inventario/Precio_producto";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_URL = `${BASE_URL}api/fin/venta/`;
+const API_URL = `${BASE_URL}/api/fin/venta/`;
 
 interface CreateVentaData {
-  fecha?: string;
   monto_entregado: number;
-  detalles: Omit<DetalleVenta, 'id' | 'venta'>[];
-  cambio? : number
+  detalles: Omit<DetalleVenta, 'id' | 'producto_nombre' | 'precio_unitario' | 'unidad_medida'>[];
 }
 
 const fetchVentas = async (): Promise<Venta[]> => {
@@ -28,44 +25,19 @@ const registrarVenta = async (ventaData: CreateVentaData): Promise<Venta> => {
   const token = localStorage.getItem("access_token");
   if (!token) throw new Error("Token no encontrado");
 
-  const totalVenta = ventaData.detalles.reduce((sum, detalle) => sum + detalle.total, 0);
-  const cambio = ventaData.monto_entregado - totalVenta;
-
   const payload = {
-    fecha: ventaData.fecha || new Date().toISOString(),
     monto_entregado: ventaData.monto_entregado,
-    cambio,
     detalles: ventaData.detalles.map(detalle => ({
-      producto: detalle.producto_id,
+      producto: detalle.producto,
       cantidad: detalle.cantidad,
-      unidades_de_medida: detalle.unidades_de_medida_id,
+      unidades_de_medida: detalle.unidades_de_medida,
       total: detalle.total
     }))
   };
 
-  console.log("Enviando venta:", payload);
+  console.log("Enviando venta:", payload); // DEBUG
 
   const response = await api.post(API_URL, payload, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  return response.data;
-};
-
-const actualizarVenta = async (venta: Venta): Promise<Venta> => {
-  const token = localStorage.getItem("access_token");
-  if (!token || !venta.id) throw new Error("Falta token o ID");
-
-  const payload = {
-    fecha: venta.fecha,
-    monto_entregado: venta.monto_entregado,
-    cambio: venta.cambio,
-  };
-
-  const response = await api.put(`${API_URL}${venta.id}/`, payload, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -117,27 +89,7 @@ export const useVenta = () => {
       console.error("Error detalle:", error.response?.data);
       addToast({
         title: "Error",
-        description: `Error al registrar venta: ${error.response?.data?.detail || error.message}`,
-        color: "danger",
-      });
-    },
-  });
-
-  const actualizarMutation = useMutation({
-    mutationFn: actualizarVenta,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ventas"] });
-      addToast({
-        title: "Éxito",
-        description: "Venta actualizada con éxito",
-        color: "success",
-      });
-    },
-    onError: (error: any) => {
-      console.error("Error detalle:", error.response?.data);
-      addToast({
-        title: "Error",
-        description: `Error al actualizar venta: ${error.response?.data?.detail || error.message}`,
+        description: `Error al registrar venta: ${error.response?.data?.message || error.message}`,
         color: "danger",
       });
     },
@@ -157,13 +109,13 @@ export const useVenta = () => {
       console.error("Error detalle:", error.response?.data);
       addToast({
         title: "Error",
-        description: `Error al eliminar venta: ${error.response?.data?.detail || error.message}`,
+        description: `Error al eliminar venta: ${error.response?.data?.message || error.message}`,
         color: "danger",
       });
     },
   });
 
-  const agregarDetalleVenta = (
+const agregarDetalleVenta = (
   detalle: DetalleVenta,
   detallesActuales: DetalleVenta[],
   editIndex: number | null,
@@ -173,11 +125,11 @@ export const useVenta = () => {
   resetDetalle: () => void
 ) => {
   const cantidadYaAgregada = detallesActuales
-    .filter(d => d.producto_id === detalle.producto_id)
+    .filter(d => d.producto === detalle.producto)
     .reduce((sum, d) => sum + d.cantidad, 0);
 
   const cantidadEditando =
-    editIndex !== null && detallesActuales[editIndex]?.producto_id === detalle.producto_id
+    editIndex !== null && detallesActuales[editIndex]?.producto === detalle.producto
       ? detallesActuales[editIndex].cantidad
       : 0;
 
@@ -194,8 +146,11 @@ export const useVenta = () => {
 
   const nuevoDetalle: DetalleVenta = {
     ...detalle,
-    total: detalle.cantidad * (productoSeleccionado.precio || 0),
-    unidades_de_medida_id: detalle.unidades_de_medida_id || productoSeleccionado.unidad_medida_id?.id || 0,
+    total: detalle.cantidad * Number(productoSeleccionado.precio || 0),
+    unidades_de_medida: detalle.unidades_de_medida || productoSeleccionado.unidad_medida?.id || 0,
+    producto_nombre: productoSeleccionado.nombre_cultivo || 'Desconocido',
+    precio_unitario: Number(productoSeleccionado.precio || 0),
+    unidad_medida: productoSeleccionado.unidad_medida?.nombre || 'unidad'
   };
 
   if (editIndex !== null) {
@@ -209,7 +164,6 @@ export const useVenta = () => {
 
   resetDetalle();
 };
-
 
   const useDetallesVenta = (ventaId: number) => {
     return useQuery<DetalleVenta[], Error>({
@@ -226,12 +180,9 @@ export const useVenta = () => {
     error: ventasQuery.error,
     registrarVenta: registrarMutation.mutateAsync,
     isRegistrando: registrarMutation.isPending,
-    actualizarVenta: actualizarMutation.mutate,
-    isActualizando: actualizarMutation.isPending,
     eliminarVenta: eliminarMutation.mutate,
     isEliminando: eliminarMutation.isPending,
     useDetallesVenta, 
     agregarDetalleVenta,
-
   };
 };

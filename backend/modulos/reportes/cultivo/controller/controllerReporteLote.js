@@ -51,7 +51,6 @@ export const generarReporteLotesPDF = async (req, res) => {
       currentX += colWidths[i];
     }
 
-    // Encabezados
     doc.font('Helvetica-Bold').fontSize(10);
     colTitles.forEach((title, i) => {
       const x = colPositions[i];
@@ -59,7 +58,6 @@ export const generarReporteLotesPDF = async (req, res) => {
       doc.text(title, x + 5, tableTop + 5, { width: colWidths[i] - 10 });
     });
 
-    // Filas
     doc.font('Helvetica');
     lotes.forEach((b, i) => {
       const y = tableTop + rowHeight * (i + 1);
@@ -79,7 +77,6 @@ export const generarReporteLotesPDF = async (req, res) => {
       });
     });
 
-    // Resumen
     const summaryY = tableTop + rowHeight * (lotes.length + 2);
     doc.moveDown();
     doc.fontSize(12).text('3. Resumen General', 50, summaryY);

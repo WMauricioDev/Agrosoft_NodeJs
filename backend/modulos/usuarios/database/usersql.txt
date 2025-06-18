@@ -1,0 +1,40 @@
+INSERT INTO usuarios_usuarios (
+  numero_documento, nombre, apellido, username, rol_id, email, password,
+  is_staff, is_superuser, first_name, last_name, is_active, date_joined, last_login
+)
+VALUES (
+  '12345678',         -- numero_documento
+  'Juan',             -- nombre
+  'Pérez',            -- apellido
+  'juanp',            -- username
+  4,                  -- rol_id (por ejemplo, 2 para 'usuario estándar')
+  'juanp@example.com',-- email
+  'hashed_password',  -- password (debería estar en formato hash)
+  true,               -- is_staff
+  false,              -- is_superuser
+  'Juan',             -- first_name
+  'Pérez',            -- last_name
+  true,               -- is_active
+  NOW(),              -- date_joined
+  NULL                -- last_login (puede ser NULL si nunca ha iniciado sesión)
+);
+
+
+
+
+{
+  "numero_documento": "12345678",
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "username": "juanp",
+  "rol_id": 2,
+  "email": "juanp@example.com",
+  "password": "TuPasswordSeguro123",
+  "is_staff": true,
+  "is_superuser": false,
+  "first_name": "Juan",
+  "last_name": "Pérez",
+  "is_active": true,
+  "date_joined": "2025-06-16T10:00:00Z",
+  "last_login": null
+}

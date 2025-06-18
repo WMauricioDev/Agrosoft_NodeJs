@@ -7,7 +7,7 @@ import { Venta, DetalleVenta } from "@/types/finanzas/Venta";
 import ReuModal from "@/components/globales/ReuModal";
 import { ReuInput } from "@/components/globales/ReuInput";
 import Tabla from "@/components/globales/Tabla";
-import { Trash2, EditIcon, Ticket } from 'lucide-react';
+import { Ticket } from 'lucide-react';
 import { useUnidadesMedida } from "@/hooks/inventario/useInsumo";
 import { ModalUnidadMedida } from "@/components/cultivo/ModalUnidadMedida";
 import { TiqueteModal } from "@/components/finanzas/TiqueteModal";
@@ -31,16 +31,6 @@ const ListaVentaPage: React.FC = () => {
     { name: "Total", uid: "total" },
     { name: "Acciones", uid: "acciones" },
   ];
-
-  const handleEdit = (venta: Venta) => {
-    setSelectedVenta(venta);
-    setIsEditModalOpen(true);
-  };
-
-  const handleDelete = (venta: Venta) => {
-    setSelectedVenta(venta);
-    setIsDeleteModalOpen(true);
-  };
 
   const handleShowTicket = (venta: Venta) => {
     setSelectedVenta(venta);
@@ -92,12 +82,6 @@ const transformedData = (ventas ?? []).map((venta) => {
     total: `$${total.toFixed(2)} COP`,
     acciones: (
       <div className="flex gap-2">
-        <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(venta)}>
-          <EditIcon size={20} />
-        </button>
-        <button className="text-red-500 hover:text-red-700" onClick={() => handleDelete(venta)}>
-          <Trash2 size={20} />
-        </button>
         <button className="text-green-500 hover:text-green-700" onClick={() => handleShowTicket(venta)}>
           <Ticket size={20} color="black" />
         </button>
