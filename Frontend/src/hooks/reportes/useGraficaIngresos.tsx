@@ -24,13 +24,12 @@ export const useIngresosEgresosGraficas = (fechaInicio: string, fechaFin: string
     meta: {
       errorMessage: "Error al cargar los datos de ingresos y egresos para las gráficas"
     },
-    throwOnError: (error) => {
+    onError: (error) => {
       addToast({ 
         title: "Error", 
         description: error.message || "Error al cargar los datos", 
         timeout: 3000 
       });
-      return false; 
     }
   });
 };

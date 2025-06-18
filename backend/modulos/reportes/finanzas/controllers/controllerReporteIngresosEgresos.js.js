@@ -1,3 +1,4 @@
+// modulos/reportes/finanzas/controllers/controllerReporteIngresosEgresos.js
 import pool from "../../../usuarios/database/Conexion.js";
 import PDFDocument from 'pdfkit';
 
@@ -8,7 +9,7 @@ const formatNumber = (num) => {
 
 export const generarReporteIngresosEgresos = async (req, res) => {
     try {
-        const { fecha_inicio, fecha_fin } = req.query;
+        const { fecha_inicio, fecha_fin, format } = req.query;
 
         if (!fecha_inicio || !fecha_fin) {
             return res.status(400).json({ message: 'Debes proporcionar fecha_inicio y fecha_fin' });
@@ -99,7 +100,24 @@ export const generarReporteIngresosEgresos = async (req, res) => {
             totalTransaccionesEgresos += egresoMes.total_transacciones;
         });
 
-        // Create PDF
+        // Handle JSON response for frontend
+        if (format === 'json') {
+            return res.json({
+                resumen: {
+                    fecha_inicio,
+                    fecha_fin,
+                    total_ingresos: totalIngresos,
+                    total_egresos: totalEgresos,
+                    balance_neto: totalIngresos - totalEgresos,
+                    total_cantidad: totalCantidad,
+                    total_transacciones_ingresos: totalTransaccionesIngresos,
+                    total_transacciones_egresos: totalTransaccionesEgresos
+                },
+                por_mes: porMes
+            });
+        }
+
+        // Create PDF (original logic unchanged)
         const doc = new PDFDocument({ margin: 40 });
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename="reporte_ingresos_egresos_${fecha_inicio}_${fecha_fin}.pdf"`);
