@@ -3,12 +3,10 @@ import pool from '../../../usuarios/database/Conexion.js';
 
 export const generarReporteEspeciesTiposPDF = async (req, res) => {
   try {
-    // Query for types
     const tiposSql = `SELECT id, nombre, descripcion FROM tipo_especies_tipoespecie ORDER BY nombre`;
     const tiposResult = await pool.query(tiposSql);
     const tipos = tiposResult.rows;
 
-    // Query for species with type names
     const especiesSql = `
       SELECT 
         e.id,
@@ -33,18 +31,15 @@ export const generarReporteEspeciesTiposPDF = async (req, res) => {
 
     doc.pipe(res);
 
-    // Title
     doc.fontSize(18).text('Informe de Especies y Tipos Registrados', { align: 'center' });
     doc.moveDown();
 
-    // 1. Objective
     doc.fontSize(12).text('1. Objetivo');
     doc.fontSize(10).text(
       'Este documento presenta un listado detallado de todas las especies y tipos de especies registrados en el sistema. El objetivo es proporcionar una visión completa del catálogo disponible para facilitar la consulta y gestión de la biodiversidad registrada.',
       { align: 'justify' }
     );
 
-    // 2. Types of Species
     doc.moveDown();
     doc.fontSize(12).text('2. Tipos de Especies Registrados');
     doc.moveDown(0.5);
@@ -61,7 +56,6 @@ export const generarReporteEspeciesTiposPDF = async (req, res) => {
       currentX += colWidthsTipos[i];
     }
 
-    // Types Table Headers
     doc.font('Helvetica-Bold').fontSize(10);
     colTitlesTipos.forEach((title, i) => {
       const x = colPositionsTipos[i];
@@ -69,7 +63,6 @@ export const generarReporteEspeciesTiposPDF = async (req, res) => {
       doc.text(title, x + 5, tableTop + 5, { width: colWidthsTipos[i] - 10 });
     });
 
-    // Types Table Rows
     doc.font('Helvetica').fontSize(8);
     tipos.forEach((tipo, i) => {
       const y = tableTop + rowHeight * (i + 1);
@@ -89,7 +82,6 @@ export const generarReporteEspeciesTiposPDF = async (req, res) => {
       });
     });
 
-    // 3. Species
     tableTop = doc.y + rowHeight * (tipos.length + 1);
     doc.moveDown();
     doc.fontSize(12).text('3. Especies Registradas');
@@ -105,7 +97,6 @@ export const generarReporteEspeciesTiposPDF = async (req, res) => {
       currentX += colWidthsEspecies[i];
     }
 
-    // Species Table Headers
     doc.font('Helvetica-Bold').fontSize(10);
     colTitlesEspecies.forEach((title, i) => {
       const x = colPositionsEspecies[i];
@@ -113,7 +104,6 @@ export const generarReporteEspeciesTiposPDF = async (req, res) => {
       doc.text(title, x + 5, tableTop + 5, { width: colWidthsEspecies[i] - 10 });
     });
 
-    // Species Table Rows
     doc.font('Helvetica').fontSize(7);
     especies.forEach((especie, i) => {
       const y = tableTop + rowHeight * (i + 1);
@@ -135,7 +125,6 @@ export const generarReporteEspeciesTiposPDF = async (req, res) => {
       });
     });
 
-    // 4. General Summary
     const summaryY = tableTop + rowHeight * (especies.length + 2);
     doc.moveDown();
     doc.fontSize(12).text('4. Resumen General', 50, summaryY);
