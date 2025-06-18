@@ -22,9 +22,23 @@ const GraficaIngresosEgresos: React.FC = () => {
 
   const handleRefetch = () => {
     refetch().then(() => {
+      if (data?.resumen) {
+        addToast({
+          title: "Éxito",
+          description: `Datos actualizados (${(data.resumen.total_transacciones_ingresos + data.resumen.total_transacciones_egresos) || 0} transacciones encontradas)`,
+          timeout: 3000,
+        });
+      } else {
+        addToast({
+          title: "Advertencia",
+          description: "No se encontraron datos para las fechas seleccionadas",
+          timeout: 3000,
+        });
+      }
+    }).catch(error => {
       addToast({
-        title: "Éxito",
-        description: `Datos de ingresos y egresos actualizados (${(data?.resumen.total_transacciones_ingresos + data?.resumen.total_transacciones_egresos) || 0} transacciones encontradas)`,
+        title: "Error",
+        description: error.message || "No se pudieron actualizar los datos",
         timeout: 3000,
       });
     });
@@ -67,131 +81,137 @@ const GraficaIngresosEgresos: React.FC = () => {
         </div>
 
         {isError && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            Error al cargar los datos de ingresos y egresos
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            Error al cargar los datos. Por favor, verifica las fechas o intenta de nuevo.
           </div>
         )}
 
-        {data?.resumen && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">Ingresos Totales</h3>
-              <p className="text-2xl font-bold text-green-600">
-                ${data.resumen.total_ingresos.toLocaleString('es-CO', { maximumFractionDigits: 2 })}
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">Egresos Totales</h3>
-              <p className="text-2xl font-bold text-red-600">
-                ${data.resumen.total_egresos.toLocaleString('es-CO', { maximumFractionDigits: 2 })}
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">Balance Neto</h3>
-              <p className="text-2xl font-bold text-blue-600">
-                ${data.resumen.balance_neto.toLocaleString('es-CO', { maximumFractionDigits: 2 })}
-              </p>
-            </div>
-          </div>
+        {isLoading && (
+          <div className="text-center text-gray-600">Cargando gráficas...</div>
         )}
 
-        {data && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {!isLoading && !isError && data?.resumen && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <div className="bg-white p-4 rounded-lg shadow">
-                <h2 className="text-xl font-semibold mb-4">Ingresos vs Egresos por Mes</h2>
+                <h3 className="text-sm font-medium text-gray-500">Ingresos Totales</h3>
+                <p className="text-2xl font-bold text-green-600">
+                  ${data.resumen.totales_ingresos.toLocaleString('es-CO', { maximumFractionDigits: 2 })}
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow">
+                <h3 className="text-sm font-medium text-gray-500">Egresos Totales</h3>
+                <p className="text-2xl font-bold text-red-600">
+                  ${data.resumen.total_egresosLocaleString('es-CO', { maximumFractionDigits: 2 })}
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow">
+                <h3 className="text-sm font-medium text-gray-500">Balance Neto</h3>
+                <p className="text-2xl font-bold text-blue-600">
+                  ${data.resumen.balance_neto.toLocaleString('es-CO', { maximumFractionDigits: 2 })}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white p-4 rounded-lg shadow">
+                  <h2 className="text-xl font-semibold mb-4">Ingresos vs Egresos por Mes</h2>
+                  <Plot
+                    data={[
+                      {
+                        x: data.por_mes.meses,
+                        y: data.por_mes.ingresos,
+                        name: 'Ingresos',
+                        type: 'bar',
+                        marker: { color: 'rgb(75, 192, 192)' },
+                      },
+                      {
+                        x: data.por_mes.meses,
+                        y: data.por_mes.egresos,
+                        name: 'Egresos',
+                        type: 'bar',
+                        marker: { color: 'rgb(255, 99, 132)' },
+                      },
+                      {
+                        x: data.por_mes.meses,
+                        y: data.por_mes.balance,
+                        name: 'Balance',
+                        type: 'line',
+                        marker: { color: 'rgb(54, 162, 235)' },
+                        yaxis: 'y2'
+                      }
+                    ]}
+                    layout={{
+                      xaxis: { title: "Mes" },
+                      yaxis: { title: "Monto ($)", side: 'left' },
+                      yaxis2: {
+                        title: "Balance ($)",
+                        overlaying: 'y',
+                        side: 'right'
+                      },
+                      autosize: true,
+                      margin: { t: 30 },
+                      barmode: 'group'
+                    }}
+                    config={{ responsive: true }}
+                    className="w-full"
+                  />
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow">
+                  <h3 className="text-xl font-semibold mb-2">Transacciones por Mes</h3>
+                  <Plot
+                    data={[
+                      {
+                        x: data.por_mes.meses,
+                        y: data.por_mes.transaccionesIngresos,
+                        name: 'Transacciones Ingresos',
+                        type: 'bar',
+                        marker: { color: 'rgb(75, 192, 192)' },
+                      },
+                      {
+                        x: data.por_mes.meses,
+                        y: data.por_mes.transaccionesEgresos,
+                        name: 'Transacciones Egresos',
+                        type: 'bar',
+                        marker: { color: 'rgb(255, 99, 132)' },
+                      }
+                    ]}
+                    layout={{
+                      xaxis: { title: "Mes" },
+                      yaxis: { title: "Número de Transacciones" },
+                      autosize: true,
+                      margin: { t: 40 },
+                      barmode: 'group'
+                    }}
+                    config={{ responsive: true }}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow">
+                <h3 className="text-xl font-semibold mb-2">Balance</h3>
                 <Plot
                   data={[
-                    {
-                      x: data.por_mes.meses,
-                      y: data.por_mes.ingresos,
-                      name: 'Ingresos',
-                      type: 'bar',
-                      marker: { color: 'rgb(75, 192, 192)' },
-                    },
-                    {
-                      x: data.por_mes.meses,
-                      y: data.por_mes.egresos,
-                      name: 'Egresos',
-                      type: 'bar',
-                      marker: { color: 'rgb(255, 99, 132)' },
-                    },
                     {
                       x: data.por_mes.meses,
                       y: data.por_mes.balance,
-                      name: 'Balance',
-                      type: 'line',
-                      marker: { color: 'rgb(54, 162, 235)' },
-                      yaxis: 'y2'
+                      type: 'bar',
+                      marker: { color: 'rgb(54, 162, 235)' }
                     }
                   ]}
                   layout={{
-                    xaxis: { title: "Mes" },
-                    yaxis: { title: "Monto ($)", side: 'left' },
-                    yaxis2: {
-                      title: "Balance ($)",
-                      overlaying: 'y',
-                      side: 'right'
-                    },
+                    xaxis: { title: 'Mes' },
+                    yaxis: { title: 'Balance ($)' },
                     autosize: true,
-                    margin: { t: 30 },
-                    barmode: 'group'
-                  }}
-                  config={{ responsive: true }}
-                  className="w-full"
-                />
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow">
-                <h2 className="text-xl font-semibold mb-4">Transacciones por Mes</h2>
-                <Plot
-                  data={[
-                    {
-                      x: data.por_mes.meses,
-                      y: data.por_mes.transaccionesIngresos,
-                      name: 'Transacciones Ingresos',
-                      type: 'bar',
-                      marker: { color: 'rgb(75, 192, 192)' },
-                    },
-                    {
-                      x: data.por_mes.meses,
-                      y: data.por_mes.transaccionesEgresos,
-                      name: 'Transacciones Egresos',
-                      type: 'bar',
-                      marker: { color: 'rgb(255, 99, 132)' },
-                    }
-                  ]}
-                  layout={{
-                    xaxis: { title: "Mes" },
-                    yaxis: { title: "Número de Transacciones" },
-                    autosize: true,
-                    margin: { t: 30 },
-                    barmode: 'group'
+                    margin: { t: 40 }
                   }}
                   config={{ responsive: true }}
                   className="w-full"
                 />
               </div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4">Balance Neto por Mes</h2>
-              <Plot
-                data={[{
-                  x: data.por_mes.meses,
-                  y: data.por_mes.balance,
-                  type: "bar",
-                  marker: { color: 'rgb(54, 162, 235)' }
-                }]}
-                layout={{
-                  xaxis: { title: "Mes" },
-                  yaxis: { title: "Balance ($)" },
-                  autosize: true,
-                  margin: { t: 30 }
-                }}
-                config={{ responsive: true }}
-                className="w-full"
-              />
-            </div>
-          </div>
+          </>
         )}
       </div>
     </DefaultLayout>
