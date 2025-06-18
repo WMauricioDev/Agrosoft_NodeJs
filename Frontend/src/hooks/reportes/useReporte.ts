@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/components/utils/axios"; 
+import { addToast } from "@heroui/react";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -22,5 +23,16 @@ export const useReporte = (modulo: string, reporte: string, params: { fecha_inic
             return response.data; 
         },
         enabled: !!modulo && !!reporte && !!params.fecha_inicio && !!params.fecha_fin,
+        meta: {
+            errorMessage: "Error al generar el reporte"
+        },
+        throwOnError: (error) => {
+            addToast({ 
+                title: "Error", 
+                description: error.message || "Error al generar el reporte", 
+                timeout: 3000 
+            });
+            return false; 
+        }
     });
 };

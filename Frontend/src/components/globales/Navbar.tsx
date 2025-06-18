@@ -56,8 +56,7 @@ const menuItemsBase = [
     subItems: [
       { id: 16, label: "Salario", path: "/finanzas/listarsalarios/" },
       { id: 17, label: "Ventas", path: "/finanzas/listarventas/" },
-      { id: 18, label: "Pagos", path: "/finanzas/listarpagos/" },
-      { id: 19, label: "Costo Beneficio", path: "/finanzas/costo_beneficio/" },
+      { id: 18, label: "Pagos", path: "/finanzas/listarpagos/" }, 
 
     ],
   },
