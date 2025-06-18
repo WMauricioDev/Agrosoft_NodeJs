@@ -57,7 +57,6 @@ const menuItemsBase = [
       { id: 16, label: "Salario", path: "/finanzas/listarsalarios/" },
       { id: 17, label: "Ventas", path: "/finanzas/listarventas/" },
       { id: 18, label: "Pagos", path: "/finanzas/listarpagos/" },
-
     ],
   },
   {

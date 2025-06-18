@@ -31,7 +31,7 @@ export const reportesPorModulo: Record<string, { nombre: string; reporte: string
         { nombre: "Reporte de Evapotranspiración", reporte: "evapotranspiracion" },
     ],
     finanzas: [
-        { nombre: "Reporte de Ingresos", reporte: "venta" },
+        { nombre: "Reporte de Ingresos", reporte: "ingresos-egresos" },
         { nombre: "Reporte de Gastos", reporte: "gastos" },
         { nombre: "Reporte de Pagos", reporte: "pago" },
     ],

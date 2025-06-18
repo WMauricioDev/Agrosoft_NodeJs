@@ -60,7 +60,7 @@ import pago from "./modulos/finanzas/routers/PagoRouter.js"
 import Mapa from "./modulos/cultivo/routers/router.mapa.js"
 
 // Rutas de Reportes PDF
-import UsuariosPDF from "./modulos/reportes/usuarios/routers/routerReporteUsuarios.js"
+import UsuariosPDF from "./modulos/reportes/usuarios/routers/routerReporteUsuarios.js";
 import BancalesPDF from './modulos/reportes/cultivo/routers/routerReporteBancal.js';
 import LotesPDF from './modulos/reportes/cultivo/routers/routerReporteLote.js';
 import RouterInsumosPDF from './modulos/reportes/inventario/routers/routerReporteInventario.js'; 
@@ -70,28 +70,26 @@ import RouterCultivoPDF from './modulos/reportes/cultivo/routers/routerReporteCu
 import RouterEspeciesPDF from './modulos/reportes/cultivo/routers/routerReporteEspeciesTipos.js';
 import RouterPagoPDF from './modulos/reportes/finanzas/routers/routerReportePago.js';
 import RouterTiquetePDF from './modulos/reportes/finanzas/routers/routerTiqueteVenta.js';
+import RouterIngresosEgresosPDF from './modulos/reportes/finanzas/routers/routerReporteIngresosEgresos.js';  
 import RouterPlagaPDF from './modulos/reportes/cultivo/routers/routerReportePlaga.js';
 import RouterHerramientasPDF from './modulos/reportes/inventario/routers/routerHerramientasPDF.js';
 import RouterPreciosProductosPDF from './modulos/reportes/inventario/routers/routerPreciosProductosPDF.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Configuración de CORS
+// Configuración de CORS y middleware (sin cambios)
 app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true,
 }));
-
-// Configuración de middleware
 app.use(express.static('./public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
-
-// Servir imágenes desde modulos/uploads/
 app.use('/uploads', express.static(path.join(__dirname, 'modulos/uploads')));
 
 // Rutas del módulo Cultivo
@@ -159,14 +157,14 @@ app.use('/cultivo', RouterCultivoPDF);
 app.use('/cultivo', RouterEspeciesPDF);
 app.use('/finanzas', RouterPagoPDF);
 app.use('/finanzas', RouterTiquetePDF);
+app.use('/finanzas', RouterIngresosEgresosPDF); 
 app.use('/cultivo', RouterPlagaPDF);
 app.use('/inventario', RouterHerramientasPDF);
 app.use('/inventario', RouterPreciosProductosPDF);
 
-// Swagger Docs
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Configuración del motor de plantilla EJS
+// Swagger Docs y configuración de EJS (sin cambios)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.set('views', './src/views');
 app.set('view engine', 'ejs');
 
@@ -174,7 +172,6 @@ app.get('/documents', (req, resp) => {
   resp.render('documents.ejs');
 });
 
-// Iniciar el servidor
 app.listen(3000, async () => {
   console.log('✅ Servidor iniciado en el puerto 3000');
 });

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { addToast } from "@heroui/react";
-import { ReportePagoDetalle } from "@/types/finanzas/ReporteEgresos"; // Ajusta la ruta de la interfaz si es necesario
+import { ReportePagoDetalle } from "@/types/finanzas/ReporteEgresos";  
 import axios from "axios";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
