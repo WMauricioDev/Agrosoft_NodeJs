@@ -5,7 +5,6 @@ export const generarReporteCultivosPDF = async (req, res) => {
   try {
     const { fecha_inicio, fecha_fin } = req.query;
 
-    // Build SQL query
     let sql = `
       SELECT 
         c.nombre,
@@ -21,7 +20,6 @@ export const generarReporteCultivosPDF = async (req, res) => {
     const params = [];
 
     if (fecha_inicio && fecha_fin) {
-      // Validate date format (YYYY-MM-DD)
       const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
       if (!dateRegex.test(fecha_inicio) || !dateRegex.test(fecha_fin)) {
         return res.status(400).json({ message: 'Formato de fecha inválido (YYYY-MM-DD)' });
@@ -42,18 +40,15 @@ export const generarReporteCultivosPDF = async (req, res) => {
 
     doc.pipe(res);
 
-    // Title
     doc.fontSize(18).text('Reporte de Cultivos Activos', { align: 'center' });
     doc.moveDown();
 
-    // 1. Objective
     doc.fontSize(12).text('1. Objetivo');
     doc.fontSize(10).text(
       'Este documento presenta un reporte detallado de los cultivos activos registrados en el sistema, incluyendo información clave para la gestión agrícola como especies, ubicación, fechas de siembra y estado actual.',
       { align: 'justify' }
     );
 
-    // 2. General Summary
     doc.moveDown();
     doc.fontSize(12).text('2. Resumen General');
     doc.fontSize(10).text(
@@ -62,7 +57,6 @@ export const generarReporteCultivosPDF = async (req, res) => {
       { align: 'justify' }
     );
 
-    // 3. Crop Details
     doc.moveDown();
     doc.fontSize(12).text('3. Detalle de Cultivos Activos');
     doc.moveDown(0.5);
@@ -79,7 +73,6 @@ export const generarReporteCultivosPDF = async (req, res) => {
       currentX += colWidths[i];
     }
 
-    // Table Headers
     doc.font('Helvetica-Bold').fontSize(10);
     colTitles.forEach((title, i) => {
       const x = colPositions[i];
@@ -87,7 +80,6 @@ export const generarReporteCultivosPDF = async (req, res) => {
       doc.text(title, x + 5, tableTop + 5, { width: colWidths[i] - 10 });
     });
 
-    // Table Rows
     doc.font('Helvetica').fontSize(8);
     cultivos.forEach((cultivo, i) => {
       const y = tableTop + rowHeight * (i + 1);
@@ -106,7 +98,6 @@ export const generarReporteCultivosPDF = async (req, res) => {
       });
     });
 
-    // 4. Additional Information
     const additionalInfoY = tableTop + rowHeight * (cultivos.length + 2);
     doc.moveDown();
     doc.fontSize(12).text('4. Información Adicional', 50, additionalInfoY);

@@ -30,6 +30,7 @@ import bancal from "./modulos/cultivo/routers/router.bancal.js";
 import unidadmedida from "./modulos/cultivo/routers/router.unidadmedida.js";
 import RouterGraficos from './modulos/cultivo/routers/router.GraficasCostos.js';
 import RouterGraficosCosechas from './modulos/cultivo/routers/router.graficaCosechas.js';
+import routerReportarPlaga from './modulos/cultivo/routers/router.ReportarPlaga.js';
 // Rutas del módulo Usuarios
 import Usuarios from './modulos/usuarios/routers/Usuarios.router.js';
 import Roles from './modulos/usuarios/routers/Roles.routes.js';
@@ -62,6 +63,7 @@ import Mapa from "./modulos/cultivo/routers/router.mapa.js"
 import UsuariosPDF from "./modulos/reportes/usuarios/routers/routerReporteUsuarios.js";
 import BancalesPDF from './modulos/reportes/cultivo/routers/routerReporteBancal.js';
 import LotesPDF from './modulos/reportes/cultivo/routers/routerReporteLote.js';
+import RouterInsumosPDF from './modulos/reportes/inventario/routers/routerReporteInventario.js'; 
 import RouterCosechasPDF from './modulos/reportes/cultivo/routers/routerReporteCosechas.js';
 import RouterActividadesPDF from './modulos/reportes/cultivo/routers/routerReporteActividades.js';
 import RouterCultivoPDF from './modulos/reportes/cultivo/routers/routerReporteCultivo.js';
@@ -69,6 +71,10 @@ import RouterEspeciesPDF from './modulos/reportes/cultivo/routers/routerReporteE
 import RouterPagoPDF from './modulos/reportes/finanzas/routers/routerReportePago.js';
 import RouterTiquetePDF from './modulos/reportes/finanzas/routers/routerTiqueteVenta.js';
 import RouterIngresosEgresosPDF from './modulos/reportes/finanzas/routers/routerReporteIngresosEgresos.js';  
+import RouterPlagaPDF from './modulos/reportes/cultivo/routers/routerReportePlaga.js';
+import RouterHerramientasPDF from './modulos/reportes/inventario/routers/routerHerramientasPDF.js';
+import RouterPreciosProductosPDF from './modulos/reportes/inventario/routers/routerPreciosProductosPDF.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -108,6 +114,7 @@ app.use('/api/cultivo', bancal);
 app.use('/api/cultivo', unidadmedida);
 app.use('/api/cultivo', RouterGraficos);
 app.use('/api/cultivo', RouterGraficosCosechas);
+app.use('/api/cultivo', routerReportarPlaga);
 
 // Rutas del módulo Usuarios
 app.use('/api', Usuarios);
@@ -143,6 +150,7 @@ app.use('/api', Mapa);
 app.use("/usuarios",UsuariosPDF)
 app.use("/cultivo" ,BancalesPDF)
 app.use("/cultivo",LotesPDF)
+app.use("/inventario",RouterInsumosPDF);
 app.use('/cultivo', RouterCosechasPDF);
 app.use('/cultivo', RouterActividadesPDF);
 app.use('/cultivo', RouterCultivoPDF);
@@ -150,6 +158,10 @@ app.use('/cultivo', RouterEspeciesPDF);
 app.use('/finanzas', RouterPagoPDF);
 app.use('/finanzas', RouterTiquetePDF);
 app.use('/finanzas', RouterIngresosEgresosPDF); 
+app.use('/cultivo', RouterPlagaPDF);
+app.use('/inventario', RouterHerramientasPDF);
+app.use('/inventario', RouterPreciosProductosPDF);
+
 
 // Swagger Docs y configuración de EJS (sin cambios)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

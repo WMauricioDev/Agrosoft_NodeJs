@@ -15,7 +15,6 @@ const ListaReportePlaga: React.FC = () => {
 
   const columns = [
     { name: "ID", uid: "id" },
-    { name: "Usuario", uid: "usuario" },
     { name: "Bancal", uid: "bancal" },
     { name: "Plaga", uid: "plaga" },
     { name: "Estado", uid: "estado" },
@@ -25,9 +24,8 @@ const ListaReportePlaga: React.FC = () => {
 
   const transformedData = reportes?.map((reporte) => ({
     id: reporte.id.toString(),
-    usuario: reporte.usuario.username,
-    bancal: reporte.bancal.nombre,
-    plaga: reporte.plaga.nombre,
+    bancal: reporte.bancal_id.nombre,
+    plaga: reporte.plaga_id.nombre,
     estado: (
       <div className="flex items-center gap-1">
         {reporte.estado === 'PE' && <Clock className="text-yellow-500" size={18} />}

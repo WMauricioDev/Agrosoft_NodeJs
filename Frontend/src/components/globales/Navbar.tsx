@@ -56,8 +56,7 @@ const menuItemsBase = [
     subItems: [
       { id: 16, label: "Salario", path: "/finanzas/listarsalarios/" },
       { id: 17, label: "Ventas", path: "/finanzas/listarventas/" },
-      { id: 18, label: "Pagos", path: "/finanzas/listarpagos/" }, 
-
+      { id: 18, label: "Pagos", path: "/finanzas/listarpagos/" },
     ],
   },
   {
@@ -107,7 +106,6 @@ const menuItemsBase = [
     subItems: [
       { id: 42, label: "Ingresos", path: "/graficas/ingresos" },
       { id: 43, label: "Cosechas", path: "/graficas/cosechas" },
-      { id: 44, label: "Egresos", path: "/graficas/egresos" },
       { id: 45, label: "Costo actividad", path: "/graficas/actividadcosto" },
     ],
   },
